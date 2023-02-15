@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一、DHCP介绍1. 简要介绍DHCP 协议在我们日常生活中应该是最常见而又经常被忽略的一种协议了。当你走进一间屋子，手机自动连上了 WiFi，当你离开了屋子，又自动断开了 WiFi…… 这一系列的幕后都是DHCP协议在默默工作。 DHCP 协议(Dynamic Host Configuration Protocol)是一个基于UDP协议的局域网的网络协议。指的是由服务器控制一段 IP 地址范围，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DHCP 主机动态配置协议详解">
+<meta property="og:url" content="http://cherryyang05.github.io/2a5bb25d.html">
+<meta property="og:site_name" content="打球只投三分">
+<meta property="og:description" content="一、DHCP介绍1. 简要介绍DHCP 协议在我们日常生活中应该是最常见而又经常被忽略的一种协议了。当你走进一间屋子，手机自动连上了 WiFi，当你离开了屋子，又自动断开了 WiFi…… 这一系列的幕后都是DHCP协议在默默工作。 DHCP 协议(Dynamic Host Configuration Protocol)是一个基于UDP协议的局域网的网络协议。指的是由服务器控制一段 IP 地址范围，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/DHCP%E7%A7%9F%E5%80%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/DHCP%E6%8F%A1%E6%89%8B.jpg">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/DHCP%E6%95%B0%E6%8D%AE%E5%8C%85%E4%BB%8B%E7%BB%8D.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E5%86%85%E5%AE%B9.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/%E7%8A%B6%E6%80%81%E6%9C%BA.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2a5bb25d/option%E7%BB%84%E6%88%90.png">
+<meta property="article:published_time" content="2020-05-15T10:20:18.000Z">
+<meta property="article:modified_time" content="2023-01-06T08:12:57.168Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="计算机网络">
+<meta property="article:tag" content="TCP&#x2F;IP协议">
+<meta property="article:tag" content="DHCP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cherryyang05.github.io/2a5bb25d/DHCP%E7%A7%9F%E5%80%9F.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/2a5bb25d.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>DHCP 主机动态配置协议详解 | 打球只投三分</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="打球只投三分" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打球只投三分</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每天进步一点点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/2a5bb25d.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打球只投三分">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DHCP 主机动态配置协议详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-15 18:20:18" itemprop="dateCreated datePublished" datetime="2020-05-15T18:20:18+08:00">2020-05-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-06 16:12:57" itemprop="dateModified" datetime="2023-01-06T16:12:57+08:00">2023-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCP-IP%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">TCP/IP协议</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2a5bb25d.html" class="post-meta-item leancloud_visitors" data-flag-title="DHCP 主机动态配置协议详解" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2a5bb25d.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2a5bb25d.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="一、DHCP介绍"><a href="#一、DHCP介绍" class="headerlink" title="一、DHCP介绍"></a>一、DHCP介绍</h2><h3 id="1-简要介绍"><a href="#1-简要介绍" class="headerlink" title="1. 简要介绍"></a>1. 简要介绍</h3><p>DHCP 协议在我们日常生活中应该是最常见而又经常被忽略的一种协议了。当你走进一间屋子，手机自动连上了 WiFi，当你离开了屋子，又自动断开了 WiFi…… 这一系列的幕后都是DHCP协议在默默工作。</p>
+<p>DHCP 协议(Dynamic Host Configuration Protocol)是一个基于UDP协议的局域网的网络协议。指的是由服务器控制一段 IP 地址范围，客户机登录服务器时就可以自动获得服务器分配的 IP 地址和子网掩码。</p>
+<p>该协议的最大作用是动态的为加入网络的设备分配 IP 地址，在该协议出现前，IP 地址的分配基于静态模式，你把设备的 mac 地址手动在路由器设置，然后路由器自动生成一个 IP 与你的 mac 地址绑定起来。这种应用在有线网络时代可以适用，但在无线时代，每时每刻可能有不同的设备加入或离开网络，因此原有静态匹配 IP 的做法不再适合。</p>
+<p>DHCP 协议的诞生就是为了迎合在无线情况下，网络内部连接设备不断变化的情况。它包含两部分，一是分配 IP 地址，二是支持客户端请求，服务器应答，使得两者之间有效交换配置信息。</p>
+<p>DHCP 最重要功能显然是动态分配 IP 地址，当我们的设备连接上网络之后里面获得一个可用的 IP 地址，就得感谢该协议的执行，现在我们大多数设备都依靠 DHCP 来从路由器动态获得 IP</p>
+<span id="more"></span>
+
+<h3 id="2-DHCP-的-IP-租借"><a href="#2-DHCP-的-IP-租借" class="headerlink" title="2. DHCP 的 IP 租借"></a>2. DHCP 的 IP 租借</h3><p>DHCP 协议能够维护一个动态的 IP 池，根据设备加入和离开网络回收或分发可用 IP，它甚至能实现多个设备共享相同 IP。DHCP 协议的实现基于 UDP，需要 IP 的设备和具备分配 IP 能力的设备根据 DHCP 协议的方式封装数据包，然后通过 UDP 协议发送给对方。有了该协议后，我们上网时不再麻烦的去配置各种信息，设备和路由器之间相互通信后，自动配置好相应信息，我们只要等着配置完毕然后上网就行。</p>
+<p>DHCP 支持三种地址分配方式，一种是手动分配，由管理员手动将指定 IP 地址分发给特定设备；第二种是自动分配，它从当前可用的 IP 地址池中选出一个，永久的分发给某一台特定设备；第三种是动态分配，它从 IP 地址池中选出一个分发给某台设备一段时间，时间到了后收回，或者设备离开网络后通知路由器主动收回，由此可见，第二种和第三种区别不大</p>
+<p>使用动态分配方式时，管理员指定一系列可以分配的 IP，然后 DHCP 服务器会自动维护哪些 IP 已经分配，哪些 IP 可以使用。同时服务器指定分配的 IP 使用时长，一旦超时后，客户必须主动向服务器请求续租，例如上图就有对应按钮，或者请求重新从服务器获得一个新的 IP 地址，这个请求应答过程将是我们研究和实现的重点。</p>
+<p>DHCP 协议动态分配 IP 的好处显而易见，首先是自动化，省却了管理员耗时耗力的维护，其次是集中管理，从服务器就可以得知IP的使用情况，由此有效防止 IP 冲突。而且还能实现地址的共享和重用，如果一台设备不活跃，例如关机或离开网络，协议可以及时收回 IP，分发给在网络中的其他设备。</p>
+<p>在 DHCP 协议管理下，所有设备只能“租借” IP 而不能“拥有” IP。有租借就必须有管理，DHCP 协议的主要内容就在这里。租借时常根据设备的使用情况而定，作为服务器的设备租借时间必须很长，而对于手持设备而言，租借时间可以很短。在很多情况下，管理员为了防止 IP 被长时间无效占用，例如某台设备计划租借一个月，但它运行一天就关机了，那么这个 IP 就会在余下 29 天浪费掉，因此管理员会强制设备租借短时期，时期到了后再跟服务器请求延长租借期。</p>
+<p>管理员一般把 IP 池划分为若干类别，不同类别对应不同租期，然后根据接入设备的类型赋予不同类别的IP。一旦租期抵达一半时，设备就开始于服务器协商以便延长租期。</p>
+<p>下面是IP租借的流程图：</p>
+<p><img data-src="/2a5bb25d/DHCP%E7%A7%9F%E5%80%9F.png" alt="IP租借"></p>
+<p>上图描述了设备向 DHCP 服务器租借 IP 8 天流程，其中在第 4 天要与服务器协商续租。租借 IP 的设备需要保持两个时钟，时钟 T1 在租借期过了一半时触发，此时设备向服务器请求续租；如果续租不成功，第二个时钟在租期 87.5% 时触发，设备向另一个 DHCP 服务器发起租借 IP 的请求。我们后面用代码实现协议时，主要通过构造数据包完成上面所述流程。</p>
+<p>DHCP 协议时典型的服务器客户端应用模式。需要 IP 的设备是客户端，分发 IP 的设备是服务器，两者通过互发消息完成一项任务。他们之间的交互可以由下图表达：</p>
+<p><img data-src="/2a5bb25d/DHCP%E6%8F%A1%E6%89%8B.jpg" alt="DHCP握手"></p>
+<p>类似于 <code>TCP</code> 的握手，但是又比 TCP 简单不少。</p>
+<h2 id="二、DHCP主机动态配置协议解析和数据包格式说明"><a href="#二、DHCP主机动态配置协议解析和数据包格式说明" class="headerlink" title="二、DHCP主机动态配置协议解析和数据包格式说明"></a>二、DHCP主机动态配置协议解析和数据包格式说明</h2><h3 id="1-查看DHCP数据包"><a href="#1-查看DHCP数据包" class="headerlink" title="1. 查看DHCP数据包"></a>1. 查看DHCP数据包</h3><p>打开网络封包分析软件 WireShack，输入过滤条件 <code>bootp.option.type == 53</code> (或者 <code>dhcp.option.type == 53</code> 也可)，在命令行中输入 <code>ipconfig/renew</code>，表示续租 DHCP 服务器，我们获取这样的数据包：</p>
+<p><img data-src="/2a5bb25d/DHCP%E6%95%B0%E6%8D%AE%E5%8C%85%E4%BB%8B%E7%BB%8D.png" alt="DHCP数据包介绍"></p>
+<p>点开一个数据包，看到：</p>
+<p><img data-src="/2a5bb25d/%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png" alt="具体格式"></p>
+<p>我们看到 DHCP 协议数据包的组成格式为 <code>IP数据包-&gt;UDP数据包-&gt;Boostrap Protocoal数据包(也就是DHCP数据包)</code></p>
+<p><strong>【注】Boostrap 是DHCP协议的前身，它叫主机静态配置协议。DHCP其实是它的扩展，将原来静态配置的过程动态化，于是配置起来更加灵活方便，只不过DHCP数据包的依然以Boostrap协议数据包为基础。</strong></p>
+<p>我们点开 DHCP 看看具体内容：</p>
+<p><img data-src="/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E5%86%85%E5%AE%B9.png" alt="DHCP具体内容"></p>
+<p>通过观察，我们大概可以知道 DHCP 数据包大概有哪些字段，要了解这些字段的作用，我们还得充分了解协议的具体交互流程。DHCP 协议以客户端&lt;-&gt;服务器的方式进行交互，整个过程由客户端主导，服务器被动回应，因此掌握客户端的运行状态，我们就可以掌握 DHCP 的协议交互流程。</p>
+<h3 id="2-DHCP流程"><a href="#2-DHCP流程" class="headerlink" title="2. DHCP流程"></a>2. DHCP流程</h3><p>DHCP 在执行时维护了一个状态机，该状态机由八个状态组成。</p>
+<p>客户端在运行时维护一个内部状态机，其运行过程如下：</p>
+<ol>
+<li><code>INIT</code> 状态。客户端创建一个DHCPDISCOVER消息在局域网内广播，查询可用的 DHCP 服务器，然后进入<code>SELECTING</code>状态。</li>
+<li><code>SELECTING</code> 状态。局域网内的DHCP收到广播消息后，发送<code>DHCPOFFER</code>消息，客户端会收到一个或多个 DHCP 服务器的回应，然后它从众多回应中选取一个服务器，向它发送<code>DHCPREQUEST</code>消息，然后进入<code>REQUESTING</code>状态。</li>
+<li><code>REQUESTING</code> 状态。客户端向服务器发送 <code>DHCPREQUEST</code> 消息中包含了它对服务器的数据请求，例如可用IP地址以及各类配置参数，请求发送出去后它等待服务器回应。服务器会返回<code>DHCPACK</code> 消息，里面包含了客户端想要的可用IP以及配置参数等信息。<br>收到消息后，客户端检测服务器返回的 IP 地址是否可用，可用的话进入使用状态并像上一节描述的那样设置两个超时时钟。如果客户端发现 IP 地址不可用，它向服务器发送 <code>DHCPDECLINE</code>消息，然后转入状态1。<br>如果客户端从服务器收到的是DHCPNAK消息，它表示服务器拒绝向客户端提供服务，因此客户端重新进入状态1.</li>
+<li><code>INIT-REBOOT</code> 状态。如果客户端已经租借到IP，它重启后进入该状态。此时它会向服务器发送 DHCPREQUEST 消息，重新确定它对IP的使用权，然后客户端进入 REBOOTING 状态，等待服务器反应。</li>
+<li><code>REBOOTING</code> 状态。此时客户正在等待服务器返回确认消息，此时会有 3 种情况。一是客户端收到服务器发来的 DHCPACK 消息，表明可以继续使用它当前 IP,于是客户端进入 BOUND 状态；二是，客户端得到 DHCPACK 回应，然后发现它原来使用的 IP 在自己关机或重启时，被其他设备抢夺了，于是他想服务器发送 DHCPDECLINE 消息，然后进入状态 1；三是收到服务器发来的 DHCPNAK 消息，这表明服务器告诉客户端 IP 不能再继续使用，于是客户端进入状态 1.</li>
+<li><code>BOUND</code> 状态。此时客户端得到可用IP地址，并进入使用状态。此时它启动两个时钟，T1 和 T2。当 T1 超时时，它进入状态 RENEWING。如果客户端主动要放弃使用当前 IP，它会向服务器发送 DHCPRELEASE 消息，然后进入状态 1.</li>
+<li><code>RENEWING</code> 状态。此时客户端希望续租当前 IP，于是他想客户端发送 DHCPREQUEST 消息，然后等待服务器确认。此时客户端要面临三种情况，一是服务器返回 DHCPACK 消息，它可以继续使用当前 IP；二是收到 DHCPNAK 消息，服务器拒绝客户端继续租用当前 IP；三是客户端的 T2 时钟超时，客户端进入 REBINGDING 状态。</li>
+<li><code>REBIDING</code> 状态。此时客户端无法继续续租原有 IP，于是它持续向局域网广播 DHCPREQUEST 消息，直到有服务器响应它为止。此时客户端又面临三种情况。一是有服务器向客户端返回 DHCPACK 消息，于是客户端可以使用新分配的 IP；二是服务器返回 DHCPNAK 消息，这表明服务器希望客户端重新启动租借流程，于是客户端进入 INIT 状态；第三是，在收到回应前，客户端当前租用的 IP 到期，它重新进入 INIT 状态。</li>
+</ol>
+<p>为了简单起见，我们将以客户端的方式编写代码，上面的流程状态可以使用下图统一描述：</p>
+<p><img data-src="/2a5bb25d/%E7%8A%B6%E6%80%81%E6%9C%BA.png" alt="状态机"></p>
+<h3 id="3-字段详解"><a href="#3-字段详解" class="headerlink" title="3. 字段详解"></a>3. 字段详解</h3><p>首先完成第一步，客户端向局域网广播消息，然后收到服务器应答。下面是 DHCP 消息的具体格式：</p>
+<p><img data-src="/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png" alt="DHCP具体格式"></p>
+<p>上面的是前面抓包时对应的 DHCP 部分，依次解析各个字段：</p>
+<ul>
+<li><code>op</code> 字段 1 字节，它表明消息类型，请求消息使用数值1，回应消息使用数值2</li>
+<li><code>HType</code> 1 字节，它表明消息发送所使用的网络类型，由于我们默认使用互联网，因此它的值固定为 1</li>
+<li><code>HLen</code> 字段 1 字节，它表明设备硬件地址的长度，由于我们默认使用 mac 地址，因此该字段固定为 6</li>
+<li><code>Hops</code> 字段 1 字节，它表明数据包可以跨越几个不同网络，该字段的作用我们在前面 traceroute 程序中了解过，由于我们希望限制消息在当前局域网内流通，因此设置为 0</li>
+<li><code>XID</code> 字段 4 字节。它与 ICMP 消息中的 session 作用一样，用来标志一次对话过程</li>
+<li><code>Secs</code> 字段 2 字节。它用来表明客户端发出请求后等待的时间，一般该字段不常使用，我们将它固定为 0</li>
+<li><code>Flags</code> 字段 2 字节，取值 0 或 1，如果设置为 1，客户端要求服务器以广播的方式发送回应消息，因为此时客户端可能还没有 IP 地址</li>
+<li><code>CIAddr</code> 字段 4 字节，它存放客户端当前 IP 地址，如果客户端当前有 IP，而且进入状态 BOUND,RENEWING 状态，其他情况下统一设置为 0</li>
+<li><code>YIAddr</code> 字段 4 字节，这是服务器返回给客户端使用的IP</li>
+<li><code>SIAddr</code> 字段 4 字节，服务器 IP 地址，它有点特殊，这个 IP 是不一定是当前交互的服务器 IP，而是设备下次启动时去获取IP地址的服务器IP</li>
+<li><code>GIAddr</code> 字段 4 字节，网关 IP，当 DHCP 服务器不在本地局域网时，设备将通过该 IP 将数据包转发给处于另一个局域网的服务器，通常情况下使用不到</li>
+<li><code>CHAddr</code> 字段 16 字节，设备的硬件地址。由于我们默认设备使用 mac 地址，因此只使用到 6 个字节，其余 10 个字节用 0 填充</li>
+<li><code>SName</code> 字段 64 个字节，该字段用做 DHCP 服务器的字符串名称</li>
+<li><code>File</code> 字段 128 字节，该字段用于在设备和服务器间交换特定信息</li>
+<li><code>Options</code> 字段，可变长。该字段用于设备和服务器间交换多种配置信息</li>
+</ul>
+<p>接下来我们看看 <code>Options</code> 字段，由于所有信息的交互都存储在该字段，因此我们需搞清楚它的结构。在该字段开始前是4个字节的 <code>魔术字</code>，固定为 <code>99.130.83.99</code>(十六进制：63 82 53 63)，然后才是一系列 Option 数据结构，Option 数据结构组成如下。</p>
+<p><img data-src="/2a5bb25d/option%E7%BB%84%E6%88%90.png" alt="option组成"></p>
+<p>每个 <code>Option</code> 由三字段组成，第一字段是 <code>Code</code>,用来表明当前 <code>Option</code> 类型，它有两个特殊值，一个是 <code>0</code>，它表示当前 <code>Option</code> 只有这一个字节，另一个特殊值是 <code>255</code>，它表示后续不再含有 <code>Option</code>结构体；第二字段是 <code>len</code>，用来标志数据段的长度；第三字段是 <code>Data</code>，用来存储数据。</p>
+<p>由于 Option 结构体用于客户端与服务器进行数据交换，因此它的种类相当繁杂。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+              <a href="/tags/TCP-IP%E5%8D%8F%E8%AE%AE/" rel="tag"># TCP/IP协议</a>
+              <a href="/tags/DHCP/" rel="tag"># DHCP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/58ced44c.html" rel="prev" title="BAT批处理文件的使用（二）">
+      <i class="fa fa-chevron-left"></i> BAT批处理文件的使用（二）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/bc4fb6eb.html" rel="next" title="Java虚拟机知识总结(一)">
+      Java虚拟机知识总结(一) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81DHCP%E4%BB%8B%E7%BB%8D"><span class="nav-text">一、DHCP介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E8%A6%81%E4%BB%8B%E7%BB%8D"><span class="nav-text">1. 简要介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-DHCP-%E7%9A%84-IP-%E7%A7%9F%E5%80%9F"><span class="nav-text">2. DHCP 的 IP 租借</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81DHCP%E4%B8%BB%E6%9C%BA%E5%8A%A8%E6%80%81%E9%85%8D%E7%BD%AE%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90%E5%92%8C%E6%95%B0%E6%8D%AE%E5%8C%85%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E"><span class="nav-text">二、DHCP主机动态配置协议解析和数据包格式说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%9F%A5%E7%9C%8BDHCP%E6%95%B0%E6%8D%AE%E5%8C%85"><span class="nav-text">1. 查看DHCP数据包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-DHCP%E6%B5%81%E7%A8%8B"><span class="nav-text">2. DHCP流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AD%97%E6%AE%B5%E8%AF%A6%E8%A7%A3"><span class="nav-text">3. 字段详解</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">208k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/2a5bb25d.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

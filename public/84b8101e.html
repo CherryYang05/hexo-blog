@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文用 Rust 语言实现一个简单的进度条功能，并介绍通过转义码在终端打印带颜色等格式的字符串。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust实现进度条功能">
+<meta property="og:url" content="http://cherryyang05.github.io/84b8101e.html">
+<meta property="og:site_name" content="打球只投三分">
+<meta property="og:description" content="本文用 Rust 语言实现一个简单的进度条功能，并介绍通过转义码在终端打印带颜色等格式的字符串。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20230112160436.png">
+<meta property="article:published_time" content="2023-01-12T07:57:27.000Z">
+<meta property="article:modified_time" content="2023-01-22T13:57:54.598Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="小工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20230112160436.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/84b8101e.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Rust实现进度条功能 | 打球只投三分</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="打球只投三分" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打球只投三分</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每天进步一点点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/84b8101e.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打球只投三分">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rust实现进度条功能
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-01-12 15:57:27" itemprop="dateCreated datePublished" datetime="2023-01-12T15:57:27+08:00">2023-01-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-22 21:57:54" itemprop="dateModified" datetime="2023-01-22T21:57:54+08:00">2023-01-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">生产力工具</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/84b8101e.html" class="post-meta-item leancloud_visitors" data-flag-title="Rust实现进度条功能" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/84b8101e.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/84b8101e.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本文用 Rust 语言实现一个简单的进度条功能，并介绍通过转义码在终端打印带颜色等格式的字符串。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、代码实现"><a href="#一、代码实现" class="headerlink" title="一、代码实现"></a>一、代码实现</h2><p>先上代码。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">bar_show</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;(), <span class="type">Box</span>&lt;<span class="keyword">dyn</span> Error&gt;&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> BAR_FRONT: &amp;<span class="type">str</span> = <span class="string">&quot;-\\|/&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">index</span> <span class="keyword">in</span> <span class="number">0</span>..=<span class="number">100</span> &#123;</span><br><span class="line">        <span class="built_in">print!</span>(</span><br><span class="line">            <span class="string">&quot;\r&#123;&#125; \u&#123;1b&#125;[42m&#123;&#125;\u&#123;1b&#125;[0m [ &#123;&#125;% ]&quot;</span>,</span><br><span class="line">            BAR_FRONT.<span class="title function_ invoke__">chars</span>().<span class="title function_ invoke__">nth</span>(index % <span class="number">4</span>).<span class="title function_ invoke__">unwrap</span>(),</span><br><span class="line">            <span class="string">&quot; &quot;</span>.<span class="title function_ invoke__">repeat</span>(index / <span class="number">3</span>),</span><br><span class="line">            index</span><br><span class="line">        );</span><br><span class="line">        <span class="title function_ invoke__">stdout</span>().<span class="title function_ invoke__">flush</span>()?;</span><br><span class="line">        <span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_millis</span>(<span class="number">30</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">println!</span>();</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为终端输出的进度条是带颜色的，在这里没法显示，只能通过截图看。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20230112160436.png" alt="进度条显示"></p>
+<h2 id="二、代码解释"><a href="#二、代码解释" class="headerlink" title="二、代码解释"></a>二、代码解释</h2><p>进度条前面的指示字符是 <code>&quot;-\\|/&quot;</code> 交替显示，呈现出动态效果，因为 <code>\</code> 需要转义，所以是两个反斜杠 <code>\\</code>。</p>
+<p>然后就是进度条从 0-100 开始，每一次循环输出指示字符(模 4)，空白字符重复 (index &#x2F; times) 次，根据进度条长度进行调整除数。然后刷新输出流，要不然输出会在缓存中，每隔一段时间才会输出到设备，不会实时显示进度条进度，最后再睡眠 30ms，让进度条缓慢加载。</p>
+<p>最重要的是这一句：<code>&quot;\r&#123;&#125; \u&#123;1b&#125;[42m&#123;&#125;\u&#123;1b&#125;[0m [ &#123;&#125;% ]&quot;</code>。</p>
+<p>首先，<code>\r</code> 表示将光标置于本行行首，使用 <code>print!</code> 可以使得每次输出覆盖之前输出的行。然后 <code>\u</code> 表示输出后面的 <code>UniCode</code> 字符，<code>&#123;&#125;</code> 就不用说了，是 Rust 里用来控制格式化输出的。</p>
+<blockquote>
+<p>注：Unix 系统里，每行结尾只有“&lt;换行&gt;”，即“\n”；Windows 系统里面，每行结尾是“&lt;换行&gt;&lt;回车 &gt;”，即“\n\r”；Mac 系统里，每行结尾是“&lt;回车&gt;”。一个直接后果是，Unix&#x2F;Mac 系统下的文件在 Windows里打开的话，所有文字会变成一行；而 Windows 里的文件在 Unix&#x2F;Mac 下打开的话，在每行的结尾可能会多出一个 ^M 符号。所以，如果你需要跨平台处理文本文件，可能会被回车换行搅得有点头大。<br>0x0D（ascii 码是 13） 指的是“回车”   \r 是把光标置于本行行首<br>0x0A（ascii 码是 10） 指的是“换行”   \n 是把光标置于下一行的同一列<br>0x0D + 0x0A         回车换行       \r\n 是把光标置于下一行行首 </p>
+</blockquote>
+<p><code>\u&#123;1b&#125;[42m</code> 这句的格式是 <code>\x1b[&lt;代码&gt;;&lt;代码&gt;</code>，其中 <code>\x1b[</code> 是十六进制 1b，写成八进制 <code>\033</code> 也行，然后一个左中括号，是特殊的终端控制符，格式固定。然后后面跟上一个数字和一个字母，这里 <code>42m</code> 就是将背景设置为绿色，字母 m 表示设置的属性类别，数字代表属性值。</p>
+<p>下面是一些其他属性，可以设置文本的颜色，背景色，设置是否加粗，下划线等。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">\033[0m 关闭所有属性</span><br><span class="line">\033[1m 设置加粗</span><br><span class="line">\033[2m 设置模糊，有的终端可能不支持</span><br><span class="line">\033[3m 设置斜体，有的终端可能不支持</span><br><span class="line">\033[4m 下划线（单线）</span><br><span class="line">\033[5m 闪烁（慢）</span><br><span class="line">\033[5m 闪烁（快），有的终端可能不支持</span><br><span class="line">\033[7m 交换背景色与前景色</span><br><span class="line">\033[8m 隐藏所有</span><br><span class="line">\033[30m 至 \033[37m 设置前景色</span><br><span class="line">\033[40m 至 \033[47m 设置背景色</span><br><span class="line">\033[nA 光标上移n行 </span><br><span class="line">\033[nB 光标下移n行</span><br><span class="line">\033[nC 光标右移n行</span><br><span class="line">\033[nD 光标左移n行</span><br><span class="line">\033[y;xH 设置光标位置</span><br><span class="line">\033[2J 清屏</span><br><span class="line">\033[K 清除从光标到行尾的内容</span><br><span class="line">\033[s 保存光标位置 </span><br><span class="line">\033[u 恢复光标位置</span><br><span class="line">\033[?25l 隐藏光标</span><br><span class="line">\033[?25h 显示光标</span><br></pre></td></tr></table></figure>
+
+<p>各个数字代表的颜色如下。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">字背景颜色范围:40--49</span><br><span class="line">    40:黑</span><br><span class="line">    41:深红</span><br><span class="line">    42:绿</span><br><span class="line">    43:黄色</span><br><span class="line">    44:蓝色</span><br><span class="line">    45:紫色</span><br><span class="line">    46:深绿</span><br><span class="line">    47:白色</span><br><span class="line">字颜色: 30--39</span><br><span class="line">    30:黑</span><br><span class="line">    31:红</span><br><span class="line">    32:绿</span><br><span class="line">    33:黄</span><br><span class="line">    34:蓝色</span><br><span class="line">    35:紫色</span><br><span class="line">    36:深绿 </span><br><span class="line">    37:白色</span><br></pre></td></tr></table></figure>
+
+<p>另外，同类的多种设置项可以组合在一起，中间用分号 <code>;</code> 隔开。</p>
+<p>例如 <code>print!(&quot;\u&#123;1b&#125;[31;1;3;4m&#123;&#125;\u&#123;1b&#125;[0m&quot;, &quot;Rosa&quot;);</code>，其中 <code>\u&#123;1b&#125;[31;1;3;4m</code> 中，<code>31</code> 表示前景色（字的颜色）是红色，<code>1</code> 表示加粗，<code>3</code> 表示设置斜体，<code>4</code> 表示设置下划线。则上述代码输出的是一个红色加粗加下划线的斜体字符串 <code>Rosa</code>。最后的 <code>\u&#123;1b&#125;[0m</code> 表示将格式清除掉，否则下面输出的任何字符都将使用刚刚的样式。</p>
+<p>同样，在 C 语言中也可以实现。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> color = <span class="number">32</span>;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;\033[20;1H\033[1;4;%dmHello, world.\033[0m&quot;</span>, color);</span><br></pre></td></tr></table></figure>
+
+<p>这行命令首先 <code>\033[20;1H</code> 将光标移动到终端第 20 行第 1 列，之后的 <code>\033[1;4;32m</code> 将文本属性设置为高亮、带下划线且颜色为绿色，然后输出 <code>Hello,world</code>，最后 <code>\033[0m</code> 将终端属性恢复为默认值。</p>
+<h2 id="三、一些参考实现"><a href="#三、一些参考实现" class="headerlink" title="三、一些参考实现"></a>三、一些参考实现</h2><h3 id="3-1-bash-中输出带样式的字符"><a href="#3-1-bash-中输出带样式的字符" class="headerlink" title="3.1 bash 中输出带样式的字符"></a>3.1 bash 中输出带样式的字符</h3><p>在 bash 中，通常我们可以使用 <code>echo</code> 命令加 <code>-e</code> 选项输出各种颜色的文本，<code>echo -e</code> 表示处理特殊字符，开启转义。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">echo -e &quot;\033[31mRed Text\033[0m&quot;</span><br><span class="line">echo -e &quot;\033[32mGreen Text\033[0m&quot;</span><br><span class="line">echo -e &quot;\033[33mYellow Text\033[0m&quot;</span><br><span class="line">echo -e &quot;\033[34mBlue Text\033[0m&quot;</span><br><span class="line">echo -e &quot;\033[35mMagenta Text\033[0m&quot;</span><br><span class="line">echo -e &quot;\033[36mCyan Text\033[0m&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-C-语言中输出颜色表"><a href="#3-2-C-语言中输出颜色表" class="headerlink" title="3.2 C 语言中输出颜色表"></a>3.2 C 语言中输出颜色表</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> i, j, n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">11</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; <span class="number">10</span>; j++) &#123;</span><br><span class="line">            n = <span class="number">10</span> * i + j;</span><br><span class="line">            <span class="keyword">if</span> (n &gt; <span class="number">108</span>) <span class="keyword">break</span>;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\033[%dm %3d\033[m&quot;</span>, n, n);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、参考文档"><a href="#四、参考文档" class="headerlink" title="四、参考文档"></a>四、参考文档</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/goloving/p/15015053.html">浅析 <code>\x1B[1;3;31mxterm.js\x1B[0m</code> 是什么？如何在终端输出带颜色等格式的字符串 
+</a></p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ANSI_escape_code#Colors">ANSI escape code</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/opangle/p/4082692.html">控制台终端输出颜色</a></p>
+<p>Rust 官方有进度条实现的 <a target="_blank" rel="noopener" href="https://crates.io/crates/indicatif">indicatif crate</a>，用法比较全面，这里是 <a target="_blank" rel="noopener" href="http://wilson-blog.cn/post/2021/02/20/rust.indicatif.html#indicatifmultiprogress">源码解析</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+              <a href="/tags/%E5%B0%8F%E5%B7%A5%E5%85%B7/" rel="tag"># 小工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/31dce7e5.html" rel="prev" title="Makefile的简单使用">
+      <i class="fa fa-chevron-left"></i> Makefile的简单使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/aaaac292.html" rel="next" title="C 语言预处理器和宏的高级用法">
+      C 语言预处理器和宏的高级用法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">一、代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A"><span class="nav-text">二、代码解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%B8%80%E4%BA%9B%E5%8F%82%E8%80%83%E5%AE%9E%E7%8E%B0"><span class="nav-text">三、一些参考实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-bash-%E4%B8%AD%E8%BE%93%E5%87%BA%E5%B8%A6%E6%A0%B7%E5%BC%8F%E7%9A%84%E5%AD%97%E7%AC%A6"><span class="nav-text">3.1 bash 中输出带样式的字符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-C-%E8%AF%AD%E8%A8%80%E4%B8%AD%E8%BE%93%E5%87%BA%E9%A2%9C%E8%89%B2%E8%A1%A8"><span class="nav-text">3.2 C 语言中输出颜色表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%8F%82%E8%80%83%E6%96%87%E6%A1%A3"><span class="nav-text">四、参考文档</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">208k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/84b8101e.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

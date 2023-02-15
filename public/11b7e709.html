@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="baidu-site-verification" content="true">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文是《深入浅出SSD 固态存储核心技术、原理与实战》的学习笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入浅出SSD（一）">
+<meta property="og:url" content="http://cherryyang05.github.io/11b7e709.html">
+<meta property="og:site_name" content="打球只投三分">
+<meta property="og:description" content="本文是《深入浅出SSD 固态存储核心技术、原理与实战》的学习笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512163939.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512164826.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512165605.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512170135.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194602.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194929.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513213919.png">
+<meta property="article:published_time" content="2022-05-12T08:07:36.000Z">
+<meta property="article:modified_time" content="2023-01-06T08:06:48.091Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="SSD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512163939.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/11b7e709.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入浅出SSD（一） | 打球只投三分</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="打球只投三分" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">打球只投三分</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">每天进步一点点</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/11b7e709.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="打球只投三分">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入浅出SSD（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-12 16:07:36" itemprop="dateCreated datePublished" datetime="2022-05-12T16:07:36+08:00">2022-05-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-01-06 16:06:48" itemprop="dateModified" datetime="2023-01-06T16:06:48+08:00">2023-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OpenSSD/" itemprop="url" rel="index"><span itemprop="name">OpenSSD</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OpenSSD/SSD/" itemprop="url" rel="index"><span itemprop="name">SSD</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/11b7e709.html" class="post-meta-item leancloud_visitors" data-flag-title="深入浅出SSD（一）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/11b7e709.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/11b7e709.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本文是《深入浅出SSD 固态存储核心技术、原理与实战》的学习笔记</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、SSD-介绍"><a href="#一、SSD-介绍" class="headerlink" title="一、SSD 介绍"></a>一、SSD 介绍</h2><p>SSD(Solid State Drive) 固态硬盘，主要以半导体闪存为介质的存储设备，属于 ROM 的一种。</p>
+<p>SSD 硬件包括几大组成部分:主控、闪存、缓存芯片DRAM（可选，有些SSD上可能只有 SRAM，并没有配置 DRAM）、PCB（电源芯片、电阻、电容等）、接口（SATA、SAS、PCle等），其主体就是一块 PCB。</p>
+<p>软件角度，SSD 内部运行固件（Firmware, FW）负责调度数据从接口端到介质端的读写，还包括嵌入核心的闪存介质寿命和可靠性管理调度算法，以及其他 SSD 的算法。</p>
+<p>SSD 控制器，闪存和固件是 SSD 三大技术核心。</p>
+<p>SSD 的容量，性能，可靠性，寿命，尺寸，功耗，噪声，重量，抗震，温度都优于机械硬盘，目前价格也逐渐接近机械硬盘。</p>
+<h2 id="二、SSD-基本工作原理"><a href="#二、SSD-基本工作原理" class="headerlink" title="二、SSD 基本工作原理"></a>二、SSD 基本工作原理</h2><p>SSD 的输入是命令(Command)，输出是数据(Data)和命令状态(Command Status)。SSD 前端(Front End)接收用户命令请求，经过内部计算和处理逻辑，输出用户所需要的数据或状态。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512163939.png" alt="SSD系统调用"></p>
+<p>SSD 的三大功能模块：</p>
+<ul>
+<li>前端接口和相关的协议模块;</li>
+<li>中间的 FTL 层（Flash Translation Layer，闪存转换层）模块;</li>
+<li>后端和闪存通信模块</li>
+</ul>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512164826.png" alt="接口协议"></p>
+<p>FTL 算法决定了性能、可靠性、功耗等 SSD 的核心参数。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512165605.png" alt="SSD的垃圾回收（GC）"></p>
+<h2 id="三、SSD-系统架构"><a href="#三、SSD-系统架构" class="headerlink" title="三、SSD 系统架构"></a>三、SSD 系统架构</h2><p>SSD 作为数据存储设备，其实是一种典型的(System on Chip)单机系统，有主控CPU、RAM、操作加速器、总线、数据编码译码等模块(见图2-1)，操作对象为协议、数据命令、介质，操作目的是写入和读取用户数据。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512170135.png" alt="SSD主控模块硬件图"></p>
+<p>SSD 系统架构分为前端（Host Interface Controller，主机接口控制器）和后端（Flash Controller，闪存控制器），前端和主机接口打交道，包含 SATA、PCIe、SAS 接口等，后端和闪存打交道，完成数据编解码和 ECC。</p>
+<h3 id="1-前端"><a href="#1-前端" class="headerlink" title="1. 前端"></a>1. 前端</h3><p>SATA 的全称是 Serial Advanced Technology Attachment（串行高级技术附件），是一种串行硬件驱动器接口。</p>
+<p>SAS（Serial Attached SCSI）即串行连接 SCSI，是新一代的 SCSI 技术。</p>
+<p>PCIe（Peripheral Component Interconnect Express）是一种高速串行计算机扩展总线标准，原来被称为 3GIO</p>
+<h3 id="2-主控-CPU"><a href="#2-主控-CPU" class="headerlink" title="2. 主控 CPU"></a>2. 主控 CPU</h3><h3 id="3-后端"><a href="#3-后端" class="headerlink" title="3. 后端"></a>3. 后端</h3><p>后端两大模块分别为 ECC 和闪存控制器。</p>
+<p>ECC 模块是数据编解码单元，由于闪存存储天生的误码率，要在数据写入是加上 ECC 检验保护，同样读取的时候要通过 ECC 进行解码。</p>
+<p>SSD 中的 ECC 算法主要有 BCH 和 LDPC，后者逐渐成为主流。</p>
+<h2 id="四、闪存物理结构"><a href="#四、闪存物理结构" class="headerlink" title="四、闪存物理结构"></a>四、闪存物理结构</h2><p>现在固态硬盘采用 NAND 闪存作为存储介质。闪存在写之前必须先擦除，不能覆盖写，因此 SSD 需要有垃圾回收，一个块读写次数超过一定限度就会损坏，因此要有磨损均衡。</p>
+<p>闪存是一种非易失性存储器，基本存储单元是一种类 NMOS 的双层浮栅 MOS 管，电子被上下绝缘层包围，因此掉电不会消失。</p>
+<p>施敏发明浮栅晶体管的来源是奶酪蛋糕~~</p>
+<h3 id="SLC、MLC、TCL"><a href="#SLC、MLC、TCL" class="headerlink" title="SLC、MLC、TCL"></a>SLC、MLC、TCL</h3><p>一个存储单元存储 1bit 的数据的闪存，叫做 SLC（Single Level Cell），存储 2bit 数据的闪存叫 MLC（Multiple Level Cell），存储 3bit 数据的闪存为 TLC（Triple Level Cell）。</p>
+<p>存储单元存储的值是按照存储单元里的电子相对个数来判断的，电子相对个数通过电压的区间范围来判断。</p>
+<p>但同时，一个存储单元电子划分得越多，那么在写入的时候，控制进入浮栅极的电子个数就要越精细，所以写耗费的时间就越长;同样的，读的时候，需要尝试用不同的参考电压去读取，一定程度上加长了读取时间。所以我们会看到在性能上，TLC 不如 MLC，MLC 不如 SLC。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194602.png" alt="SLC、MLC和TCL参数比较"></p>
+<p>一个闪存内部的存储组织结构如下图所示:<br>一个闪存芯片有若干个 DIE（或者叫LUN），每个 DIE 有若干个 Plane，每个 Plane 有若干个 Block，每个 Block 有若干个 Page,每个 Page 对应着一个 Wordline，Wordline 由成千上万个存储单元构成。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194929.png" alt="闪存内部组织架构"></p>
+<p>DIE&#x2F;LUN 是接收和执行闪存命令的最基本单元，在一个 LUN 中，不能对某个 Page 写的同时，又对其他 Page 进行读访问。</p>
+<p>一个 LUN 又分为若干个 Plane，市面上常见的是 1 个或者 2 个 Plane，现在也有 4 个 Plane 的闪存了。每个 Plane 都有自己独立的 Cache Register 和 Page Register，其大小等于一个 Page 的大小。</p>
+<p>固态硬盘主控在写某个 Page 的时候，先把数据从主控传输到该 Page 所对应 Plane 的 Cache Register 中，然后把整个 Cache Register 写到闪存阵列，读的时候相反，先把这个 Page 中的数据从闪存介质读取到 Cache Register 中，然后<strong>按需</strong>传给主控。</p>
+<p>同时有 Cache Register 和 Page Register 的目的是优化闪存的访问速度（类似于二级缓存）。</p>
+<p>我们通常所说的闪存读写时间，并不包含数据从闪存到主控之间的数据传输时间，也不包括数据在 Cache Register 和 Page Register 之间的传输时间。闪存写人时间是指一个 Page 的数据从 Page Register 当中写人闪存介质的时间，闪存读取时间是指一个 Page 的数据从闪存介质读取到 Page Register 的时间。</p>
+<p>闪存一般都支持 Multi-Plane（或者Dual-Plane）操作，就是将同一个 LUN 中多个 Plane 中 Cache Register 写入数据后同时写入闪存介质，这样可以节省 Page 写入时间。</p>
+<p>闪存的擦除是以 block 为单位的，因为在物理结构上，一个 block 中的存储单元共用一个衬底（Substrate）。</p>
+<h3 id="读、写、擦原理"><a href="#读、写、擦原理" class="headerlink" title="读、写、擦原理"></a>读、写、擦原理</h3><p>量子隧道效应</p>
+<h3 id="三维闪存"><a href="#三维闪存" class="headerlink" title="三维闪存"></a>三维闪存</h3><h3 id="3D-XPoint"><a href="#3D-XPoint" class="headerlink" title="3D XPoint"></a>3D XPoint</h3><p>相变存储器：PRAM，PCM</p>
+<p>PCM 通过一种微小的电阻作用使得玻璃融化，相变为晶体，现在 PCM 读取时间已经可以到皮秒级别。</p>
+<p>PCM 特点：</p>
+<ul>
+<li>掉电数据不丢失</li>
+<li>可以按照字节访问</li>
+<li>软件简单</li>
+<li>写之前不需要擦除操作</li>
+<li>功耗低，和闪存差不多</li>
+<li>读写速度快</li>
+<li>寿命远长于闪存</li>
+</ul>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513213919.png" alt="几种存储器特性对比"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SSD/" rel="tag"># SSD</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/5c3fd875.html" rel="prev" title="Rust入门教程（一）">
+      <i class="fa fa-chevron-left"></i> Rust入门教程（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/48404f67.html" rel="next" title="Rust入门教程（二）：结构体和枚举">
+      Rust入门教程（二）：结构体和枚举 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81SSD-%E4%BB%8B%E7%BB%8D"><span class="nav-text">一、SSD 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81SSD-%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">二、SSD 基本工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81SSD-%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="nav-text">三、SSD 系统架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%89%8D%E7%AB%AF"><span class="nav-text">1. 前端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%BB%E6%8E%A7-CPU"><span class="nav-text">2. 主控 CPU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%90%8E%E7%AB%AF"><span class="nav-text">3. 后端</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E9%97%AA%E5%AD%98%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84"><span class="nav-text">四、闪存物理结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SLC%E3%80%81MLC%E3%80%81TCL"><span class="nav-text">SLC、MLC、TCL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E3%80%81%E5%86%99%E3%80%81%E6%93%A6%E5%8E%9F%E7%90%86"><span class="nav-text">读、写、擦原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E7%BB%B4%E9%97%AA%E5%AD%98"><span class="nav-text">三维闪存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3D-XPoint"><span class="nav-text">3D XPoint</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">208k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var canonicalURL, curProtocol;
+      //Get the <link> tag
+      var x=document.getElementsByTagName("link");
+		//Find the last canonical URL
+		if(x.length > 0){
+			for (i=0;i<x.length;i++){
+				if(x[i].rel.toLowerCase() == 'canonical' && x[i].href){
+					canonicalURL=x[i].href;
+				}
+			}
+		}
+    //Get protocol
+	    if (!canonicalURL){
+	    	curProtocol = window.location.protocol.split(':')[0];
+	    }
+	    else{
+	    	curProtocol = canonicalURL.split(':')[0];
+	    }
+      //Get current URL if the canonical URL does not exist
+	    if (!canonicalURL) canonicalURL = window.location.href;
+	    //Assign script content. Replace current URL with the canonical URL
+      !function(){var e=/([http|https]:\/\/[a-zA-Z0-9\_\.]+\.baidu\.com)/gi,r=canonicalURL,t=document.referrer;if(!e.test(r)){var n=(String(curProtocol).toLowerCase() === 'https')?"https://sp0.baidu.com/9_Q4simg2RQJ8t7jm9iCKT-xh_/s.gif":"//api.share.baidu.com/s.gif";t?(n+="?r="+encodeURIComponent(document.referrer),r&&(n+="&l="+r)):r&&(n+="?l="+r);var i=new Image;i.src=n}}(window);})();
+  </script>
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/11b7e709.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
