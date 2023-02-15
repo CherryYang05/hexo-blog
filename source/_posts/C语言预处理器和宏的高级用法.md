@@ -182,7 +182,7 @@ GNU C 的一大特色就是 `__attribute__` 机制。`__attribute__` 可以设�
 #include<stdio.h>
 
 #define _LOG_
-#ifdef _LOG_
+#ifdef _LOG_   
 #define LOG_ERROR_STYLE "\x1b[31m"
 #define LOG_INFO_STYLE "\x1b[32m"
 #define LOG_WARNING_STYLE "\x1b[33m"
