@@ -124,6 +124,15 @@ git stash pop               //移除隐藏
 
 另一种避免重复提交的方法就是 `git --amend` 命令，在第二次提交时，若我们想合并上一次提交，可以使用 `git commit --amend -m "xxx"`，这样新一次的提交会覆盖上一次的提交。
 
+但是在使用 `--amend` 时候不能进行 `push` 提交，否则会提
+
+```shell
+提示：更新被拒绝，因为您当前分支的最新提交落后于其对应的远程分支。
+提示：再次推送前，先与远程变更合并（如 'git pull ...'）。详见
+提示：'git push --help' 中的 'Note about fast-forwards' 小节`
+```
+
+若 `push` 了之后应该使用 `--force-with-lease` 参数。
 
 ## 6. 
 
