@@ -3,8 +3,8 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 打球只投三分
-subtitle: 每天进步一点点
+title: 北极熊不吃企鹅宝宝
+subtitle: 为什么呢？
 description: ''
 keywords: 
 author: 'Cherry'
@@ -43,7 +43,7 @@ external_link:
 filename_case: 0
 render_drafts: trues
 post_asset_folder: true
-relative_link: true
+relative_link: false
 future: true
 highlight:
   enable: true
@@ -103,7 +103,7 @@ deploy:
     repo: https://github.com/CherryYang05/CherryYang05.github.io.git
     # git@github.com:CherryYang05/CherryYang05.github.io.git
     branch: master
-  - type: baidu_url_submitter
+  # - type: baidu_url_submitter
 # Markdown-it config
 ## Docs: https://github.com/celsomiranda/hexo-renderer-markdown-it/wiki
 markdown:
@@ -146,11 +146,11 @@ baidusitemap:
 sitemap:
   path: sitemap.xml
 
-baidu_url_submit:
-  count: 5                      ## 比如3，代表提交最新的三个链接
-  host: cherryyang05.github.io  ## 在百度站长平台中注册的域名
-  token: ZbBiWp20BIT4fEUU       ## 请注意这是您的秘钥， 请不要发布在公众仓库里!
-  path: baidu_urls.txt          ## 文本文档的地址， 新链接会保存在此文本文档里
+# baidu_url_submit:
+#   count: 5                      ## 比如3，代表提交最新的三个链接
+#   host: cherryyang05.github.io  ## 在百度站长平台中注册的域名
+#   token: ZbBiWp20BIT4fEUU       ## 请注意这是您的秘钥， 请不要发布在公众仓库里!
+#   path: baidu_urls.txt          ## 文本文档的地址， 新链接会保存在此文本文档里
 
 # url优化插件
 abbrlink:
