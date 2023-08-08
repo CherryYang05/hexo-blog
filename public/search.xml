@@ -992,14 +992,28 @@
       </tags>
   </entry>
   <entry>
-    <title>GDB的使用</title>
+    <title>用 gdb 调试程序</title>
     <url>/1ea0c606.html</url>
     <content><![CDATA[<blockquote>
 <p>学计算机的人不能不会用命令行 GDB 进行调试，就像西方不能没有耶路撒冷～～</p>
 </blockquote>
 <span id="more"></span>
 
-<h1 id="GDB-的使用"><a href="#GDB-的使用" class="headerlink" title="GDB 的使用"></a>GDB 的使用</h1><h1 id="Log-的使用"><a href="#Log-的使用" class="headerlink" title="Log 的使用"></a>Log 的使用</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜  ~ logger <span class="string">&quot;Hello World&quot;</span></span><br><span class="line">➜  ~ <span class="built_in">log</span> show --last 1m | grep Hello</span><br><span class="line">2022-10-04 22:42:30.438584+0800 0x81a171   Default     0x0                  47131  0    logger: Hello World</span><br></pre></td></tr></table></figure>
+<h2 id="1-gdb-调试-run-和-start-的区别"><a href="#1-gdb-调试-run-和-start-的区别" class="headerlink" title="1. gdb 调试 run 和 start 的区别"></a>1. gdb 调试 run 和 start 的区别</h2><p>一般来说，在启动 gdb 之后，执行 <code>r</code> 或者 <code>run</code> 之后，就开始执行程序了，直到遇到第一个断点。</p>
+<p><code>start</code> 指令会执行程序至 <code>main()</code> 主函数的起始位置，即在主函数的第一行停止执行（改行代码还没有执行）。</p>
+<p>另外，程序执行过程中使用 <code>run</code> 或 <code>start</code> 指令，表示重新启动程序。</p>
+<h2 id="2-gdb-tui：在-gdb-中显示程序源码"><a href="#2-gdb-tui：在-gdb-中显示程序源码" class="headerlink" title="2. gdb tui：在 gdb 中显示程序源码"></a>2. gdb tui：在 gdb 中显示程序源码</h2><p>我们使用 gdb 的时候，想要看源码，需要输入 <code>list</code> 命令查看断点前后的代码，但是 <code>list</code> 没有代码高亮，也无法实时跟踪。用 gdb tui 自带的界面可以方便的查看并跟踪源码。输入命令 <code>gdb -tui</code> 打开窗口。</p>
+<p>gdb 还有其他窗口类型，输入如下命令可以打开相应的窗口。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">layout cmd  // 命令窗口，可以输入调试命令</span><br><span class="line">layout src  // 源代码窗口，显示当前行、断点等信息</span><br><span class="line">layout asm  // 汇编代码窗口</span><br><span class="line">layout reg  // 寄存器窗口</span><br></pre></td></tr></table></figure>
+
+<p>要想使用这些窗口，需要通过源码编译 gdb，在编译时添加参数 <code>--enable-tui</code>。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">./configure --prefix=/usr/local/gdb-11.2</span><br><span class="line">make -j32</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<p>在编译安装时可能会出现如下错误：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">configure: error: no enhanced curses library found; disable TUI</span><br></pre></td></tr></table></figure>
+
+<p>在 CentOS 下需要安装 <code>ncurses-devel</code> 包，Ubuntu 下安装 <code>libncurses5-dev</code></p>
+<h1 id="Log-的使用"><a href="#Log-的使用" class="headerlink" title="Log 的使用"></a>Log 的使用</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜  ~ logger <span class="string">&quot;Hello World&quot;</span></span><br><span class="line">➜  ~ <span class="built_in">log</span> show --last 1m | grep Hello</span><br><span class="line">2022-10-04 22:42:30.438584+0800 0x81a171   Default     0x0                  47131  0    logger: Hello World</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
