@@ -47,6 +47,7 @@ jobs:
         run: |
           git config --global user.email "754449629@qq.com"
           git config --global user.name "CherryYang05"
+          git remote set-url origin https://github.com/CherryYang05/hexo-blog.git
 
       - name: Build
         run: |
