@@ -106,7 +106,6 @@ deploy:
   # - type: baidu_url_submitter
 # Markdown-it config
 ## Docs: https://github.com/celsomiranda/hexo-renderer-markdown-it/wiki
-
 markdown:
   render:
     html: true # Doesn't escape HTML content so the tags will appear as html.
