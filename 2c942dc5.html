@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="TFTP简单文本传输协议的介绍随着互联网发展，文件传输效率越来越快，相应的传输协议也越来越复杂。早年有很多文件传输协议如今已经很少再用，所谓老兵不死，只是慢慢凋零。这些协议尽管现在使用不多，但它们的设计思想依然值得我们好好研究和掌握。 例如 FTP 以及它的 UDP 版本 TFTP，它们实现文件传输的协议设计思想依然非常值得研究，它对我们设计新协议依然很有启发性。本节开始，我们研究 TFTP 协议">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TFTP简单文本传输协议的基本原理">
+<meta property="og:url" content="http://cherryyang05.github.io/2c942dc5.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="TFTP简单文本传输协议的介绍随着互联网发展，文件传输效率越来越快，相应的传输协议也越来越复杂。早年有很多文件传输协议如今已经很少再用，所谓老兵不死，只是慢慢凋零。这些协议尽管现在使用不多，但它们的设计思想依然值得我们好好研究和掌握。 例如 FTP 以及它的 UDP 版本 TFTP，它们实现文件传输的协议设计思想依然非常值得研究，它对我们设计新协议依然很有启发性。本节开始，我们研究 TFTP 协议">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftpd64.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp_Windows.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp%E6%8A%93%E5%8C%851.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp%E6%8A%93%E5%8C%852.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp%E6%8A%93%E5%8C%853.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp%E6%8A%93%E5%8C%854.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp%E6%8A%93%E5%8C%855.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/tftp%E6%8A%93%E5%8C%856.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/%E4%BC%A0%E8%BE%93%E7%A4%BA%E4%BE%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/%E4%BC%A0%E8%BE%93%E7%A4%BA%E4%BE%8B2.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/%E8%AF%BB%E5%86%99%E8%AF%B7%E6%B1%82%E6%95%B0%E6%8D%AE%E5%8C%85.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/%E4%BC%A0%E8%BE%93%E6%95%B0%E6%8D%AE%E5%9D%97%E6%95%B0%E6%8D%AE%E5%8C%85.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/%E5%BA%94%E7%AD%94%E6%95%B0%E6%8D%AE%E5%8C%85.png">
+<meta property="og:image" content="http://cherryyang05.github.io/2c942dc5/%E9%94%99%E8%AF%AF%E6%95%B0%E6%8D%AE%E5%8C%85.png">
+<meta property="article:published_time" content="2020-06-10T11:32:31.000Z">
+<meta property="article:modified_time" content="2023-08-08T12:35:27.404Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="计算机网络">
+<meta property="article:tag" content="TFTP协议">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cherryyang05.github.io/2c942dc5/tftpd64.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/2c942dc5.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>TFTP简单文本传输协议的基本原理 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/2c942dc5.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TFTP简单文本传输协议的基本原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-10 19:32:31" itemprop="dateCreated datePublished" datetime="2020-06-10T19:32:31+08:00">2020-06-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-08 20:35:27" itemprop="dateModified" datetime="2023-08-08T20:35:27+08:00">2023-08-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/TCP-IP%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">TCP/IP协议</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2c942dc5.html" class="post-meta-item leancloud_visitors" data-flag-title="TFTP简单文本传输协议的基本原理" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2c942dc5.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2c942dc5.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="TFTP简单文本传输协议的介绍"><a href="#TFTP简单文本传输协议的介绍" class="headerlink" title="TFTP简单文本传输协议的介绍"></a>TFTP简单文本传输协议的介绍</h2><p>随着互联网发展，文件传输效率越来越快，相应的传输协议也越来越复杂。早年有很多文件传输协议如今已经很少再用，所谓老兵不死，只是慢慢凋零。这些协议尽管现在使用不多，但它们的设计思想依然值得我们好好研究和掌握。</p>
+<p>例如 FTP 以及它的 UDP 版本 TFTP，它们实现文件传输的协议设计思想依然非常值得研究，它对我们设计新协议依然很有启发性。本节开始，我们研究 TFTP 协议的原理以及相关代码实现。</p>
+<p>TFTP 原名叫<code>Trivial File Transport Protocol</code>.对互联网早期存有记忆的同学对 FTP 协议一定非常了解，当时局域网乃至整个网络上很多大文件，例如电影的传输依靠的就是该协议。FTP 协议运行在 TCP 协议之上，它的内容很复杂，除了文件传输外，它还支持很多文件相关操作，例如远程实现文件建立，删除等。TFTP 是 FTP 协议的简化版，它运行在 UDP 协议上，同时简化了很多 FTP 操作，只支持文件的传输功能。</p>
+<span id="more"></span>
+<p>TFTP协议是基于服务器和客户端之间的传输协议。一开始客户端向服务器发出连接请求，服务器应答后两者连接建立。然后客户端向服务器发出文件传输请求，服务器将客户端需要的文件分割成多个小块，依次传递给客户端，客户端每收到一个小块后向服务器发出应答，收到应答后服务器再发送下一个小块。当所有文件块传输完毕后，两者连接断开。</p>
+<p>TFTP 服务器程序通常在端口 69 监听客户端请求。值得注意的是，当服务器与客户端进行数据块传输时，服务器会使用一个随机端口而不是用于监听请求的 69 端口，这是为了服务器能同时相应多个客户端的连接。服务器与不同客户端使用不同端口进行数据通信，这样就保证不同客户端所需要的数据块不会发生混淆。</p>
+<p>服务器与客户端在发送文件数据时，会按照一种名为”锁定步骤”的方式进行数据传输。也就是服务器向客户端发送一个数据块，再接收到客户端发回的应答数据包前什么都不做，直到收到客户端确定数据块已经收到的应答后，它才发送下一个数据块，这种方式使得数据传输效率不高，但确保数据传输流程足够简单，同时能保证传输出错时，数据重传很方便，同时客户端也不用考虑数据块不按次序抵达时，如何将数据块进行正确组装。</p>
+<p>TFTP 协议的简单附带的代价是效率不高。由于它走的是 UDP 协议，因此一次发送数据块不能超过 512 字节，这也是服务器必须把文件切成小块反复传输的原因。还有一点值得注意的是 TFTP 协议没有任何安全措施，它不需要注册或登录，任何客户端都可以连接然后下载文件。</p>
+<p>我们首先在网络上下载一个 TFTP 的服务器客户端：<a target="_blank" rel="noopener" href="http://tftpd32.jounin.net/tftpd32_download.html">Tftpd64</a> 具体界面如下：</p>
+<p><img data-src="/2c942dc5/tftpd64.png" alt="tftpd64"></p>
+<p>然后在 Windows 中的设置的程序与功能中打开 TFTP Client:</p>
+<p><img data-src="/2c942dc5/tftp_Windows.png" alt="tftp_Windows"></p>
+<h2 id="TFTP抓包演示"><a href="#TFTP抓包演示" class="headerlink" title="TFTP抓包演示"></a>TFTP抓包演示</h2><p>我们在 TFTP 服务器客户端上选择我们的 IP 地址：192.168.1.101，然后这台电脑就可以作为我们的 TFTP 服务器了，然后我们在命令行中输入：<code>tftp 192.168.1.101 get test.txt</code>(test.txt 是我特地新建的用来测试的文件，该文件必须存放在 tftp 服务器客户端软件中 Current Directory 所显示的目录中)：</p>
+<p><img data-src="/2c942dc5/tftp%E6%8A%93%E5%8C%851.png" alt="tftp抓包1"></p>
+<p><img data-src="/2c942dc5/tftp%E6%8A%93%E5%8C%852.png" alt="tftp抓包2"></p>
+<p>然后就可以在当前磁盘（G盘）中看到我们传送的文件了</p>
+<p>需要注意的几个问题:</p>
+<ol>
+<li>文件传送成功与否，你朋友也可以在 Tftpd32 的 “Tftp Server” 和 “Current Action”这两项中看到。</li>
+<li>如果想把文件传给你朋友，那么只要把命令换成 “Tftp -i朋友IP put pictures.rar” 即可。关于Tftp命令的更多参数，你可以在 CMD 下输入 Tftp 进行查看。不过此时你朋友不能进行上传和下载工作，因为他此时是 Tftp 的服务端，只有客户端才能进行这些操作。如果他想把西传给你，那就需要你做服务端了。</li>
+<li>用 Tftp 传送文件时，服务端需有确定的公网 IP，如果你朋友在局域网中通过网关上网的话，那就无法传送了。当然，如果两个人在同一局域网中，内网的 IP 也可以传送文件,只是有些多此一举。</li>
+<li>Windows 98 系统可以当服务端，但客户端一定要是 Windows 2000 或是 Windows XP 等有 Tftp 命令的系统。<br>以后如果你遇到因为防火墙等原因不能通过QQ传送文件时，不妨试试 Tftp.</li>
+</ol>
+<p><img data-src="/2c942dc5/tftp%E6%8A%93%E5%8C%853.png" alt="tftp抓包3"></p>
+<p>我们再通过 Wireshark 抓包来观察 TFTP 协议(由于在 Windows上自己传给自己抓不到包，因此我在 Linux虚拟机上进行测试)，但是出现了 <code>Destination unreachable (Host administratively prohibited)</code>，查询资料得知，是 Linux 的防火墙没有设置，我们设置一下 iptables:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">iptables -P OUTPUT ACCEPT       <span class="comment">#允许所有本机向外的访问</span></span><br><span class="line">iptables -P FORWARD ACCEPT      <span class="comment">#允许所有转发</span></span><br><span class="line">iptables -P INPUT ACCEPT        <span class="comment">#允许所有本机向外的访问</span></span><br><span class="line">iptables -F                     <span class="comment">#清除所有规则</span></span><br></pre></td></tr></table></figure>
+
+<p><img data-src="/2c942dc5/tftp%E6%8A%93%E5%8C%854.png" alt="tftp抓包4"></p>
+<p><img data-src="/2c942dc5/tftp%E6%8A%93%E5%8C%855.png" alt="tftp抓包5"></p>
+<p><img data-src="/2c942dc5/tftp%E6%8A%93%E5%8C%856.png" alt="tftp抓包6"></p>
+<p>【注】:我的电脑不知道为何只能抓到单向的数据包，无法抓到主机向虚拟机传送的数据包，查了很多资料之后未果，先接着学习吧。</p>
+<p>抓包显示两种数据包，分别是 Acknowledgement 和 Data block，其中前者是客户端收到数据块后对服务器的应答，后者是服务器向客户端发送的数据块。数据包的具体格式我们会在后面进行详细分析。</p>
+<h2 id="TFTP交互细节及数据包解读"><a href="#TFTP交互细节及数据包解读" class="headerlink" title="TFTP交互细节及数据包解读"></a>TFTP交互细节及数据包解读</h2><p>tftp 主要分为三步，首先是连接，然后是数据传输，最后是连接中断。所有这些步骤都通过发送相关数据包完成。最开始由客户端发送一个数据读取或写入请求，这个请求发出的同时连接自动建立，在这个过程中双方会协议要传输什么格式的文件。TFTP协议支持两个格式文件的传输，分别是 ASCII 文本，另一种是二进制数据，FTP 协议支持的文本格式比 TFTP 要复杂得多。</p>
+<p>如果客户端请求的文件存在，服务器会直接将第一个数据块发送给客户端。如果是客户端想上传文件，服务器会发送一个 ACK 数据包表示确认。在这个过程中如果出现错误，其中一方就向另一方发送错误信息数据包，然后文件传输终止。由于使用 UDP 作为底层协议，因此一次数据发送最大不超过 <code>512</code> 字节。因此为了保证数据顺序正确性，每个数据包必须对应相应编号，编号根据数据块的顺序从1开始。</p>
+<p>由于每次数据块最大是 512 字节，只要文件传输没有结束，那么一次数据块就是 512 字节，如果有数据包中数据少于 512 字节，那意味着这是文件最后一个数据包，最后一个数据块发送完后，连接自动中断。我们通过一个具体实例来掌握数据发送流程，假设客户端想从服务器读取一个 1200 字节的文件，以下是相关步骤：</p>
+<ol>
+<li>客户端发送一个数据包给服务器，其中包含了要读取的文件名。</li>
+<li>服务器发回第一个 512 字节数据块，并对其标号为 1.</li>
+<li>客户端返回服务器一个标号为 1 的确认数据包</li>
+<li>服务器发送标号为 2 包含 512 字节的数据块</li>
+<li>客户端收到 2 号数据块后发生确认数据包</li>
+<li>服务器发送标号为 3 的包含 176 字节的数据块</li>
+<li>客户端收到后回发标号为 3 的确认数据包</li>
+<li>服务器收到确认数据包后，确认文件发送完毕</li>
+</ol>
+<p><img data-src="/2c942dc5/%E4%BC%A0%E8%BE%93%E7%A4%BA%E4%BE%8B.png" alt="传输示例"></p>
+<p>我们再看看客户端上传文件的流程：</p>
+<ol>
+<li>客户端发送一个写请求数据包，里面包含了要写的文件名称</li>
+<li>服务器发送确认数据包，在数据包中它使用编号 0</li>
+<li>客户端发送一个含有 512 字节，编号为1的数据包</li>
+<li>服务器返回编号为 1 的确认数据包</li>
+<li>客户端发送编号为 2，包含 512 字节的数据包</li>
+<li>服务器返回编号为 2 的确认数据包</li>
+<li>客户端发送编号为 3，包含 176 字节的数据包，等待服务器返回确认数据包。</li>
+<li>服务器接受 3 号数据包后，返回确认数据包，由于该数据包数据少于 512 字节，服务器知道是最后一个数据包。</li>
+<li>客户端收到 3 号确认数据包后，知道文件传输完毕，中断连接。</li>
+</ol>
+<p><img data-src="/2c942dc5/%E4%BC%A0%E8%BE%93%E7%A4%BA%E4%BE%8B2.png" alt="传输示例2"></p>
+<p>TFTP 协议后来又经过一次扩展，增加一些控制命令。如果客户端或服务器想使用扩展命令时，它必须向对方确认是否也能支持相应命令。它会发送一个数据包，里面包含扩展命令对应的数值列表，对方也会返回一个列表，把它支持的扩展命令对应的数值放在列表中，不支持的则不在列表里。TFTP 协议一个特点是，它不允许任何一方连续发送 2 个数据包，必须是<code>一来一回</code>。具体的扩展功能在协议实现时我们再详细研究。</p>
+<h2 id="探究数据包具体格式"><a href="#探究数据包具体格式" class="headerlink" title="探究数据包具体格式"></a>探究数据包具体格式</h2><p>我们看看 TFTP 数据包的组装方式，为我们代码实现该协议奠定基础。TFTP 协议总共有5种不同数据包，分别对应读请求，写请求，数据块，接收回应(ACK)，以及错误。前两种数据包格式一样，只不过某些值域设置有差别，剩下的三种数据包格式各不相同。但无论哪一种数据包，他们都包含一个值域叫操作码，用来定义该数据包属于那种类型。</p>
+<p>我们先看读请求和写请求数据包的格式，首先是2字节表示操作码，它用来表示当前数据包的类型，取值 1 表示该数据包是个读请求，2 表示该数据包是；接下来是可变长字段，它用来表示要读取或上传的文件名，它使用 ASCII 码并以 0 表示结尾；第三个字段叫 Mode，也是可变长字段，用来表示传输文件的数据类型，如果传输的是字符串文件，那么它填写字符串 “netascii”，如果传输的是二进制文件，那么它填写字符串 “octet”，这些字符串都以 0 结尾，其结构用下图表示：</p>
+<p><img data-src="/2c942dc5/%E8%AF%BB%E5%86%99%E8%AF%B7%E6%B1%82%E6%95%B0%E6%8D%AE%E5%8C%85.png" alt="读写请求数据包"></p>
+<p>接着我们看看传输数据块的数据包，它的前 2 字节也是操作码，取值 3 用于表示数据包用于数据块传输，接下来是 2 字节，用于表示数据块编号，最后是可变长字段 Data，用于装载数据块，该数据包的格式如下：</p>
+<p><img data-src="/2c942dc5/%E4%BC%A0%E8%BE%93%E6%95%B0%E6%8D%AE%E5%9D%97%E6%95%B0%E6%8D%AE%E5%8C%85.png" alt="传输数据块数据包"></p>
+<p>然后是应答数据包，它开始 2 字节也是操作码，取值 4，接下来2字节表示接收到的数据块编号，相应结构如下图：</p>
+<p><img data-src="/2c942dc5/%E5%BA%94%E7%AD%94%E6%95%B0%E6%8D%AE%E5%8C%85.png" alt="应答数据包"></p>
+<p>最后一个是错误数据报，它前 2 字节表示操作码，取值 5；接下来 2 字节表示错误码，0 表示未知错误，1 表示文件不存在，2 表示权限不足，3 表示磁盘已满，具体的错误码我们在实践时再具体分析；接下来是可变长字段，它用字符串的形式描述具体错误，该数据包的结构如下图：</p>
+<p><img data-src="/2c942dc5/%E9%94%99%E8%AF%AF%E6%95%B0%E6%8D%AE%E5%8C%85.png" alt="错误数据包"></p>
+<h2 id="具体代码实现"><a href="#具体代码实现" class="headerlink" title="具体代码实现"></a>具体代码实现</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+              <a href="/tags/TFTP%E5%8D%8F%E8%AE%AE/" rel="tag"># TFTP协议</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/47ec812d.html" rel="prev" title="DNS协议原理实现">
+      <i class="fa fa-chevron-left"></i> DNS协议原理实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2558636.html" rel="next" title="博弈论 第1节 导论——五个入门结论">
+      博弈论 第1节 导论——五个入门结论 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#TFTP%E7%AE%80%E5%8D%95%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE%E7%9A%84%E4%BB%8B%E7%BB%8D"><span class="nav-text">TFTP简单文本传输协议的介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TFTP%E6%8A%93%E5%8C%85%E6%BC%94%E7%A4%BA"><span class="nav-text">TFTP抓包演示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TFTP%E4%BA%A4%E4%BA%92%E7%BB%86%E8%8A%82%E5%8F%8A%E6%95%B0%E6%8D%AE%E5%8C%85%E8%A7%A3%E8%AF%BB"><span class="nav-text">TFTP交互细节及数据包解读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A2%E7%A9%B6%E6%95%B0%E6%8D%AE%E5%8C%85%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F"><span class="nav-text">探究数据包具体格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">具体代码实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">209k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/2c942dc5.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

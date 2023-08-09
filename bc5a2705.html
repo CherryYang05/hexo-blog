@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本系列笔记来自于国防科技大学的计算机体系结构课程作者：Cherry时间：2022.1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机体系结构课程笔记（一）">
+<meta property="og:url" content="http://cherryyang05.github.io/bc5a2705.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="本系列笔记来自于国防科技大学的计算机体系结构课程作者：Cherry时间：2022.1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/RISC%E6%8C%87%E4%BB%A4%E9%9B%86%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E4%B8%BE%E4%BE%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%8F%96%E6%8C%87%E4%BB%A4%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%8C%87%E4%BB%A4%E8%AF%91%E7%A0%81%EF%BC%8C%E8%AF%BB%E5%AF%84%E5%AD%98%E5%99%A8%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%89%A7%E8%A1%8C%EF%BC%8C%E6%9C%89%E6%95%88%E5%9C%B0%E5%9D%80%E8%AE%A1%E7%AE%97%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%86%99%E5%9B%9E%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E7%AE%80%E5%8D%95%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%90%84%E6%B5%81%E6%B0%B4%E6%AE%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E9%94%81%E5%AD%98%E5%99%A8.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%91%BD%E5%90%8D.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%9E%84%E6%88%90.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C%EF%BC%88%E7%BB%AD%EF%BC%89.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E5%AF%B9%E5%A4%9A%E8%B7%AF%E9%80%89%E6%8B%A9%E5%99%A8MUX%E7%9A%84%E6%8E%A7%E5%88%B6.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%97%B6%E7%A9%BA%E5%9B%BE%EF%BC%88%E5%90%84%E6%AE%B5%E6%97%B6%E9%97%B4%E4%B8%8D%E7%AD%89%EF%BC%89.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E9%9D%99%E6%80%81%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D%EF%BC%88%E6%AD%A3%E7%A1%AE%EF%BC%89.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E8%AE%BF%E5%AD%98%E5%86%B2%E7%AA%81.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E6%8F%92%E5%85%A5%E6%9A%82%E5%81%9C%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E5%86%99%E5%90%8E%E5%86%99%E7%9B%B8%E5%85%B3.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%AE%9A%E5%90%91%E6%8A%80%E6%9C%AF%E4%B8%8D%E8%83%BD%E8%A7%A3%E5%86%B3%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9B%B8%E5%85%B3%E6%A3%80%E6%B5%8B%E7%A1%AC%E4%BB%B6%E5%8F%AF%E4%BB%A5%E6%A3%80%E6%B5%8B%E5%88%B0%E7%9A%84%E5%90%84%E7%A7%8D%E7%9B%B8%E5%85%B3%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%AE%9A%E5%90%91%E8%B7%AF%E5%BE%84.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E5%B0%86%E5%AF%BC%E8%87%B4%E6%9A%82%E5%81%9C3%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E6%93%8D%E4%BD%9C.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80%EF%BC%88%E5%86%8D%E6%94%B9%E8%BF%9B%EF%BC%89.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E7%9A%84%E6%A6%82%E7%8E%87.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%B9%E5%88%86%E6%94%AF%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%BB%B6%E8%BF%9F%E5%88%86%E6%94%AF%E4%BB%A5%E5%8F%8A%E6%8C%87%E4%BB%A4%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%85%B7%E6%9C%89%E4%B8%80%E4%B8%AA%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%A7%BD%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%8C%87%E4%BB%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95%E7%9A%84%E8%A6%81%E6%B1%82%E5%8F%8A%E6%95%88%E6%9E%9C.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%8F%96%E6%B6%88%E5%88%86%E6%94%AF.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%90%84%E7%A7%8D%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E6%8D%9F%E5%A4%B1%E6%96%B9%E6%B3%95%E7%9A%84%E6%95%88%E6%9E%9C.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%90%84%E6%AE%B5%E5%8A%9F%E8%83%BD.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%8C%87%E4%BB%A4%E5%BA%8F%E5%88%97%E5%9C%A8R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E7%9A%84%E9%87%8D%E5%8F%A0%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E8%BD%BD%E5%85%A5%E5%BB%B6%E8%BF%9F%E4%B8%BA%E4%B8%A4%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BFALU%E8%BE%93%E5%85%A5%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%AE%9A%E5%90%91%E6%BA%90.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%9F%BA%E6%9C%AC%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%A4%84%E7%90%86%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E7%9A%84%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%AE%E7%82%B9%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD8%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%8F%8C%E7%B2%BE%E5%BA%A6%E6%B5%AE%E7%82%B9%E6%93%8D%E4%BD%9C%E6%8C%87%E4%BB%A4%E5%BB%B6%E8%BF%9F%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96%E9%97%B4%E9%9A%94%E5%92%8C%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%9A%82%E5%81%9C%E5%AF%B9R4000%E6%B5%81%E6%B0%B4%E7%BA%BFCPI%E7%9A%84%E5%BD%B1%E5%93%8D.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/N%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E64.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/N%E5%A4%A7%E4%BA%8E64.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E5%90%91%E9%87%8F%E6%8C%87%E4%BB%A4%E7%B1%BB%E5%9E%8B.png">
+<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E9%93%BE%E6%8E%A5%E6%8A%80%E6%9C%AF.png">
+<meta property="article:published_time" content="2021-12-31T04:10:32.000Z">
+<meta property="article:modified_time" content="2023-08-08T12:35:27.421Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="体系结构">
+<meta property="article:tag" content="笔记">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cherryyang05.github.io/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/bc5a2705.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机体系结构课程笔记（一） | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/bc5a2705.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机体系结构课程笔记（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-12-31 12:10:32" itemprop="dateCreated datePublished" datetime="2021-12-31T12:10:32+08:00">2021-12-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-08 20:35:27" itemprop="dateModified" datetime="2023-08-08T20:35:27+08:00">2023-08-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课程笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">体系结构</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/bc5a2705.html" class="post-meta-item leancloud_visitors" data-flag-title="计算机体系结构课程笔记（一）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/bc5a2705.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/bc5a2705.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>20k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>18 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本系列笔记来自于国防科技大学的计算机体系结构课程<br>作者：Cherry<br>时间：2022.1</p>
+</blockquote>
+<span id="more"></span>
+
+<h1 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h1><blockquote>
+<p>国防科大计算机体系结构课程第一至三章笔记</p>
+</blockquote>
+<h2 id="1-1-计算机体系结构的概念与发展"><a href="#1-1-计算机体系结构的概念与发展" class="headerlink" title="1.1 计算机体系结构的概念与发展"></a>1.1 计算机体系结构的概念与发展</h2><p><strong>冯诺依曼结构：</strong><br>运算器（核心）、存储器、输入&#x2F;输出设备、控制器</p>
+<p><strong>程序执行的过程</strong></p>
+<ul>
+<li>分解程序指令，形成控制四个部分工作的控制流</li>
+<li>对数据进行加工（运算），形成数据流</li>
+<li>周而复始地产生指令流 &#x2F; 数据流</li>
+<li>并最终得到结果</li>
+</ul>
+<p><strong>一个机器周期里面安排的操作序列</strong></p>
+<ol>
+<li>计算机从存储器中取出一条指令</li>
+<li>对这条指令进行译码</li>
+</ol>
+<ul>
+<li>分解并确定这条指令所指示的操作</li>
+<li>确定操作对象（操作数）所在的位置</li>
+<li>某个寄存器单元、存储器单元或者输入设备</li>
+</ul>
+<ol start="3">
+<li>取操作数并送到运算器</li>
+<li>运算器按照译码确定的操作进行运算</li>
+<li>运算结束后，将结果送到指定的位置</li>
+</ol>
+<ul>
+<li>计算机准备执行下一条指令</li>
+</ul>
+<p>阿姆道尔（C. M. Amdahl）首次明确</p>
+<ul>
+<li>计算机体系结构是程序员所看到的计算机的属性，即概念性结构与功能特性</li>
+<li>1964 年 4 月， Architecture of the IBM System&#x2F;360 ，发表在 IBM Journal of Research and Development 上</li>
+<li>计算机体系结构概念的经典定义</li>
+</ul>
+<p><strong>程序员所看到的计算机的属性</strong></p>
+<ul>
+<li>对于通用寄存器型机器，这些属性主要是指<br>（1）数据表示：硬件能直接辨认和处理的数据类型<br>（2）寻址规则：最小寻址单元、寻址方式及其表示<br>（3）寄存器定义：寄存器的定义、数量和使用方式<br>（4）指令系统：机器指令的操作类型和格式、指令间的排序和控制机构等<br>（5）中断系统：中断的类型和中断响应硬件的功能等<br>（6）机器工作状态的定义和切换：如管态和目态等<br>（7）存储系统：程序员可用的最大存储容量<br>（8）信息保护：信息保护方式和硬件的支持<br>（9）I&#x2F;O 结构：I&#x2F;O 寻址方式、数据传送的方式等</li>
+</ul>
+<p><strong>计算机组成关注的问题：</strong></p>
+<p>指令集结构的逻辑实现</p>
+<ul>
+<li>数据通路宽度</li>
+<li>各种操作对功能部件的共享程度</li>
+<li>专用功能部件的设置</li>
+<li>功能部件的并行性</li>
+<li>缓冲和排队技术</li>
+<li>预测技术</li>
+<li>可靠性技术</li>
+<li>控制机构的组成，等等</li>
+</ul>
+<p>计算机的实现</p>
+<ul>
+<li>处理器、主存的物理结构</li>
+<li>器件的集成度和速度</li>
+<li>信号传输</li>
+<li>器件、模块、插件、底板的划分与连接</li>
+<li>涉及的专用器件</li>
+<li>电源、冷却</li>
+<li>微组装技术</li>
+<li>整机装配技术，等等</li>
+</ul>
+<p><strong>不同年代计算机体系结构研究内容的变化：</strong></p>
+<table>
+<thead>
+<tr>
+<th>年代</th>
+<th>研究内容</th>
+<th>典型计算机</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1940s</td>
+<td>程序控制计算机、存储程序计算机</td>
+<td>ENIAC、EDVAC</td>
+</tr>
+<tr>
+<td>1950s</td>
+<td>指令系统</td>
+<td>IBM 360 系列机</td>
+</tr>
+<tr>
+<td>1960s</td>
+<td>阵列机和并行处理</td>
+<td>ILLIAC IV</td>
+</tr>
+<tr>
+<td>1970s</td>
+<td>流水线、向量处理、微处理器</td>
+<td>Cray-1、Intel 4004</td>
+</tr>
+<tr>
+<td>1980s</td>
+<td>RISC、cache、流水线</td>
+<td>MIPS R1000、Power</td>
+</tr>
+<tr>
+<td>1990s</td>
+<td>SMP、CMP、指令级并行</td>
+<td>MIPS R100000、PowerPC 604</td>
+</tr>
+<tr>
+<td>2000 年以来</td>
+<td>SMT、功耗、Multi-core，Stream</td>
+<td>Intel i7、Power 6、ARM、GPU</td>
+</tr>
+</tbody></table>
+<p>同一个功能用硬件和软件实现是等效的，但是效率不同。</p>
+<p><strong>计算机系统中的多语言层次结构：</strong></p>
+<p>第一级：微程序机器级</p>
+<ul>
+<li>微程序机器级的机器语言是微指令集</li>
+<li>程序员用微指令编写的微程序一般是直接由硬件解释实现的</li>
+</ul>
+<p>第二级：传统机器级</p>
+<ul>
+<li>传统机器级的语言是该机的指令集</li>
+<li>机器指令程序可以由微程序进行解释(仿真)，可有多个解释程序通过仿真，实现多种指令集</li>
+<li>可以没有微程序机器级</li>
+</ul>
+<p>第三级：操作系统虚拟机</p>
+<ul>
+<li>直接管理传统机器中的软硬件资源</li>
+<li>是传统机器的引伸</li>
+<li>提供了传统机器所没有的某些基本操作和数据结构<ul>
+<li>文件系统</li>
+<li>虚拟存储系统</li>
+<li>多道程序系统</li>
+<li>多线程管理等</li>
+</ul>
+</li>
+</ul>
+<p>第四级：汇编语言虚拟机</p>
+<ul>
+<li>用汇编语言编写的程序，首先翻译或解释成第 3 级和第 2 级语言，然后再由相应的机器执行</li>
+<li>完成汇编语言翻译的程序就叫做汇编程序，又叫汇编器</li>
+</ul>
+<p>第五级：高级语言虚拟机</p>
+<ul>
+<li>机器语言就是各种高级语言</li>
+<li>用这些语言所编写的程序一般是由称为编译程序翻译到第４级或第 3 级上</li>
+<li>也有用解释的方法实现转化</li>
+</ul>
+<p>第六级：应用语言虚拟机</p>
+<ul>
+<li>为使计算机满足某种用途而专门设计的（人工智能、教育、行政管理、计算机设计）</li>
+<li>应用语言编写的程序一般是由应用程序包翻译到第 5 级上</li>
+</ul>
+<p><strong>翻译和解释：</strong></p>
+<p>翻译（Translation）：<br>先把 N+1 级程序全部变换成 N 级程序后，再去执行新产生的 N 级程序，在执行过程中 N+1 级程序不再被访问</p>
+<p>解释（Interpretation）：<br>每当一条 N+1 级指令被译码后，就直接去执行一串等效的 N 级指令，然后再去取下一条 N+1 级的指令，依此重复进行</p>
+<p>一般来说，解释执行比翻译花的时间多，但存储空间较少。</p>
+<h3 id="1-1-4-系列机和兼容"><a href="#1-1-4-系列机和兼容" class="headerlink" title="1.1.4 系列机和兼容"></a>1.1.4 系列机和兼容</h3><ul>
+<li>系列机（family machine）是具有相同体系结构，但组成和实现不同的一系列不同型号的计算机系统<ul>
+<li>IBM 公司在推出 IBM S360 时首次提出的系列机的概念，被认为是计算机发展史上一个重要里程碑</li>
+<li>各计算机厂家仍按系列机研发产品</li>
+</ul>
+</li>
+<li>现代计算机不但系统系列化，其构成部件和软件也系列化<ul>
+<li>如微处理器（ CPU ）、硬盘、操作系统、高级语言等</li>
+</ul>
+</li>
+</ul>
+<p><strong>兼容性</strong></p>
+<ul>
+<li>向上 (下) 兼容指的是按某档机器编制的程序，不加修改的就能运行于比它高(低)档的机器</li>
+<li>向前(后)兼容指的是按某个时期投入市场的某种型号机器编制的程序，不加修改地就能运行于在它之前 (后) 投入市场的机器</li>
+</ul>
+<p><strong>兼容对体系结构的影响</strong></p>
+<p>计算机系统及软件设计者的“障碍”：</p>
+<ul>
+<li>系统软件的开发难度大</li>
+<li>需要保护巨大的应用软件宝库</li>
+</ul>
+<p>向后兼容是才是软件兼容的根本特征，也是系列机的根本特征</p>
+<ul>
+<li>为了保证软件的兼容，要求指令集不改变，这无疑又妨碍计算机体系结构的发展</li>
+<li>向后兼容虽然削弱了系列机对体系结构发展的约束，但仍然是体系结发展的沉重包袱</li>
+<li>20 世纪 80 年代具有 RISC 体系结构的微处理器在新结构、新技术应用等方面领先传统的 CISC 微处理器的主要原因之一</li>
+</ul>
+<h2 id="1-2-计算机体系结构的发展"><a href="#1-2-计算机体系结构的发展" class="headerlink" title="1.2 计算机体系结构的发展"></a>1.2 计算机体系结构的发展</h2><p><img data-src="/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png" alt="计算机体系结构的发展历史"></p>
+<p><strong>并行技术的发展：</strong><br>概念：</p>
+<ol>
+<li>指令集并行</li>
+<li>线程级并行</li>
+<li>任务级&#x2F;过程级并行</li>
+</ol>
+<p>提高并行性的技术途径：</p>
+<ol>
+<li>时间重叠</li>
+<li>资源重复</li>
+<li>资源共享（提高资源的使用效率，如打印机）</li>
+</ol>
+<p>并行计算的应用需求</p>
+<p><strong>计算机的成本构成：</strong></p>
+<ol>
+<li>处理器板：37%</li>
+<li>I&#x2F;O 设备：37%</li>
+<li>附件：6%</li>
+<li>软件：20%</li>
+</ol>
+<p>目前，设计者需要取得性能与成本之间的平衡</p>
+<p><strong>摩尔定律</strong><br>1965 年，时任仙童公司研发实验室主任的摩尔（Gordon Mooer）在《Electronics》上撰文，认为集成电路密度大约每两年翻一番，大约成指数级增长。<br>40 年来，摩尔定律不但印证了集成电路技术的发展，也印证了计算机技术的发展。</p>
+<h2 id="1-3-计算机系统设计和分析"><a href="#1-3-计算机系统设计和分析" class="headerlink" title="1.3 计算机系统设计和分析"></a>1.3 计算机系统设计和分析</h2><p>装机部件的成本的 50% 左右在显示部件上，即显示器和显卡。<br>成本——时间因素：学习曲线</p>
+<ul>
+<li>产品价格随着时间下降的趋势</li>
+</ul>
+<h3 id="1-3-2-基准测试程序"><a href="#1-3-2-基准测试程序" class="headerlink" title="1.3.2 基准测试程序"></a>1.3.2 基准测试程序</h3><p>五类测试程序</p>
+<ul>
+<li>真实程序</li>
+<li>修正的（或者脚本化）应用程序</li>
+<li>核心程序</li>
+<li>小测试程序</li>
+<li>合成测试程序(将多个程序的核心部分提取出来)</li>
+</ul>
+<p>测试程序包：选择一组各个方面有代表性的测试程序组成<br>如：<code>www.SPEC.org</code></p>
+<ul>
+<li>基于 NUIX ，诞生于 20 世纪 80 年代</li>
+<li>由真实程序和核心程序构成</li>
+<li>采用 C 和 Fortran 两种语言，后增加 C++</li>
+<li>包括整数部分 SPECint 和浮点部分 SPECfp</li>
+<li>主要版本包括 SPEC89 、 SPEC92 、 SPEC95 、 SPEC2000 和 SPEC2006 等<ul>
+<li>SECP2006 功能进一步细化<ul>
+<li>台式计测试： SPEC CPU2000</li>
+<li>图像测试： SPECviewperf, SPECapc</li>
+<li>NFS 性能测试： SPECSFS</li>
+<li>Web 服务测试： SPECWeb</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-3-3-量化设计的基本原则"><a href="#1-3-3-量化设计的基本原则" class="headerlink" title="1.3.3 量化设计的基本原则"></a>1.3.3 量化设计的基本原则</h3><ol>
+<li>大概率事件优先原则</li>
+</ol>
+<ul>
+<li>追求全局的最优结果</li>
+</ul>
+<ol start="2">
+<li>Amdahl 定律</li>
+</ol>
+<ul>
+<li>系统性能加速比，受限于该部件在系统中所占的重要性</li>
+<li>可以定量计算</li>
+</ul>
+<ol start="3">
+<li>程序的局部性原理</li>
+</ol>
+<ul>
+<li>程序执行时所访问存储器在时-空上是相对地簇聚</li>
+<li>这种簇聚包括指令和数据两部分</li>
+</ul>
+<p><strong>大概率事件优先原则</strong></p>
+<ul>
+<li>对于大概率事件（常见的事件）赋予优先的处理权和资源使用权，以获得全局的最优结果</li>
+<li>要能确定什么是大概率事件，同时要说明针对该事件进行的改进将如何提高机器的性能</li>
+<li>“好钢用在刀刃上”，事半功倍</li>
+</ul>
+<p><strong>Amdahl 定律</strong></p>
+<ul>
+<li>$$系统加速比&#x3D;\dfrac{系统性能_{改进后}}{系统性能_{改进前}}&#x3D;\frac{总执行时间_{改进前}}{总执行时间_{改进后}}$$</li>
+<li>核心概念：时间</li>
+<li>系统加速比依赖于两个因素<ul>
+<li>“可改进比例”：可改进部分在原系统计算时间中所占的比例 ，它总是小于等于 1 的</li>
+<li>“部件加速比”：可改进部分改进以后的性能提高，一般情况下它是大于 1 的</li>
+</ul>
+</li>
+<li>Amdahl的系统执行时间：<br>$$&#x3D;(1-可改进比例)×总执行时间_{改进前}+\dfrac{可改进比例}{部件加速比}×总执行时间_{改进前}$$<br>$$&#x3D;总执行时间_{改进前}×(1-可改进比例+\dfrac{可改进比例}{部件加速比})$$</li>
+<li>则Amdahl的系统加速比<br>$$&#x3D;\dfrac{总执行时间_{改进前}}{总执行时间_{改进后}}$$<br>$$&#x3D;\dfrac{1}{(1-可改进比例)+\dfrac{可改进比例}{部件加速比}}$$</li>
+<li>Amdahl定律的观点<ul>
+<li>性能增加的递减规则<ul>
+<li>仅仅对计算机中的一部分做性能改进，则改进的越多，系统获得的效果越小</li>
+</ul>
+</li>
+<li>Amdahl 定律的一个重要推论<ul>
+<li>针对整个任务的一部分进行优化，则最大加速比不大于$$\frac{1}{1-可改进比例}$$</li>
+<li>通俗的说，系统的性能是由他不可加速的部分的性能决定</li>
+<li>Amdahl 定律衡量一个“好”的计算机系统<ul>
+<li>具有高性能价格比的计算机系统是一个带宽平衡的系统，而不是看它使用的某些部件的性能</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>程序局部性</strong></p>
+<ul>
+<li>程序访问地址的分布不是随机的，而是相对地簇聚<ul>
+<li>包括时间局部性和程序的空间局部性</li>
+</ul>
+</li>
+<li>程序的时间局部性<ul>
+<li>程序即将用到的信息很可能就是目前正在使用的信息</li>
+</ul>
+</li>
+<li>程序的空间局部性<ul>
+<li>程序即将用到的信息很可能与目前正在使用的信息在空间上相邻或者临近</li>
+</ul>
+</li>
+<li>其他局部性<ul>
+<li>生产 - 消费局部性</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-3-5-CPU-性能"><a href="#1-3-5-CPU-性能" class="headerlink" title="1.3.5 CPU 性能"></a>1.3.5 CPU 性能</h3><ul>
+<li>程序执行过程中所处理的指令数，记为 IC</li>
+<li>每条指令执行所需要的时钟周期数 CPI(Cycles Per Instruction)</li>
+<li>每条指令执行所需要的平均时钟周期数 CPI &#x3D; CLK &#x2F; IC</li>
+</ul>
+<h4 id="CPU-性能公式"><a href="#CPU-性能公式" class="headerlink" title="CPU 性能公式"></a>CPU 性能公式</h4><p>例子见 PPT</p>
+<h1 id="第二章-指令系统"><a href="#第二章-指令系统" class="headerlink" title="第二章 指令系统"></a>第二章 指令系统</h1><h2 id="大纲-指令集结构概述-指令集结构的分类-寻址方式-指令系统的设计和优化-指令系统的发展和改进-操作数的类型和大小-MIPS指令系统结构-指令集结构概述-指令集结构的分类"><a href="#大纲-指令集结构概述-指令集结构的分类-寻址方式-指令系统的设计和优化-指令系统的发展和改进-操作数的类型和大小-MIPS指令系统结构-指令集结构概述-指令集结构的分类" class="headerlink" title="大纲- 指令集结构概述- 指令集结构的分类		- 寻址方式- 指令系统的设计和优化- 指令系统的发展和改进	- 操作数的类型和大小- MIPS指令系统结构	- 指令集结构概述- 指令集结构的分类"></a><strong>大纲</strong><br>- 指令集结构概述<br>- 指令集结构的分类		<br>- 寻址方式<br>- 指令系统的设计和优化<br>- 指令系统的发展和改进	<br>- 操作数的类型和大小<br>- MIPS指令系统结构	<br>- 指令集结构概述<br>- 指令集结构的分类</h2><h2 id="2-1-指令集结构和设计技术"><a href="#2-1-指令集结构和设计技术" class="headerlink" title="2.1 指令集结构和设计技术"></a>2.1 指令集结构和设计技术</h2><h3 id="1-指令集结构概述"><a href="#1-指令集结构概述" class="headerlink" title="1. 指令集结构概述"></a>1. 指令集结构概述</h3><h3 id="2-指令集结构的分类"><a href="#2-指令集结构的分类" class="headerlink" title="2. 指令集结构的分类"></a>2. 指令集结构的分类</h3><ul>
+<li><p>一般来说，可以从如下五个因素考虑对计算机指令集结构进行分类，即：</p>
+<ul>
+<li>在CPU中操作数的存储方法；</li>
+<li>指令中显式表示的操作数个数；</li>
+<li>操作数的寻址方式；</li>
+<li>指令集所提供的操作类型；</li>
+<li>操作数的类型和大小。</li>
+</ul>
+</li>
+<li><p>CPU中用来存储操作数的存储单元主要有：</p>
+<ul>
+<li>堆栈；</li>
+<li>累加器；</li>
+<li>一组寄存器。</li>
+</ul>
+</li>
+</ul>
+<p> 指令中的操作数可以被明确地显式给出，也可以按照某种约定隐式地给出。</p>
+<p><strong>通用寄存器型指令集结构的分类</strong></p>
+<ul>
+<li><p>通用寄存器型指令集结构的主要优点:</p>
+<ul>
+<li>在表达式求值方面，比其它类型指令集结构都具有更大的灵活性；</li>
+<li>寄存器可以用来存放变量；<ul>
+<li>减少存储器的通信量，加快程序的执行速度（因为寄存器比存储器快）</li>
+<li>可以用更少的地址位来寻址寄存器，从而可以有效改进程序的目标代码大小。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>两种主要的指令特性能够将通用寄存器型指令集结构（GPR）进一步细分。</p>
+<ul>
+<li>ALU指令到底有两个或是三个操作数？</li>
+<li>在ALU指令中，有多少个操作数可以用存储器来寻址，也即有多少个存储器操作数？</li>
+</ul>
+</li>
+<li><p>可以将当前大多数通用寄存器型指令集结构进一步细分为三种类型：</p>
+<ul>
+<li>寄存器－寄存器型(R－R：register-register)</li>
+<li>寄存器－存储器型(R－M：register-memory)</li>
+<li>存储器－存储器型(M－M：memory-memory)</li>
+</ul>
+</li>
+</ul>
+<p>三种通用寄存器型指令集结构的优缺点</p>
+<ul>
+<li>寄存器－寄存器型（0,3）<ul>
+<li>优点：<ul>
+<li>指令字长固定，指令结构简洁，是一种简单的代码生成模型，各种指令的执行时钟周期数相近。</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>与指令中含存储器操作数的指令系统结构相比，指令条数多，目标代码不够紧凑，因而程序占用的空间比较大。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>寄存器－存储器型（1,2）<ul>
+<li>优点：<ul>
+<li>可以在ALU指令中直接对存储器操作数进行引用，而不必先用load指令进行加载，容易对指令进行编码，目标代码比较紧凑。</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>由于有一个操作数的内容将被破坏，所以指令中的两个操作数不对称。在一条指令中同时对寄存器操作数和存储器操作数进行编码，有可能<em>限制指令所能够表示的寄存器个数</em>。指令的执行时钟周期因操作数的来源（寄存器或存储器）的不同而差别比较大。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>存储器－存储器型（3,3）<ul>
+<li>优点：<ul>
+<li>目标代码最紧凑，不需要设置存储器来保存变量。</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>指令字长变换很大，特别是3个操作数指令。而且每条指令完成的工作也差别很大。对存储器的频率访问会使存储器成为瓶颈。这种类型的指令系统现在已经不用了。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-2-指令集结构和MIPS指令集"><a href="#2-2-指令集结构和MIPS指令集" class="headerlink" title="2.2 指令集结构和MIPS指令集"></a>2.2 指令集结构和MIPS指令集</h2><h3 id="3-寻址技术"><a href="#3-寻址技术" class="headerlink" title="3. 寻址技术"></a>3. 寻址技术</h3><ul>
+<li>在通用寄存器型指令集结构中，一般是利用寻址方式指明指令中的操作数是一个常数、一个寄存器操作数，抑或是一个存储器操作数。</li>
+<li>寻址实际上是从形式地址到实际地址的转换。形式地址由指令描述，实际地址也称为有效地址。</li>
+<li>有效地址指明的是存储器单元的地址或寄存器地址。</li>
+<li>必须加速有效地址生成。</li>
+</ul>
+<p>常用的一些操作数寻址方式：</p>
+<ul>
+<li>寄存器寻址</li>
+<li>立即值寻址</li>
+<li>偏移寻址</li>
+<li>寄存器间接寻址</li>
+<li>索引寻址</li>
+<li>直接寻址或绝对寻址</li>
+<li>存储器间接寻址</li>
+<li>自增寻址（串操作，先寻址再加）</li>
+<li>自减寻址（先减再寻址）</li>
+<li>缩放寻址<ul>
+<li>指令实例： Add R1, 100(R2)[R3]</li>
+<li>含义：Regs[R1]←Regs[R1]+Mem[100+Regs[R2]+Regs[R3]*d]</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-指令系统的设计和优化"><a href="#4-指令系统的设计和优化" class="headerlink" title="4. 指令系统的设计和优化"></a>4. 指令系统的设计和优化</h3><p>一种指令集结构中的指令到底要支持哪些类型的操作呢？这就是所谓的指令集结构功能设计问题。</p>
+<table>
+<thead>
+<tr>
+<th>分类</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>算术和逻辑运算</td>
+<td>整数的算术和逻辑操作：加、减、与、或等</td>
+</tr>
+<tr>
+<td>数据传输</td>
+<td>Load&#x2F;Store</td>
+</tr>
+<tr>
+<td>控制</td>
+<td>分支、跳转、过程调用和返回、自陷等</td>
+</tr>
+<tr>
+<td>系统</td>
+<td>操作系统调用、虚拟存储器管理等</td>
+</tr>
+<tr>
+<td>浮点</td>
+<td>浮点操作：加、乘等</td>
+</tr>
+<tr>
+<td>十进制</td>
+<td>十进制加、十进制乘、十进制到字符的转换</td>
+</tr>
+<tr>
+<td>字符串</td>
+<td>字符串移动、字符串比较、字符串搜索等</td>
+</tr>
+<tr>
+<td>图形</td>
+<td>像素操作、压缩&#x2F;解压操作等</td>
+</tr>
+</tbody></table>
+<p>控制指令</p>
+<ul>
+<li>跳转” （Jump）：当控制指令为无条件改变控制流时，我们称之为“跳转” 。</li>
+<li>“分支” （Branch）：而当控制指令是有条件改变控制流时，我们称之为“分支” 。</li>
+<li>控制流程的改变情况：<ul>
+<li>条件分支（conditional branch）；</li>
+<li>跳转（jump）；</li>
+<li>过程调用（call）；</li>
+<li>过程返回（return）。</li>
+</ul>
+</li>
+<li>控制指令主要使用在条件分支上</li>
+</ul>
+<p>条件分支指令的表示</p>
+<table>
+<thead>
+<tr>
+<th>分支条件表示</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>条件码（CC）在程序的控制下，由ALU操作设置特殊的位</td>
+<td>可以自由设置分支条件</td>
+<td>必须从一条指令将分支条件信息传送到分支指令，所以CC是额外状态，条件码限制了指令执行顺序</td>
+</tr>
+<tr>
+<td>条件寄存器：根据比较结果测试条件寄存器</td>
+<td>简单</td>
+<td>占用了一个寄存器</td>
+</tr>
+<tr>
+<td>比较分支：比较操作是分支指令的一部分，比较受限制</td>
+<td>一条指令完成了两条指令的功能</td>
+<td>分支指令的操作增多(串行)</td>
+</tr>
+</tbody></table>
+<p><strong>过程调用和返回的状态保存</strong></p>
+<ul>
+<li>调用者保存” （caller saving）方法：如果采用调用者保存策略，那么在一个调用者调用别的过程时，必须保存调用者所要保存的寄存器，以备调用结束返回后，能够再次访问调用者。</li>
+<li>“被调用者保存” （callee saving）方法：如果采用被调用者保存策略，那么被调用的过程必须保存它要用的寄存器，保证不会破坏过程调用者的程序执行环境，并在过程调用结束返回时，恢复这些寄存器的内容。</li>
+</ul>
+<h3 id="5-指令系统的发展和改进"><a href="#5-指令系统的发展和改进" class="headerlink" title="5. 指令系统的发展和改进"></a>5. 指令系统的发展和改进</h3><ul>
+<li>一个方向是强化指令功能，实现软件功能向硬件功能转移，基于这种指令集结构而设计实现的计算机系统称为复杂指令集计算机（CISC）。</li>
+<li>八十年代发展起来的精简指令集计算机（RISC），其目的是尽可能地降低指令集结构的复杂性，以达到简化实现，提高性能的目的。</li>
+</ul>
+<p><strong>CISC指令集功能设计</strong></p>
+<ul>
+<li>面向目标程序增强指令功能<ul>
+<li>提高运算型指令功能；</li>
+<li>提高传送指令功能；</li>
+<li>增加程序控制指令功能。</li>
+</ul>
+</li>
+<li>面向高级语言和编译程序改进指令系统<ul>
+<li>增加对高级语言和编译系统支持的指令功能；</li>
+<li>高级语言计算机指令系统。</li>
+</ul>
+</li>
+<li>面向操作系统的优化实现改进指令系统<ul>
+<li>主要表现在对中断处理、进程管理、存储管理和保护、系统工作状态的建立与切换等的支持。</li>
+<li>可以设置支持系统工作状态和访问方式转移的指令、支持进程转移的指令、支持进程同步和互斥的指令等措施，达到优化实现操作系统的目的。</li>
+</ul>
+</li>
+</ul>
+<p><strong>RISC指令集功能设计</strong></p>
+<ul>
+<li>CISC结构存在着如下缺点：<ul>
+<li>在CISC结构的指令系统中，各种指令的使用频率相差悬殊。据统计，<code>有20％的指令使用频率最大，占运行时间的80％</code>。也就是说，<code>有80％的指令在20％的运行时间内才会用到</code>。</li>
+<li>CISC结构指令系统的复杂性带来了计算机体系结构的复杂性，这不仅增加了研制时间和成本，而且还容易造成设计错误。</li>
+</ul>
+</li>
+<li>CISC结构指令系统的复杂性给VLSI设计增加了很大负担，不利于单片集成。</li>
+<li>CISC结构的指令系统中，许多复杂指令需要很复杂的操作，因而运行速度慢。</li>
+<li>在CISC结构的指令系统中，由于各条指令的功能不均衡性，不利于采用先进的计算机体系结构技术（如流水技术）来提高系统的性能。</li>
+</ul>
+<p><strong>注：x86 从奔腾4开始，内部已经实现 RISC 化</strong></p>
+<p><img data-src="/bc5a2705/RISC%E6%8C%87%E4%BB%A4%E9%9B%86%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1.png" alt="RISC指令执行频率"></p>
+<p><strong>RISC指令集功能设计原则</strong></p>
+<ul>
+<li>选取使用频率最高的指令，并补充一些最有用的指令；</li>
+<li>每条指令的功能应尽可能简单，并在一个机器周期内完成；</li>
+<li>所有指令长度均相同；</li>
+<li>只有load和store操作指令才访问存储器，其它指令操作均在寄存器之间进行；</li>
+<li>以简单有效的方式支持高级语言。</li>
+</ul>
+<h3 id="6-操作数的类型和大小"><a href="#6-操作数的类型和大小" class="headerlink" title="6. 操作数的类型和大小"></a>6. 操作数的类型和大小</h3><ul>
+<li>操作数类型和操作数表示也是软硬件主要界面之一。</li>
+<li>操作数类型是面向应用、面向软件系统所处理的各种数据结构。</li>
+<li>操作数表示是硬件结构能够识别、指令系统可以直接调用的那些结构。</li>
+<li>操作数表示所表征的那些操作数类型，是应用软件和系统软件所处理的操作数类型的子集。</li>
+<li>确定操作数表示实际上也是软硬件取舍折衷的问题<ul>
+<li>计算机即使只具有最简单的操作数表示，如只有整数（定点）表示法，也可以通过软件方法处理各种复杂的操作数类型，但是这样会大大降低系统的效率。</li>
+<li>如果各种复杂的操作数类型均包含在操作数表示之中，无疑会大大提高系统的效率，但是所花费的硬件代价也很高。</li>
+</ul>
+</li>
+</ul>
+<h3 id="7-MIPS指令系统结构"><a href="#7-MIPS指令系统结构" class="headerlink" title="7. MIPS指令系统结构"></a>7. MIPS指令系统结构</h3><ul>
+<li>Load&#x2F;Store型指令集结构；</li>
+<li>MIPS是一种多元指令集结构；</li>
+<li>具有一个简单的Load&#x2F;Store指令集；</li>
+<li>注重指令流水效率；</li>
+<li>简化指令的译码；</li>
+<li>高效支持编译器。</li>
+</ul>
+<p><strong>MIPS指令集结构：寄存器</strong></p>
+<ul>
+<li>32个32位通用寄存器（GRPs）<ul>
+<li>寄存器R0的内容恒为0</li>
+</ul>
+</li>
+<li>32个32位浮点寄存器（FPRs）<ul>
+<li>单精度浮点数表示和双精度浮点表示</li>
+</ul>
+</li>
+</ul>
+<p><strong>MIPS指令集结构：数据类型</strong></p>
+<ul>
+<li>整型数据：<ul>
+<li>8位、 16位、 32位。</li>
+</ul>
+</li>
+<li>浮点数据：<ul>
+<li>32位单精度浮点；</li>
+<li>64位双精度浮点；</li>
+<li>IEEE 754标准。</li>
+</ul>
+</li>
+</ul>
+<p><strong>MIPS指令集结构：寻址方式</strong></p>
+<ul>
+<li>寄存器寻址；如ADD R1,R2,R3</li>
+<li>立即值寻址；如ADD R1,R2,#42</li>
+<li>偏移寻址； 如ADD R1,R2,40(R3)</li>
+<li>寄存器间接寻址。存储器地址宽度为32位。如ADD R1,R2,0(R3)</li>
+</ul>
+<p><strong>MIPS指令集结构：指令格式</strong></p>
+<ul>
+<li>I类型指令</li>
+<li>R类型指令</li>
+<li>J类型指令</li>
+</ul>
+<p><strong>MPIS指令集结构：操作类型</strong></p>
+<ul>
+<li>Load和Store操作；</li>
+<li>ALU操作；</li>
+<li>分支和跳转操作；</li>
+<li>浮点操作；</li>
+<li>符号<code>&lt;-</code> 表示数据传送操作，其后附带一个下标n，也即 <code>&lt;-n</code> 表示传送一个n位数据。</li>
+<li>符号 <code>##</code> 用来表示两个域的串联操作，它可以出现在数据传送操作的任何一边。</li>
+<li>域的下标用来表明从该域中选择某一位。域中位的标记是从最高位开始标记，并且起始标记为0。下标可以是一个单独的数字，也可以是一个范围；</li>
+<li>上标表示复制一个域，如$0^{24}$可以得到一个24位全为0的一个域。</li>
+<li>变量Mem用来表示存储器中的一个数组，存储器按照字节寻址，它可以传送任何数目的字节。</li>
+</ul>
+<p><img data-src="/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84.png" alt="MIPS指令集"></p>
+<ul>
+<li>Load和Store操作：可以对MIPS的所有通用寄存器和浮点寄存器进行Load（载入）和Store（储存）操作， 但是对通用寄存器R0的Load操作没有任何效果。</li>
+</ul>
+<p><img data-src="/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E4%B8%BE%E4%BE%8B.png" alt="MIPS指令举例"></p>
+<ul>
+<li>ALU操作：在MIPS中，所有的ALU指令都是寄存器－寄存器型指令，其运算包含了简单的算术和逻辑运算，如加、减、AND、OR、XOR和移位。</li>
+<li>“设置相等”、“设置不等”“设置小于”:寄存器比较指令</li>
+<li>描述目标地址的方法：<ul>
+<li>其中两种类型的跳转指令用带符号位的26位偏移量加上程序计数器的值来确定跳转的目标地址；</li>
+<li>另外两种类型的跳转指令则指定一个寄存器，由寄存器中的内容决定跳转的目标地址。</li>
+</ul>
+</li>
+<li>两种跳转类型：<ul>
+<li>一种是简单跳转；</li>
+<li>另一种是跳转并链接（用于过程调用），它将下一条顺序指令地址（返回地址）保存在寄存器R31中。</li>
+</ul>
+</li>
+</ul>
+<p><img data-src="/bc5a2705/MIPS%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4.png" alt="MIPS跳转指令"></p>
+<ul>
+<li>浮点操作：浮点指令的操作数来源于浮点寄存器，同时它还指明了相应的操作是单精度<br>浮点操作还是双精度浮点操作。<ul>
+<li>后缀D代表双精度浮点操作；</li>
+<li>而后缀F代表单精度浮点操作（如： ADDD、ADDF、 SUBD、 SUBF、 MULTD、 MULTF、DIVD、 DIVF）。</li>
+</ul>
+</li>
+<li>MIPS的浮点操作有：加、减、乘、除。</li>
+</ul>
+<p><strong>MIPS的效能分析</strong></p>
+<ul>
+<li>问题的提出：<ul>
+<li>MIPS指令集结构的指令格式、寻址方式和操作都非常简单。也许有人会担心，这些特性会使得目标代码中指令条数增多，导致程序运行时间加长，从而使这种指令集结构的机器性能并不会太高。</li>
+</ul>
+</li>
+</ul>
+<h1 id="第三章-流水线技术"><a href="#第三章-流水线技术" class="headerlink" title="第三章 流水线技术"></a>第三章 流水线技术</h1><h2 id="3-1-流水线基本概念"><a href="#3-1-流水线基本概念" class="headerlink" title="3.1 流水线基本概念"></a>3.1 流水线基本概念</h2><p><strong>流水技术</strong><br>将一重复的时序过程分解为若干子过程，每个子过程都可以有效地在其专用功能段上与其它子过程同时执行，这种技术成为流水技术。</p>
+<p><strong>时空图</strong><br>从时间和空间两个方面描述流水线的工作过程，横坐标表示时间，纵坐标表示各流水段。</p>
+<p><strong>流水线的特点</strong></p>
+<ul>
+<li>流水过程由多个相关的子过程组成，这些子过程称为流水线的“级”或“段”。段的数目称为流水线的“深度”。</li>
+<li>每个子过程由专用的功能段实现</li>
+<li>各功能段的时间应基本相等，通常为1个时钟周期（1拍）</li>
+<li>流水线需要经过一定的通过时间才能稳定。</li>
+<li>流水技术适合于大量重复的时序过程。（流水也是一种并行，但和“并发”不一样，是处于“不同阶段”任务的并行）</li>
+</ul>
+<h3 id="3-1-2-流水线的分类"><a href="#3-1-2-流水线的分类" class="headerlink" title="3.1.2 流水线的分类"></a>3.1.2 流水线的分类</h3><p><strong>1. 单功能流水线和多功能流水线</strong></p>
+<ul>
+<li>按流水线所完成的功能分类</li>
+<li>单功能流水线，是指只能完成一种固定功能的流水线。<ul>
+<li>例如：功能单元流水线</li>
+</ul>
+</li>
+<li>多功能流水线，是指各段可以进行不同的连接，从而完成不同的功能。<ul>
+<li>例如：TI ASC的多功能流水线</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 静态流水线和动态流水线</strong></p>
+<ul>
+<li>按同一时间内流水段的连接方式划分</li>
+<li>静态流水线，是指在同一时间内，流水线的各段只能按同一种功能的连接方式工作<ul>
+<li>例如：TI ASC的流水线</li>
+<li>适合于处理一串相同的运算操作</li>
+</ul>
+</li>
+<li>动态流水线，是指在同一时间内，当某些段正在实现某种运算时，另一些段却在实现另一种运算<ul>
+<li>会使流水线的控制变得很复杂</li>
+<li>多功能流水线才有这样的划分。</li>
+</ul>
+</li>
+</ul>
+<p><strong>3. 部件级、处理机级及处理机间流水线</strong></p>
+<ul>
+<li>按流水的级别划分</li>
+<li>部件级流水线，又叫 <em>运算操作流水线</em>，是把处理机的算术逻辑部件分段，使得各种数据类型的操作能够进行流水。</li>
+<li>处理机级流水线，又叫 <em>指令流水线</em>，是把解释指令的过程按照流水方式处理。</li>
+<li>处理机间流水线，又叫 <em>宏流水线</em>，是由两个以上的处理机串行地对同一数据流进行处理，每个处理机完成一项任务。</li>
+</ul>
+<p><strong>4. 标量流水处理机和向量流水处理机</strong></p>
+<ul>
+<li>按照数据表示来进行分类</li>
+<li>标量流水处理机，是指处理机不具有向量数据表示，仅对标量数据进行流水处理。<ul>
+<li>例如IBM360&#x2F;91，Amdahl 470V&#x2F;6等</li>
+</ul>
+</li>
+<li>向量流水处理机，是指处理机具有向量数据表示，并通过向量指令对向量的各元素进行处理。<ul>
+<li>例如TI ASC、STAR-100、CYBER-205、CRAY-1、YH-1等</li>
+</ul>
+</li>
+</ul>
+<p><strong>5. 线性流水线和非线性流水线</strong></p>
+<ul>
+<li>按照是否有反馈回路来进行分类</li>
+<li>线性流水线是指流水线的各段串行连接，没有反馈回路。</li>
+<li>非线性流水线是指流水线中除有串行连接的通路外，还有 <em>反馈回路</em>。<ul>
+<li>存在流水线调度问题。</li>
+<li>确定什么时候向流水线引进新的输入，从而使新输入的数据和先前操作的反馈数据在流水线中不产生冲突，此即所谓 <em>流水线调度</em> 问题。 </li>
+<li>一般不采用该方式</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-2-MIPS基本流水线"><a href="#3-2-MIPS基本流水线" class="headerlink" title="3.2 MIPS基本流水线"></a>3.2 MIPS基本流水线</h2><h3 id="3-2-1-MIPS的一种简单实现"><a href="#3-2-1-MIPS的一种简单实现" class="headerlink" title="3.2.1 MIPS的一种简单实现"></a>3.2.1 MIPS的一种简单实现</h3><p>下图给出了实现MIPS指令的一种简单数据通路<br><img data-src="/bc5a2705/MIPS%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF.png" alt="MIPS简单数据通路"></p>
+<ul>
+<li>这是非流水方式</li>
+<li>指令执行划分为5个阶段<ul>
+<li>取指（IF）<ul>
+<li>根据PC值从存储器中取出指令，并将指令送入指令寄存器IR；PC值增加4，指向顺序的下一条指令，并将下一条指令的地址放入临时寄存器NPC中。</li>
+<li>IR←Mem[PC]，NPC←PC+4<br><img data-src="/bc5a2705/%E5%8F%96%E6%8C%87%E4%BB%A4%E5%91%A8%E6%9C%9F.png" alt="取指周期"></li>
+</ul>
+</li>
+<li>译码，读寄存器（ID）<ul>
+<li>进行指令译码，读IR寄存器（指令寄存器），按照相应寄存器号读寄存器文件，并将读出结果放入两个临时寄存器A和B中。同时对IR寄存器中内容的低16位进行符号扩展，然后将符号扩展之后的32位立即值保存在临时寄存器Imm中。</li>
+<li>A←Regs[IR6..10]<br>  B←Regs[IR11..15]<br>  Imm←((IR16)16##IR16..31)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img data-src="/bc5a2705/%E6%8C%87%E4%BB%A4%E8%AF%91%E7%A0%81%EF%BC%8C%E8%AF%BB%E5%AF%84%E5%AD%98%E5%99%A8%E5%91%A8%E6%9C%9F.png" alt="译码"></p>
+<ul>
+<li>执行，有效地址计算（EX）<ul>
+<li>存储器访问：		    ALUoutput←A+Imm<ul>
+<li>寄存器-寄存器ALU：	ALUoutput←A op B</li>
+<li>寄存器-立即值ALU:	  ALUoutput←A op Imm</li>
+<li>分支操作：		      ALUoutput←NPC+Imm<br>                      Cond←(A op 0)</li>
+<li>问题：为什么执行和有效地址计算可以合并？<br><img data-src="/bc5a2705/%E6%89%A7%E8%A1%8C%EF%BC%8C%E6%9C%89%E6%95%88%E5%9C%B0%E5%9D%80%E8%AE%A1%E7%AE%97%E5%91%A8%E6%9C%9F.png" alt="执行周期"></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>访存（MEM）<ul>
+<li>访存操作：<ul>
+<li>Load：	LMD←LMDMEM[ALUoutput]</li>
+<li>Store：	Mem[ALUoutput]←B</li>
+</ul>
+</li>
+<li>分支操作：	if (Cond) PC←ALUoutput else PC←NPC</li>
+</ul>
+</li>
+<li>写回（WB）<ul>
+<li>寄存器-寄存器型ALU指令： Reg[IR16..20]←ALUoutput</li>
+<li>寄存器-立即值型ALU指令： Reg[IR11..15]←ALUoutput</li>
+<li>Load指令：Reg[IR11..15]←LMD<br><img data-src="/bc5a2705/%E5%86%99%E5%9B%9E%E5%91%A8%E6%9C%9F.png" alt="写回周期"></li>
+</ul>
+<p>	</p>
+</li>
+<li>性能分析<ul>
+<li>在该数据通路上，分支指令需要4个时钟周期，其它指令需要5个时钟周期。假设分支指令占总指令数的12%，问CPI&#x3D;?</li>
+<li>CPI&#x3D;4×12%+5×(1-12%)&#x3D;4.88</li>
+<li>结论：就性能和硬件开销而言，上述实现不是一种优化实现！</li>
+</ul>
+</li>
+<li>改进方法<ul>
+<li>在Mem周期完成ALU指令</li>
+<li>假设ALU指令数占指令总数的44%，则在时钟周期时间不变的同时，CPI可以降低至4.4</li>
+<li>如要进一步降低CPI，可能会增加时钟周期时间</li>
+<li>采用单周期实现，可以将CPI降低为1，但时钟周期时间却会增加为原来的5倍。一般不采用这种方法，为什么？（因为实际上并没有提高效率）</li>
+<li>流水技术</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-2-基本MIPS流水线"><a href="#3-2-2-基本MIPS流水线" class="headerlink" title="3.2.2 基本MIPS流水线"></a>3.2.2 基本MIPS流水线</h3><p><strong>1. 一种简单的MIPS流水线</strong></p>
+<ul>
+<li>将3.2.1中的数据通路流水化，使得数据通路中的每一个周期就成为流水线的一段</li>
+<li>每个时钟周期启动一条指令——得到了一条简单的MIPS流水线。</li>
+<li>简单MIPS流水线的流水过程：<ul>
+<li>时-空图</li>
+<li>按时间错开的数据通路<br><img data-src="/bc5a2705/%E7%AE%80%E5%8D%95%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF.png" alt="简单的MIPS流水线"><br>注意：纵坐标不是流水段，而是指令</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 实现流水技术应解决的一些问题</strong> </p>
+<ul>
+<li>应保证流水线各段不会在同一时钟周期内使用相同的寄存器通路资源。<ul>
+<li>例如，不能要求一个ALU既做有效地址计算，又做减法操作</li>
+<li>IF与Mem两个阶段都要访问存储器，怎样避免访存冲突？<ul>
+<li>使用 <em>哈佛结构</em>，将指令存储器和数据存储器分离</li>
+</ul>
+</li>
+<li>ID和WB两个阶段都要访问寄存器，是否存在冲突？怎样避免？<ul>
+<li>将寄存器隔离，各自使用各自的资源（？）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>PC计算问题<ul>
+<li>为了能够在每个时钟周期启动一条新的指令，流水线必须在IF段获得下一条指令的地址，并将其保存在PC中。<ul>
+<li>但是，分支指令会改变PC的值，而且只有在Mem段结束时，这个新值才会被写入PC，出现矛盾。</li>
+<li>解决方法：<ul>
+<li>改变数据通路，在IF段完成PC计算。但分支指令如何处理？</li>
+<li>处理分支指令可以在流水线中加入暂停周期，或设置延迟槽</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>合理划分流水段，每段内的操作都必须在一个时钟周期内完成。</li>
+<li>流水线寄存器设计<ul>
+<li>为防止寄存器中的值在为流水线中某条指令所用时被流水线中其它的指令所重写，可在流水线各段之间设置流水线寄存器文件，也称锁存器。<br><img data-src="/bc5a2705/%E5%90%84%E6%B5%81%E6%B0%B4%E6%AE%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E9%94%81%E5%AD%98%E5%99%A8.png" alt="流水段之间的锁存器"><br>（分站后站间寄存器算哪站的？都可以，但不要不一致）</li>
+<li>流水线寄存器文件的命名<br><img data-src="/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%91%BD%E5%90%8D.png" alt="流水线寄存器的命名"></li>
+<li>段A与B之间的流水线寄存器文件称为A&#x2F;B</li>
+<li>流水线寄存器的作用<br><img data-src="/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8.png" alt="流水线寄存器的作用"><br>当指令在流水线中流动时，其数据和控制信息也在同步地向前流动</li>
+<li>流水线寄存器文件的构成<br><img data-src="/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%9E%84%E6%88%90.png" alt="流水线寄存器的构成"></li>
+</ul>
+</li>
+</ul>
+<p><strong>3. MIPS流水线的操作</strong></p>
+<ul>
+<li>在任一时刻，流水中的指令仅在流水线中的某一段内执行操作。</li>
+<li>因此，只要知道每一流水段在各指令下进行何种操作，就知道了整个流水线的操作。<br><img data-src="/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C.png" alt="MIPS流水线每个流水段的操作"><br><img data-src="/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C%EF%BC%88%E7%BB%AD%EF%BC%89.png" alt="MIPS流水线每个流水段的操作（续）"></li>
+</ul>
+<p><strong>4. MIPS流水线中多路选择器的控制</strong></p>
+<ul>
+<li>主要是确定如何控制那四个多路选择器：</li>
+<li>ALU输入端的两个MUX由ID&#x2F;EX.IR所指出的指令类型控制</li>
+<li>IF段的MUX由EX&#x2F;MEM.Cond域的值控制</li>
+<li>WB段的MUX由当前指令类型(Load&#x2F;ALU)控制<br><img data-src="/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E5%AF%B9%E5%A4%9A%E8%B7%AF%E9%80%89%E6%8B%A9%E5%99%A8MUX%E7%9A%84%E6%8E%A7%E5%88%B6.png" alt="MUX的控制"></li>
+</ul>
+<h3 id="3-2-3-流水线性能分析"><a href="#3-2-3-流水线性能分析" class="headerlink" title="3.2.3 流水线性能分析"></a>3.2.3 流水线性能分析</h3><p><strong>三项性能指标：吞吐率、加速比和效率</strong></p>
+<p><strong>1. 吞吐率</strong></p>
+<ul>
+<li>是衡量流水线速度的重要指标</li>
+<li>吞吐率是指单位时间内流水线所完成的任务数或输出结果的数量。</li>
+<li>最大吞吐率TPmax是指流水线在达到 <em>稳定状态</em>后所得到的吞吐率。</li>
+<li>设流水线由m段组成，完成n个任务的吞吐率称为实际吞吐率，记作TP。</li>
+</ul>
+<p><strong>(1) 最大吞吐率</strong></p>
+<ul>
+<li>假设流水线各段时间相等，均为 $\Delta t_{0}$，则：$TP_{max} &#x3D; \frac{1}{\Delta t_{0}}$</li>
+<li>假设流水线各段时间不等，第 i 段时间为$\Delta t_{i}$，则：$TP_{max} &#x3D; \frac{1}{max{\Delta t_{0}}}$<ul>
+<li>最大吞吐率取决于流水线中最慢一段所需的时间，该段成为流水线的瓶颈（不均匀的流水线才能反映出流水线瓶颈问题）</li>
+<li>消除瓶颈的方法<ul>
+<li>细分瓶颈段</li>
+<li>重复设置瓶颈段</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>(2) 实际吞吐率</strong></p>
+<ul>
+<li>若各段时间相等（假设均为$\Delta t_{0}$），则完成时间<br>$T_{流水} &#x3D; m\Delta t_{0}+(n-1)\Delta t_{0}$<ul>
+<li>实际吞吐率 $TP&#x3D;\cfrac{1}{T_{流水}}&#x3D;\cfrac{n}{m\Delta t_{0}+(n-1)\Delta t_{0}}&#x3D;\cfrac{1}{(1+\frac{m-1}{n})\Delta t_{0}} &#x3D; \cfrac{TP_{max}}{1+\frac{m-1}{n}}$</li>
+</ul>
+</li>
+<li>若各段时间不等（假设第i段为$\Delta t_{i}$），则完成时间为：<br><img data-src="/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%97%B6%E7%A9%BA%E5%9B%BE%EF%BC%88%E5%90%84%E6%AE%B5%E6%97%B6%E9%97%B4%E4%B8%8D%E7%AD%89%EF%BC%89.png" alt="流水线时空图（各段时间不等）"><br>$T&#x3D;\sum\limits_{i&#x3D;1}^{m}\Delta t_{i}+(n-1)\Delta t_{j}$<br>这里$\Delta t_{j}&#x3D;max{\Delta t_{i}}$<br>实际吞吐率 $TP&#x3D;\cfrac{n}{\sum\limits_{i&#x3D;1}^{m}\Delta t_{i}+(n-1)\Delta t_{j}}$</li>
+<li>不均匀流水线吞吐率的影响因素：深度、任务数、瓶颈段时间。</li>
+</ul>
+<p><strong>2. 加速比</strong></p>
+<ul>
+<li>加速比是指流水线速度与等功能的非流水线速度之比，加速比一定大于1。</li>
+<li>根据定义可知，加速比 $S &#x3D; T_{非流水}&#x2F;T_{流水}$</li>
+<li>若流水线为m段，每段时间均为 $\Delta t_{0}$，则 $T_{非流水}&#x3D;nm\Delta t_{0}$<br>$T_{流水}&#x3D;m\Delta t_{0}+(n-1)\Delta t_{0}$<br>加速比 $S&#x3D;\cfrac{mn}{m+n-1}&#x3D;\cfrac{m}{1+\frac{m-1}{n}}$</li>
+</ul>
+<p><strong>3. 效率</strong></p>
+<ul>
+<li>效率指流水线的设备利用率。</li>
+<li>由于流水线有 <em>通过时间和排空时间</em>，所以流水线的各段并非一直满负荷工作，$E&lt;1$</li>
+<li>若各段时间相等，则各段效率也相等，即 $e1 &#x3D; e2 &#x3D; e3 &#x3D;…&#x3D; n\Delta t_{0}&#x2F;T_{流水}$</li>
+<li>整个流水线效率 $E&#x3D;\cfrac{n}{m+n-1}&#x3D;\cfrac{1}{1+\frac{m-1}{n}}$<br>当 $n\ll m$ 时，$E\approx 1$</li>
+<li>从时-空图上看，效率就是n个任务所占的时空区与m个段总的时空区之比</li>
+<li>根据这个定义，可以计算流水线各段时间不等时的流水线效率 $E&#x3D;\cfrac{n个任务占用的时空区}{m个段总的时空区}$</li>
+<li>时空图上的对应关系：忙的时间和总时间的比。算出来的是所有设备的平均效率。</li>
+</ul>
+<p><strong>4. 吞吐率、加速比和效率的关系</strong></p>
+<ul>
+<li>根据加速比 $S&#x3D;\dfrac{mn}{m+n-1}&#x3D;\dfrac{m}{1+\frac{m-1}{n}}$<br>和效率 $E&#x3D;\dfrac{n}{m+n-1}&#x3D;\dfrac{1}{1+\frac{m-1}{n}}$<br>可得，效率实际上是加速比 S 和最大加速比 m 的比值，即 $E&#x3D;\dfrac{S}{m}$</li>
+<li>$E&#x3D;n\Delta t_{0}&#x2F;T_{流水}&#x3D;(n&#x2F;T_{流水})\Delta t_{0}&#x3D;TP\Delta t_{0}$<br>当 $\Delta t_{0}$ 不变时，流水线的效率与吞吐率呈正比。为提高效率而采取的措施，也有助于提高吞吐率</li>
+</ul>
+<p><strong>例题 3.1</strong> 在静态流水线上计算 $\sum\limits_{i&#x3D;1}^{4}A_{i}B_{i}$，问吞吐率、加速比、效率各是多少？</p>
+<p><img data-src="/bc5a2705/%E4%BE%8B3.1%20%E9%9D%99%E6%80%81%E6%B5%81%E6%B0%B4%E7%BA%BF.png" alt="静态流水线"><br><img data-src="/bc5a2705/%E4%BE%8B3.1%20%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B.png" alt="计算过程"><br><img data-src="/bc5a2705/%E4%BE%8B3.1%20%E6%97%B6%E7%A9%BA%E5%9B%BE.png" alt="时空图"><br><img data-src="/bc5a2705/%E4%BE%8B3.1%20%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97.png" alt="性能计算"></p>
+<p><strong>上述方案性能不高，效率仅为 0.21</strong></p>
+<ul>
+<li>静态多功能流水线在对某种功能进行处理时，总有某些段处于空闲状态</li>
+<li>功能切换增加了前一种功能的排空时间和后一种功能的通过时间</li>
+<li>需要把输出回传到输入（相关）</li>
+<li>能否通过动态流水线改进其性能？<ul>
+<li>设置多功能流水线，在加法未进行完时，便进行乘法流水（可以缩短进入时间和排空时间）<br><img data-src="/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%B5%81%E6%B0%B4%E7%BA%BF.png" alt="多功能流水线"></li>
+<li>当需要的乘法结果出来后立即执行加法流水，也可缩短一定的进入时间和排空时间<br><img data-src="/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D.png" alt="加法提前"></li>
+</ul>
+</li>
+</ul>
+<p>实际上这样设置流水线是有问题的，只有当前两个乘法完全执行完，才能执行加法，即在t&#x3D;5 时才能执行第一个加法，在 t&#x3D;7 时才能执行第二个加法，最后总时间为 19$\Delta t_{0}$。</p>
+<p><img data-src="/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D%EF%BC%88%E6%AD%A3%E7%A1%AE%EF%BC%89.png" alt="加法提前"></p>
+<p><strong>例 3.3</strong> 在 MIPS 的非流水实现和基本流水线中，5个功能单元的执行时间：10&#x2F;8&#x2F;10&#x2F;10&#x2F;7ns。流水线额外开销为 1ns，求相对于非流水指令实现而言，基本 MIPS 流水线的加速比是多少？</p>
+<p>注：流水线额外开销包括：流水寄存器的延迟（建立时间和传输延迟）以及时钟扭曲</p>
+<p><strong>6. 有关流水线性能的若干问题</strong></p>
+<ul>
+<li>流水线并不能减少（而且一般是增加）单条指令的执行时间，但能够提高吞吐率</li>
+<li>增加流水线的深度可以提高流水线性能</li>
+<li>流水线深度受限于流水线的延迟和额外开销</li>
+<li>需要用高速锁存器作为流水线寄存器——Earle 锁存器</li>
+<li>指令之间存在的<strong>相关</strong>，限制了流水线的性能</li>
+</ul>
+<p><strong>Earle锁存器</strong></p>
+<ul>
+<li>1965 年由 J.G.Earle 发明</li>
+<li>优点<ul>
+<li>对时钟扭曲不敏感（相对而言），一般是两级门延迟，避免了数据通过锁存器时可能产生的时钟扭曲</li>
+<li>在锁存器中可以执行两级逻辑运算，而不会增加锁存器的延迟时间，可以隐藏锁存器产生的额外开销</li>
+<li>锁存器是流水线技术存在的基本保证</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-3-流水线中的相关"><a href="#3-3-流水线中的相关" class="headerlink" title="3.3 流水线中的相关"></a>3.3 流水线中的相关</h2><p><strong>1. 什么是相关？</strong></p>
+<ul>
+<li>流水线中的相关是指相邻或相近的两条指令因存在某种关联，后一条指令不能在原先指定的时钟周期开始执行。</li>
+<li>消除相关的基本方法——暂停（stall）<ul>
+<li>暂停流水线中某条指令及其后面所有指令的执行，该指令之前的所有指令继续执行。</li>
+</ul>
+</li>
+</ul>
+<p><strong>2. 三种不同类型的相关</strong></p>
+<ul>
+<li><strong>结构相关</strong>：当指令在重叠执行过程中，硬件资源满足不了指令重叠执行的要求，发生资源冲突时将产生“结构相关”。</li>
+<li><strong>数据相关</strong>：因一条指令需要用到前面指令的结果，而无法与产生结果的指令重叠执行时，就发生了数据相关。</li>
+<li><strong>控制相关</strong>：当流水线遇到分支指令和其它会改变 PC 值的指令时就发生控制相关。</li>
+</ul>
+<h3 id="3-3-1-流水线的结构相关"><a href="#3-3-1-流水线的结构相关" class="headerlink" title="3.3.1 流水线的结构相关"></a>3.3.1 流水线的结构相关</h3><p><img data-src="/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E8%AE%BF%E5%AD%98%E5%86%B2%E7%AA%81.png" alt="结构相关"></p>
+<ul>
+<li>导致结构相关的常见原因：<ul>
+<li>功能部件不是全流水</li>
+<li>重复设置的资源数量不足</li>
+</ul>
+</li>
+<li>实例：当数据和指令存在同一存储器中时，访存指令会引起存储器访问冲突。</li>
+<li>解决方法：<ul>
+<li>I. 插入暂停周期</li>
+</ul>
+</li>
+</ul>
+<p><img data-src="/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E6%8F%92%E5%85%A5%E6%9A%82%E5%81%9C%E5%91%A8%E6%9C%9F.png" alt="插入暂停周期"></p>
+<ul>
+<li>II. 将指令存储器和数据存储器分离</li>
+<li>避免结构相关的方法：<ul>
+<li>所有功能单元完全流水化</li>
+<li>设置足够多的硬件资源<ul>
+<li>但是，硬件代价很大！</li>
+</ul>
+</li>
+<li>有些设计方案允许结构相关存在<ul>
+<li>降低成本</li>
+<li>减少功能单元的延迟</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>例 3.4</strong> 当前许多机器都没有将浮点功能单元完全流水， 比如在MIPS实现中，浮点乘需要5个时钟周期，但对该指令不流水。请分析由此引起的结构相关对 mdljdp2 基准程序在MIPS上运行的性能有何影响？为简单起见，假设浮点乘法服从均匀分布。</p>
+<p>解：mdljdp2中浮点乘法出现的频率约为14%。<br>最坏情况：每个浮点乘都无法与其它操作重叠执行，都需要5个周期，此时CPI为1.56<br>最好情况：可以完全重叠执行，仅需要1个周期，此时没有性能损失</p>
+<h3 id="3-3-2-流水线的数据相关"><a href="#3-3-2-流水线的数据相关" class="headerlink" title="3.3.2 流水线的数据相关"></a>3.3.2 流水线的数据相关</h3><h4 id="1-数据相关简介"><a href="#1-数据相关简介" class="headerlink" title="1. 数据相关简介"></a>1. 数据相关简介</h4><ul>
+<li>实例：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ADD	R1, R2, R3</span><br><span class="line">SUB	R4, R1, R5</span><br><span class="line">AND	R6, R1, R7</span><br><span class="line">OR	R8, R1, R9</span><br><span class="line">XOR	R10, R1, R11</span><br></pre></td></tr></table></figure>
+<ul>
+<li>产生原因：当指令在流水线中重叠执行时，流水线有可能改变指令读&#x2F;写操作数的顺序，使之不同于它们在非流水实现时的顺序，这将导致数据相关。</li>
+<li>消除方法：向流水线中插入暂停周期（stall）</li>
+</ul>
+<h4 id="2-通过定向技术（Forwarding）减少数据相关带来的暂停"><a href="#2-通过定向技术（Forwarding）减少数据相关带来的暂停" class="headerlink" title="2. 通过定向技术（Forwarding）减少数据相关带来的暂停"></a>2. 通过定向技术（Forwarding）减少数据相关带来的暂停</h4><ul>
+<li>定向（Forwarding），也称为旁路技术（bypassing），转发技术</li>
+<li>主要思路：将计算结果从其产生的地方直接送到真正需要它的地方，就可以避免暂停。<ul>
+<li>寄存器文件 EX&#x2F;MEM 中的 ALU 运算结果总是回送到 ALU 的输入寄存器</li>
+<li>从定向通路得到输入数据的 ALU 操作不必从源寄存器中读取操作数</li>
+<li>进一步推广：一个结果不仅可以从某一功能单元的输出定向到其自身的输入，而且还可以定向到其它功能单元的输入。</li>
+<li>在MIPS中，任何流水寄存器到任何功能单元的输入都可能需要定向路径，将形成复杂的旁路网络。</li>
+<li>两条指令访问同一存储单元，也可能引起数据相关，例如访问数据 Cache 失效时。</li>
+<li>本章只讨论寄存器数据相关！</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-数据相关的分类"><a href="#3-数据相关的分类" class="headerlink" title="3. 数据相关的分类"></a>3. 数据相关的分类</h4><ul>
+<li>两条指令 i 和 j，都会访问同一寄存器R，假设i 先进入流水线，则它们对R有四种不同的访问顺序：</li>
+</ul>
+<p><strong>(1) 写后读(RAW) —— i 写 j 读</strong></p>
+<ul>
+<li>如果 j 在 i 完成写之前从 R 中读出数据，将得到错误的结果！</li>
+<li>最常见的数据相关，严重制约了 CPU 的性能，是程序最重要的特征之一！</li>
+</ul>
+<p><strong>(2) 写后写(WAW) —— i 写 j 写</strong></p>
+<ul>
+<li>如果 j 在 i 之前完成写操作，R 中将保存错误的结果！</li>
+<li>MIPS 流水线不会出现这种相关！</li>
+<li>当流水线中有多个段可以写回，而且当流水线暂停某条指令的执行时，其后的指令可以继续前进时，可能引起这种类型的相关。</li>
+</ul>
+<p><img data-src="/bc5a2705/%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E5%86%99%E5%90%8E%E5%86%99%E7%9B%B8%E5%85%B3.png" alt="写后写相关"></p>
+<p><strong>(3) 读后写(WAR) —— i 读 j 写</strong></p>
+<ul>
+<li>如果 j 先将数据写入 R，i 将读出错误的结果！</li>
+<li>MIPS流水线不会出现这种类型的相关！</li>
+<li>当有些指令在流水段后半部分读源操作数，另一些指令在流水线前半部分写结果，可能引起这种类型的相关。</li>
+</ul>
+<p><strong>(4) 读后读(RAR) —— i 读 j 读</strong></p>
+<ul>
+<li>不引起数据相关！</li>
+</ul>
+<h4 id="4-需要暂停的数据相关"><a href="#4-需要暂停的数据相关" class="headerlink" title="4. 需要暂停的数据相关"></a>4. 需要暂停的数据相关</h4><ul>
+<li>并非所有数据相关都可以通过定向技术解决。</li>
+<li>例：  LW	R1，0（R2）<br> SUB	R4，R1，R5<br> AND	R6，R1，R7<br> OR	R8，R1，R9</li>
+<li>增加流水线“流水线互锁”部件，当互锁硬件发现这种相关后，就暂停流水线，直到相关消除。</li>
+<li>这种情况下，暂停的时钟周期数称为<strong>载入延迟</strong>。<br><img data-src="/bc5a2705/%E5%AE%9A%E5%90%91%E6%8A%80%E6%9C%AF%E4%B8%8D%E8%83%BD%E8%A7%A3%E5%86%B3%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3.png" alt="定向技术不能解决的数据相关"></li>
+</ul>
+<h4 id="5-对数据相关的编译调度方法"><a href="#5-对数据相关的编译调度方法" class="headerlink" title="5. 对数据相关的编译调度方法"></a>5. 对数据相关的编译调度方法</h4><ul>
+<li>流水线中常常会遇到多种类型的暂停</li>
+<li>例如，计算表达式 $A&#x3D;B+C$ 时会出现暂停</li>
+<li>编译器可以通过重新排列代码的顺序来消除这种暂停，这种技术就是<strong>流水线调度</strong>或<strong>指令调度</strong></li>
+<li>软件上的方法有时会使事情变得轻而易举，但这取决于编译器的智能。</li>
+</ul>
+<p><strong>例 3.6</strong>请为下列表达式生成没有暂停的MIPS指令序列 $a &#x3D; b – c$，$d &#x3D; e – f$，假设载入延迟为1个时钟周期。<br>分析：为了避免数据相关，需要调整指令的顺序，并合理利用 Forwarding 技术。</p>
+<h4 id="6-对-MIPS-流水线控制的实现"><a href="#6-对-MIPS-流水线控制的实现" class="headerlink" title="6. 对 MIPS 流水线控制的实现"></a>6. 对 MIPS 流水线控制的实现</h4><ul>
+<li><p>指令发射：指令从流水线的<strong>译码段</strong>进入<strong>执行段</strong>的过程称为指令发射。</p>
+</li>
+<li><p>检测数据相关</p>
+<ul>
+<li>ID 段可以检测所有数据相关</li>
+<li>在使用一个操作数的时钟周期的开始(EX 和 MEM 段的开始)检测相关，并确定必需的定向</li>
+<li>流水线相关硬件可以检测到的各种相关情况<br><img data-src="/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9B%B8%E5%85%B3%E6%A3%80%E6%B5%8B%E7%A1%AC%E4%BB%B6%E5%8F%AF%E4%BB%A5%E6%A3%80%E6%B5%8B%E5%88%B0%E7%9A%84%E5%90%84%E7%A7%8D%E7%9B%B8%E5%85%B3%E6%83%85%E5%86%B5.png" alt="硬件可以检测到的各种相关"></li>
+</ul>
+</li>
+<li><p>例：Load 互锁的检测与实现</p>
+<ul>
+<li>在 ID 段检测是否需要启动 Load 互锁，必须进行三种比较</li>
+<li>一旦检测到相关，控制部件必须在流水线中插入暂停周期，并使 IF 和 ID 段中的指令停止前进<ul>
+<li>将 ID&#x2F;EX 中控制部分清 0</li>
+<li>保持 IF&#x2F;ID 的内容不变</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>定向逻辑的实现</p>
+<ul>
+<li>所有的定向都是从 ALU&#x2F;DM 的输出到 ALU、DM 或 0 检测单元的输入</li>
+<li>形成了一个旁路网络<ul>
+<li>需要比较哪些信息？</li>
+<li>ALU输入端应采用多少个输入的 MUX？</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img data-src="/bc5a2705/%E5%AE%9A%E5%90%91%E8%B7%AF%E5%BE%84.png" alt="定向路径"></p>
+<h3 id="3-3-3-流水线的控制相关"><a href="#3-3-3-流水线的控制相关" class="headerlink" title="3.3.3 流水线的控制相关"></a>3.3.3 流水线的控制相关</h3><h4 id="1-分支指令的实现"><a href="#1-分支指令的实现" class="headerlink" title="1. 分支指令的实现"></a>1. 分支指令的实现</h4><ul>
+<li>一旦分支转移成功，正确的地址要在 Mem 段的末尾才会被写入 PC</li>
+<li>一旦 ID 段检测到分支指令，就暂停执行其后的指令，直到分支指令达到 Mem 段，确定新的 PC 为止</li>
+<li>分支转移成功将导致 MIPS 流水线暂停 3 个周期</li>
+<li>这是引起更大暂停的另一类相关</li>
+<li>没有控制流指令的指令集机器是很不好用的</li>
+<li>在事务处理应用中，分支跳转等指令占有相当大的比重。<br><img data-src="/bc5a2705/%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E5%B0%86%E5%AF%BC%E8%87%B4%E6%9A%82%E5%81%9C3%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png" alt="分支成功将暂停3个时钟周期"></li>
+</ul>
+<h4 id="2-减少分支开销的途径"><a href="#2-减少分支开销的途径" class="headerlink" title="2. 减少分支开销的途径"></a>2. 减少分支开销的途径</h4><ul>
+<li>两个基本途径：同时采用，缺一不可！<ul>
+<li>在流水线中尽早判断分支转移是否成功</li>
+<li>转移成功时，尽早计算出转移目标地址</li>
+</ul>
+</li>
+<li>经改进，MIPS流水线可以将分支开销减少1拍<ul>
+<li>将 $&#x3D;0?$ 测试提前到 ID 段</li>
+<li>在 ID 段增加一个加法器，计算分支目标地址</li>
+<li>表 3.6 列出了改进后流水线的分支操作</li>
+<li>第一种改进，注意分支结果在 EX 段有效。<br><img data-src="/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80.png" alt="修改DLX以减少分支开销"><br><img data-src="/bc5a2705/%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E6%93%8D%E4%BD%9C.png" alt="分支指令操作"></li>
+</ul>
+</li>
+<li>再改进，MIPS 流水线可以将分支开销再减少 1 拍<ul>
+<li>将分支判断结果和目标地址提前到 ID&#x2F;EX 站前</li>
+<li>第二步改进，这次分支结果在 ID 段有效！！！<br><img data-src="/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80%EF%BC%88%E5%86%8D%E6%94%B9%E8%BF%9B%EF%BC%89.png" alt="修改DLX以减少分支开销"></li>
+</ul>
+</li>
+</ul>
+<h4 id="3-程序中分支指令的行为特点"><a href="#3-程序中分支指令的行为特点" class="headerlink" title="3. 程序中分支指令的行为特点"></a>3. 程序中分支指令的行为特点</h4><p><strong>(1) 各种能改变PC值的指令的执行频度</strong></p>
+<ul>
+<li>条件分支：<ul>
+<li>整数程序：14-15%</li>
+<li>浮点程序：3-12%</li>
+<li>其中，向前分支与向后分支的比：3:1</li>
+</ul>
+</li>
+<li>无条件分支：≤4%（绝大多数）</li>
+</ul>
+<p><strong>(2) 条件分支转移成功的概率</strong></p>
+<ul>
+<li>向前转移成功：60%；向后转移成功：85%<br><img data-src="/bc5a2705/%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E7%9A%84%E6%A6%82%E7%8E%87.png" alt="条件分支转移成功的概率"></li>
+</ul>
+<h4 id="4-减少流水线分支损失的方法"><a href="#4-减少流水线分支损失的方法" class="headerlink" title="4. 减少流水线分支损失的方法"></a>4. 减少流水线分支损失的方法</h4><p><strong>(1) 冻结或排空流水线</strong></p>
+<ul>
+<li>思路：在流水线中暂停或删除分支后的指令，直到得到转移目标地址</li>
+<li>优点：简单</li>
+</ul>
+<p><strong>(2) 预测分支转移失败</strong></p>
+<ul>
+<li>思路：流水线继续照常流动，如果分支转移成功，将分支指令后的指令转换为空操作，并从分支目标处开始取指令执行；否则照常执行</li>
+<li>实际发生的成功分支多，就应该在硬件上预测成功，反之则预测失</li>
+<li>所谓预测，就是在硬件执行时把分支当作全部成功或全部失败</li>
+<li>MIPS流水线的处理过程<br><img data-src="/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%B9%E5%88%86%E6%94%AF%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B.png" alt="DLX流水线对分支的处理过程"></li>
+</ul>
+<p><strong>(3) 预测分支转移成功</strong></p>
+<ul>
+<li>思路：始终假设分支成功，直接从分支目标处取指令执行</li>
+<li>对 MIPS 流水线没有任何好处！</li>
+</ul>
+<p><strong>(4) 延迟分支（delayed branch）</strong></p>
+<ul>
+<li><p>思路：分支开销为 n 的分支指令后紧跟有 n 个延迟槽，<strong>流水线遇到分支指令时，按正常方式处理</strong>，顺带执行延迟槽中的指令，从而减少分支开销。</p>
+</li>
+<li><p>延迟槽指令不影响后续指令执行，编译器动态调度</p>
+</li>
+<li><p>延迟分支及指令的执行顺序<br><img data-src="/bc5a2705/%E5%BB%B6%E8%BF%9F%E5%88%86%E6%94%AF%E4%BB%A5%E5%8F%8A%E6%8C%87%E4%BB%A4%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png" alt="延迟分支以及指令的执行顺序"></p>
+</li>
+<li><p>具有一个分支延迟槽的MIPS流水线的执行过程<br><img data-src="/bc5a2705/%E5%85%B7%E6%9C%89%E4%B8%80%E4%B8%AA%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%A7%BD%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png" alt="具有一个分支延迟槽的MIPS流水线的执行过程"></p>
+</li>
+<li><p>什么样的指令能否放入分支延迟槽？</p>
+<ul>
+<li>三种调度方法：从前调度；从目标处调度；从失败处调度<br><img data-src="/bc5a2705/%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%8C%87%E4%BB%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95.png" alt="分支延迟指令的三种调度方法"></li>
+<li>三种方法的要求与效果，存在限制因素<ul>
+<li>编译器预测分支是否成功的能力</li>
+<li>放入延迟槽中的指令<br><img data-src="/bc5a2705/%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95%E7%9A%84%E8%A6%81%E6%B1%82%E5%8F%8A%E6%95%88%E6%9E%9C.png" alt="三种调度方法的要求及效果"></li>
+</ul>
+</li>
+<li>取消分支<ul>
+<li>思路：分支指令中包含预测方向，若预测正确，正常执行延迟槽中的指令，否则将其转换为空操作</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img data-src="/bc5a2705/%E5%8F%96%E6%B6%88%E5%88%86%E6%94%AF.png" alt="取消分支"></p>
+<h4 id="5-各种分支处理方法的性能"><a href="#5-各种分支处理方法的性能" class="headerlink" title="5. 各种分支处理方法的性能"></a>5. 各种分支处理方法的性能</h4><ul>
+<li>假设理想CPI&#x3D;1，则加速比<br>$S&#x3D;D&#x2F;(1+C)&#x3D;D&#x2F;(1+f×p_{分支})$<ul>
+<li>这里，D 为流水线的深度，p 分支为分支开销，C 为分支引起的流水线暂停时钟周期数(每条指令的平均值)，f 为分支的出现频度。</li>
+</ul>
+</li>
+<li>表 3.7 列出了流水线中各种处理方法的开销<br><img data-src="/bc5a2705/%E5%90%84%E7%A7%8D%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E6%8D%9F%E5%A4%B1%E6%96%B9%E6%B3%95%E7%9A%84%E6%95%88%E6%9E%9C.png" alt="各种减少分支损失方法的效果"></li>
+</ul>
+<h4 id="补充-流水线数据相关与冒险（冲突）"><a href="#补充-流水线数据相关与冒险（冲突）" class="headerlink" title="[补充] 流水线数据相关与冒险（冲突）"></a>[补充] 流水线数据相关与冒险（冲突）</h4><p>在组成原理中，流水线相关包含数据相关，结构相关，控制相关，这里的<strong>相关</strong>在体系结构中应该称作为<strong>冲突</strong>（或冒险），实际上相关和冲突在含义上有一些不同</p>
+<p>在体系结构中有 3 种不同类型的相关：<strong>数据相关</strong>（也叫真数据相关）、<strong>名相关</strong>和<strong>控制相关</strong></p>
+<h5 id="数据相关"><a href="#数据相关" class="headerlink" title="数据相关"></a>数据相关</h5><p>若：</p>
+<ul>
+<li>指令 i 生成的结果可能会被指令 j 用到</li>
+<li>指令 j 数据相关于指令 k，指令 k 相关于指令 i</li>
+</ul>
+<p>那么指令 j 数据相关于指令 i</p>
+<p>要说明的是，数据相关<strong>可能</strong>会导致数据冒险</p>
+<h5 id="名相关（名称相关）"><a href="#名相关（名称相关）" class="headerlink" title="名相关（名称相关）"></a>名相关（名称相关）</h5><p>当两条指令使用相同的寄存器或存储器位置（称为名称），但与该名称相关的指令之间没有数据流动时，就会发生名相关</p>
+<ul>
+<li>当指令 j 对指令 i 读取的寄存器或存储器位置执行写操作时，会发生<strong>反相关</strong></li>
+<li>当指令 i 和指令 j 对同一个寄存器或存储器位置执行写操作时，会发生<strong>输出相关</strong></li>
+</ul>
+<p>由于没有在指令之间传递值，所以反相关和输出相关都是名称相关，与真数据相关相对。因为名称相关不是真正的相关，因此如果改变这些指令中使用的名称，使这些指令不再冲突，这些指令便可以同时执行，或者重新排序。</p>
+<h5 id="数据冒险（数据冲突）"><a href="#数据冒险（数据冲突）" class="headerlink" title="数据冒险（数据冲突）"></a>数据冒险（数据冲突）</h5><ul>
+<li>写后读（RAW），与<strong>真数据相关</strong>对应</li>
+<li>写后写（WAW），与<strong>输出相关</strong>对应</li>
+<li>读后写（WAR），源于<strong>反相关</strong>，或<strong>名称相关</strong></li>
+<li>读后读（RAR），不是冒险</li>
+</ul>
+<h2 id="3-4-实例分析：MIPS-R4000"><a href="#3-4-实例分析：MIPS-R4000" class="headerlink" title="3.4 实例分析：MIPS R4000"></a>3.4 实例分析：MIPS R4000</h2><h3 id="3-4-1-MIPS-R4000的整型流水线"><a href="#3-4-1-MIPS-R4000的整型流水线" class="headerlink" title="3.4.1 MIPS R4000的整型流水线"></a>3.4.1 MIPS R4000的整型流水线</h3><p><strong>1. 指令集：64位MIPS-3指令集</strong></p>
+<p><strong>2. MIPS R4000流水线结构</strong></p>
+<ul>
+<li>超流水结构（superpipeling）</li>
+<li>访存操作流水化</li>
+</ul>
+<p><strong>3. 流水线各段的功能</strong><br><img data-src="/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%90%84%E6%AE%B5%E5%8A%9F%E8%83%BD.png" alt="R4000流水线各段功能"></p>
+<p><strong>4. 指令序列在流水线中的重叠执行过程</strong></p>
+<ul>
+<li>定向+插入暂停周期</li>
+<li>定向不一定是相邻指令</li>
+<li>结构不同，定向和暂停机制所对应的硬件结构也不同<br><img data-src="/bc5a2705/%E6%8C%87%E4%BB%A4%E5%BA%8F%E5%88%97%E5%9C%A8R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E7%9A%84%E9%87%8D%E5%8F%A0%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png" alt="指令序列在R4000流水线中的重叠执行过程"></li>
+</ul>
+<p><strong>5. 载入延迟为两个时钟周期</strong></p>
+<ul>
+<li>实际上在 DS 阶段数据已经计算出来，后一个阶段 TC 是将数据写入存储器（WB 阶段写入寄存器），而进行旁路时，无需将其写入存储器便可以得到数据，因此载入延迟为两个时钟周期<br><img data-src="/bc5a2705/%E8%BD%BD%E5%85%A5%E5%BB%B6%E8%BF%9F%E4%B8%BA%E4%B8%A4%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png" alt="载入延迟为两个时钟周期"></li>
+</ul>
+<p><strong>6. 指令序列在流水线中的执行时空图</strong><br><img data-src="/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E7%A9%BA%E5%9B%BE.png" alt="R4000流水线的执行时空图"></p>
+<p><strong>7. R4000流水线的定向路径远多于MIPS流水线</strong><br>    - ALU输入端的定向源有4个：EX&#x2F;DF，DF&#x2F;DS，DS&#x2F;TC，TC&#x2F;WB<br><img data-src="/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BFALU%E8%BE%93%E5%85%A5%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%AE%9A%E5%90%91%E6%BA%90.png" alt="R4000流水线ALU输入的四个定向源"></p>
+<p><strong>8. 分支处理</strong></p>
+<ul>
+<li>在 EX 段完成分支条件的计算，基本分支延迟为3个时钟周期<br><img data-src="/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%9F%BA%E6%9C%AC%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F.png" alt="R4000流水线基本分支延迟"></li>
+<li>分支处理策略<ul>
+<li>单周期延迟分支</li>
+<li>从失败处调度<br><img data-src="/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%A4%84%E7%90%86%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E7%9A%84%E6%97%B6%E7%A9%BA%E5%9B%BE.png" alt="R4000流水线处理分支指令的时空图"></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-4-2-MIPS-R4000的浮点流水线"><a href="#3-4-2-MIPS-R4000的浮点流水线" class="headerlink" title="3.4.2 MIPS R4000的浮点流水线"></a>3.4.2 MIPS R4000的浮点流水线</h3><ul>
+<li>包括浮点除法器、浮点乘法器和浮点加法器各1个</li>
+<li>分为8段（表3.9）<br><img data-src="/bc5a2705/R4000%E6%B5%AE%E7%82%B9%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD8%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5.png" alt="R4000浮点流水线中8个流水段"></li>
+<li>多功能非线性流水线</li>
+<li>双精度浮点操作指令延迟、初始化间隔和流水段的使用情况（表3.10）<br><img data-src="/bc5a2705/%E5%8F%8C%E7%B2%BE%E5%BA%A6%E6%B5%AE%E7%82%B9%E6%93%8D%E4%BD%9C%E6%8C%87%E4%BB%A4%E5%BB%B6%E8%BF%9F%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96%E9%97%B4%E9%9A%94%E5%92%8C%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png" alt="双精度浮点操作指令延迟、初始化间隔和流水段的使用情况"></li>
+</ul>
+<h3 id="3-4-3-MIPS-R4000流水线性能分析"><a href="#3-4-3-MIPS-R4000流水线性能分析" class="headerlink" title="3.4.3 MIPS R4000流水线性能分析"></a>3.4.3 MIPS R4000流水线性能分析</h3><p><strong>1. 引起流水线暂停的四个主要原因</strong></p>
+<ul>
+<li>载入暂停</li>
+<li>分支暂停</li>
+<li>浮点结果暂停</li>
+<li>浮点结构性暂停</li>
+</ul>
+<p><strong>2. 暂停对MIPS R4000流水线CPI的影响</strong><br><img data-src="/bc5a2705/%E6%9A%82%E5%81%9C%E5%AF%B9R4000%E6%B5%81%E6%B0%B4%E7%BA%BFCPI%E7%9A%84%E5%BD%B1%E5%93%8D.png" alt="暂停对R4000流水线CPI的影响"></p>
+<h2 id="3-5-向量处理机"><a href="#3-5-向量处理机" class="headerlink" title="3.5 向量处理机"></a>3.5 向量处理机</h2><p><strong>1. 什么是向量机？</strong></p>
+<ul>
+<li>具有向量数据表示和相应向量指令的流水线处理机称为向量流水线处理机，也称向量处理机。</li>
+<li>与之对应的是标量处理机，不支持向量数据表示，没有提供向量指令。</li>
+</ul>
+<p><strong>2. 实例：一个简单的FORTRAN循环程序</strong><br>$$<br>  DO \quad 10 \quad i&#x3D;1, N \<br>    10 \quad d[i] &#x3D; a[i]*(b[i]+c[i])<br>$$</p>
+<h3 id="3-5-1-向量处理方式和向量处理机"><a href="#3-5-1-向量处理方式和向量处理机" class="headerlink" title="3.5.1 向量处理方式和向量处理机"></a>3.5.1 向量处理方式和向量处理机</h3><ul>
+<li>水平（横向）处理方式</li>
+<li>垂直（纵向）处理方式</li>
+<li>分组（纵横）处理方式<ul>
+<li>将长度为N的向量分为m组，每组有n个元素，组内按纵向方式处理，依次处理各组。</li>
+<li>需要m次迭代；每次迭代执行两条向量指令，有1次数据相关，需要2次功能切换</li>
+<li>需要寄存器-寄存器型操作的运算流水线</li>
+<li>这种技术称为<strong>向量循环</strong>或<strong>分段开采</strong></li>
+</ul>
+</li>
+</ul>
+<p><strong>例3.8</strong> 设 A 和 B 是长度为N的向量，考虑在一个向量长度为 64 的向量处理机上实现如下的循环操作：<br>DO 10 I&#x3D;1, N<br>10 A(I) &#x3D; 5.0 * B(I) + 1.0</p>
+<p>(1) 当N≤64时<br><img data-src="/bc5a2705/N%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E64.png" alt="N&lt;=64"><br>(2) 当N&gt;64时，需要进行分段开采<br><img data-src="/bc5a2705/N%E5%A4%A7%E4%BA%8E64.png" alt="N&gt;64"></p>
+<p><strong>4. 向量处理机的速度评价方法</strong></p>
+<ul>
+<li>由于一条指令最多得到一个结果，标量处理机通常用每秒执行多少条指令(MIPS)来衡量机器的运算速度</li>
+<li>向量处理机用每秒取得多少浮点运算结果来衡量机器速度，以 MFLOPS 作为测量单位</li>
+<li>采用 MFLOPS 可以忽视 Load、Store、分支、测试等类型指令的影响</li>
+<li>一般认为，在标量计算机中执行一次浮点运算，平均需 3 条指令。因此，如果要把这两种速度指标放在一起比较，就应该把 MFLOPS 乘以一个系数，以得到相应的 MIPS</li>
+<li>比较法：选择一台速度指标得到公认的机器作为标准机，给定一些典型的基准程序，分别在标准机和被测机上求解。</li>
+</ul>
+<h3 id="3-5-2-向量处理机实例分析"><a href="#3-5-2-向量处理机实例分析" class="headerlink" title="3.5.2 向量处理机实例分析"></a>3.5.2 向量处理机实例分析</h3><p><strong>实例：Cray-I</strong></p>
+<h4 id="1-性能指标"><a href="#1-性能指标" class="headerlink" title="1. 性能指标"></a>1. 性能指标</h4><p>1GFLOPS、主频80M、向量长度64</p>
+<h4 id="2-基本结构"><a href="#2-基本结构" class="headerlink" title="2. 基本结构"></a>2. 基本结构</h4><ul>
+<li>向量运算部件</li>
+<li>向量寄存器组（V0-V7）</li>
+<li>向量长度寄存器</li>
+<li>向量屏蔽寄存器<br><img data-src="/bc5a2705/CRAY-1%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84.png" alt="CRAY-1的基本结构"></li>
+</ul>
+<h4 id="3-向量指令类型"><a href="#3-向量指令类型" class="headerlink" title="3. 向量指令类型"></a>3. 向量指令类型</h4><ul>
+<li>$V_k ← V_i ,op ,V_j$（两个向量操作）</li>
+<li>$V_k ← S_i ,op ,V_j$（一个向量一个标量操作）</li>
+<li>$V_k ← Mem$（取数据）</li>
+<li>$Mem ← V_k$（存数据）</li>
+<li>功能部件冲突：同一功能部件被一条以上的并行工作向量指令所使用</li>
+<li>$V_i$ 冲突：并行工作的各向量指令具有相同的源向量或结果向量<br><img data-src="/bc5a2705/CRAY-1%E7%9A%84%E5%90%91%E9%87%8F%E6%8C%87%E4%BB%A4%E7%B1%BB%E5%9E%8B.png" alt="CRAY-1的向量指令类型.png"></li>
+</ul>
+<h4 id="4-CRAY-I-体系结构特点"><a href="#4-CRAY-I-体系结构特点" class="headerlink" title="4. CRAY-I 体系结构特点"></a>4. CRAY-I 体系结构特点</h4><ul>
+<li>向量寄存器与功能单元的连接通路<ul>
+<li>每个 $V_i$ 块都有<strong>单独总线</strong>可连到所有向量功能部件，而每个向量功能部件也各自都有把运算结果送回向量寄存器组的总线（寄存器组和功能部件全相连）</li>
+</ul>
+</li>
+<li>向量链接技术<ul>
+<li>一个向量功能部件得到的结果直接送入另一个向量功能部件的操作数寄存器时所发生的连接过程称为链接。<br><img data-src="/bc5a2705/CRAY-1%E7%9A%84%E9%93%BE%E6%8E%A5%E6%8A%80%E6%9C%AF.png" alt="CRAY-1的链接技术"></li>
+<li>上图中，当完成 $V_1+V_2$ 时，将值送入 $V_3$ 的同时送入下一个乘法流水线作为其中的被乘数（其实我感觉有点像处理数据相关时的 Forwarding 技术）。</li>
+</ul>
+</li>
+<li>当两条指令出现“写后读”相关时，若它们不存在功能部件冲突和向量寄存器(源或目的) 冲突，就有可能把它们所用的功能部件头尾相接，形成一个链接流水线，进行流水处理。</li>
+<li>链接特性实质上是把流水线“定向”的思想引入到向量执行过程的结果</li>
+</ul>
+<h4 id="5-向量链接技术实例分析"><a href="#5-向量链接技术实例分析" class="headerlink" title="5. 向量链接技术实例分析"></a>5. 向量链接技术实例分析</h4><p><strong>例3.7</strong> 对向量运算 D&#x3D;A*(B+C)，若向量长度 N≤64，向量元素为浮点数，则在B、C取到V0、V1后，就可用以下三条向量指令求解：<br>V3←存储器	(访存，载入A)<br>V2←V0＋V1	(浮点加)<br>V4←V2*V3	(浮点乘，将D存入V4) </p>
+<p>假设：向量处理机将元素从 $V_i$ 送往功能部件及把结果存入 $V_i$ 都需要1拍；浮点加法和访存操作都需要 6 拍；浮点乘操作需要 7 拍。<br>这样，第一个结果被存入 $V_4$ 需要经过：</p>
+<ul>
+<li>1(送)+ 6(浮加) +1(入)+1(送)+7(浮乘)+1(入)&#x3D;17(拍)</li>
+<li>此后，每拍将得到一个结果送入 $V_4$。<br>总的完成时间为：17+（N-1）拍</li>
+</ul>
+<h4 id="6-向量链接技术应考虑的问题"><a href="#6-向量链接技术应考虑的问题" class="headerlink" title="6. 向量链接技术应考虑的问题"></a>6. 向量链接技术应考虑的问题</h4><ul>
+<li>设定合适的向量功能部件和操作数寄存器</li>
+<li>链接时机问题<ul>
+<li>只有在前一条向量指令的第一个结果元素送入结果向量寄存器的那一个时钟周期才可以进行链接</li>
+<li>只有当前一条向量指令全部执行完毕，释放相应的向量寄存器资源后才能执行后面的向量指令</li>
+<li>所有可以链接执行的向量指令的向量长度应相等</li>
+<li>总结链接的时机：普适的原则</li>
+</ul>
+</li>
+</ul>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" rel="tag"># 体系结构</a>
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/33fe21e.html" rel="prev" title="LeetCode题解（一）">
+      <i class="fa fa-chevron-left"></i> LeetCode题解（一）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/a74ee18.html" rel="next" title="PTA Basic 部分题解">
+      PTA Basic 部分题解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0"><span class="nav-text">第一章</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E6%A6%82%E5%BF%B5%E4%B8%8E%E5%8F%91%E5%B1%95"><span class="nav-text">1.1 计算机体系结构的概念与发展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-4-%E7%B3%BB%E5%88%97%E6%9C%BA%E5%92%8C%E5%85%BC%E5%AE%B9"><span class="nav-text">1.1.4 系列机和兼容</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95"><span class="nav-text">1.2 计算机体系结构的发展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E5%92%8C%E5%88%86%E6%9E%90"><span class="nav-text">1.3 计算机系统设计和分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E7%A8%8B%E5%BA%8F"><span class="nav-text">1.3.2 基准测试程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-%E9%87%8F%E5%8C%96%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E5%88%99"><span class="nav-text">1.3.3 量化设计的基本原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-5-CPU-%E6%80%A7%E8%83%BD"><span class="nav-text">1.3.5 CPU 性能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CPU-%E6%80%A7%E8%83%BD%E5%85%AC%E5%BC%8F"><span class="nav-text">CPU 性能公式</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F"><span class="nav-text">第二章 指令系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E7%BA%B2-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E6%A6%82%E8%BF%B0-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E7%9A%84%E5%88%86%E7%B1%BB-%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F-%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E4%BC%98%E5%8C%96-%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E6%94%B9%E8%BF%9B-%E6%93%8D%E4%BD%9C%E6%95%B0%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%A4%A7%E5%B0%8F-MIPS%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E6%A6%82%E8%BF%B0-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">大纲- 指令集结构概述- 指令集结构的分类		- 寻址方式- 指令系统的设计和优化- 指令系统的发展和改进	- 操作数的类型和大小- MIPS指令系统结构	- 指令集结构概述- 指令集结构的分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E5%92%8C%E8%AE%BE%E8%AE%A1%E6%8A%80%E6%9C%AF"><span class="nav-text">2.1 指令集结构和设计技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E6%A6%82%E8%BF%B0"><span class="nav-text">1. 指令集结构概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">2. 指令集结构的分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84%E5%92%8CMIPS%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="nav-text">2.2 指令集结构和MIPS指令集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AF%BB%E5%9D%80%E6%8A%80%E6%9C%AF"><span class="nav-text">3. 寻址技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E4%BC%98%E5%8C%96"><span class="nav-text">4. 指令系统的设计和优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E6%94%B9%E8%BF%9B"><span class="nav-text">5. 指令系统的发展和改进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%93%8D%E4%BD%9C%E6%95%B0%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%A4%A7%E5%B0%8F"><span class="nav-text">6. 操作数的类型和大小</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-MIPS%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84"><span class="nav-text">7. MIPS指令系统结构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%8A%80%E6%9C%AF"><span class="nav-text">第三章 流水线技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">3.1 流水线基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">3.1.2 流水线的分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-MIPS%E5%9F%BA%E6%9C%AC%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-text">3.2 MIPS基本流水线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-MIPS%E7%9A%84%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-text">3.2.1 MIPS的一种简单实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-%E5%9F%BA%E6%9C%ACMIPS%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-text">3.2.2 基本MIPS流水线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-text">3.2.3 流水线性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E7%9A%84%E7%9B%B8%E5%85%B3"><span class="nav-text">3.3 流水线中的相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3"><span class="nav-text">3.3.1 流水线的结构相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3"><span class="nav-text">3.3.2 流水线的数据相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E7%AE%80%E4%BB%8B"><span class="nav-text">1. 数据相关简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E9%80%9A%E8%BF%87%E5%AE%9A%E5%90%91%E6%8A%80%E6%9C%AF%EF%BC%88Forwarding%EF%BC%89%E5%87%8F%E5%B0%91%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E5%B8%A6%E6%9D%A5%E7%9A%84%E6%9A%82%E5%81%9C"><span class="nav-text">2. 通过定向技术（Forwarding）减少数据相关带来的暂停</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">3. 数据相关的分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E9%9C%80%E8%A6%81%E6%9A%82%E5%81%9C%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3"><span class="nav-text">4. 需要暂停的数据相关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%AF%B9%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E7%9A%84%E7%BC%96%E8%AF%91%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95"><span class="nav-text">5. 对数据相关的编译调度方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E5%AF%B9-MIPS-%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%8E%A7%E5%88%B6%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">6. 对 MIPS 流水线控制的实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-3-%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%8E%A7%E5%88%B6%E7%9B%B8%E5%85%B3"><span class="nav-text">3.3.3 流水线的控制相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-text">1. 分支指令的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80%E7%9A%84%E9%80%94%E5%BE%84"><span class="nav-text">2. 减少分支开销的途径</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E7%A8%8B%E5%BA%8F%E4%B8%AD%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E7%9A%84%E8%A1%8C%E4%B8%BA%E7%89%B9%E7%82%B9"><span class="nav-text">3. 程序中分支指令的行为特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%87%8F%E5%B0%91%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%88%86%E6%94%AF%E6%8D%9F%E5%A4%B1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">4. 减少流水线分支损失的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%90%84%E7%A7%8D%E5%88%86%E6%94%AF%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95%E7%9A%84%E6%80%A7%E8%83%BD"><span class="nav-text">5. 各种分支处理方法的性能</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A5%E5%85%85-%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E4%B8%8E%E5%86%92%E9%99%A9%EF%BC%88%E5%86%B2%E7%AA%81%EF%BC%89"><span class="nav-text">[补充] 流水线数据相关与冒险（冲突）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3"><span class="nav-text">数据相关</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%8D%E7%9B%B8%E5%85%B3%EF%BC%88%E5%90%8D%E7%A7%B0%E7%9B%B8%E5%85%B3%EF%BC%89"><span class="nav-text">名相关（名称相关）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%86%92%E9%99%A9%EF%BC%88%E6%95%B0%E6%8D%AE%E5%86%B2%E7%AA%81%EF%BC%89"><span class="nav-text">数据冒险（数据冲突）</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90%EF%BC%9AMIPS-R4000"><span class="nav-text">3.4 实例分析：MIPS R4000</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-MIPS-R4000%E7%9A%84%E6%95%B4%E5%9E%8B%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-text">3.4.1 MIPS R4000的整型流水线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-MIPS-R4000%E7%9A%84%E6%B5%AE%E7%82%B9%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="nav-text">3.4.2 MIPS R4000的浮点流水线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-3-MIPS-R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-text">3.4.3 MIPS R4000流水线性能分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E5%90%91%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA"><span class="nav-text">3.5 向量处理机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-1-%E5%90%91%E9%87%8F%E5%A4%84%E7%90%86%E6%96%B9%E5%BC%8F%E5%92%8C%E5%90%91%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA"><span class="nav-text">3.5.1 向量处理方式和向量处理机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-2-%E5%90%91%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90"><span class="nav-text">3.5.2 向量处理机实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-text">1. 性能指标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="nav-text">2. 基本结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%90%91%E9%87%8F%E6%8C%87%E4%BB%A4%E7%B1%BB%E5%9E%8B"><span class="nav-text">3. 向量指令类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-CRAY-I-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%89%B9%E7%82%B9"><span class="nav-text">4. CRAY-I 体系结构特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%90%91%E9%87%8F%E9%93%BE%E6%8E%A5%E6%8A%80%E6%9C%AF%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90"><span class="nav-text">5. 向量链接技术实例分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E5%90%91%E9%87%8F%E9%93%BE%E6%8E%A5%E6%8A%80%E6%9C%AF%E5%BA%94%E8%80%83%E8%99%91%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">6. 向量链接技术应考虑的问题</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">209k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/bc5a2705.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
