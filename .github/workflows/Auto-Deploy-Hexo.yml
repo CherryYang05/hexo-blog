@@ -3,8 +3,7 @@ name: Auto-Deploy-Hexo
 on:
   # 触发条件：在 push 到 master 分支后触发
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
@@ -28,12 +27,15 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package.json') }}
+          
       - if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         name: Install dependencies
         continue-on-error: true
         run: npm install
+        
       - name: Build
         run: hexo g
+        
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
