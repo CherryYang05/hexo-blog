@@ -40,8 +40,14 @@ jobs:
         # 下载 hexo-cli 脚手架及相关安装包
         run: |
           npm install -g hexo-cli
+          npm install hexo-deployer-git –save
           npm install
-        
+
+      - name: Git Config
+        run: |
+          git config --global user.email "754449629@qq.com"
+          git config --global user.name "CherryYang05"
+
       - name: Build
         run: |
           rm -rf .deploy_git
@@ -49,9 +55,7 @@ jobs:
           hexo generate
         
       - name: Deploy
-        run: |
-          git config --global user.email "754449629@qq.com"
-          git config --global user.name "CherryYang05"
+        run: |       
           hexo deploy
         # uses: peaceiris/actions-gh-pages@v3
         # with:
