@@ -40,7 +40,7 @@ jobs:
         # 下载 hexo-cli 脚手架及相关安装包
         run: |
           npm install -g hexo-cli
-          npm install hexo-deployer-git –save
+          npm install -g hexo-deployer-git
           npm install
 
       - name: Git Config
