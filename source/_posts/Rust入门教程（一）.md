@@ -203,7 +203,6 @@ let y = {
         let x = 4;
         x + 2       
     };
-
     println!("y = {}", y);
 ```
 
