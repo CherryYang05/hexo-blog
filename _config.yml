@@ -100,7 +100,7 @@ theme: next7
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   - type: git
-    repo: https://github.com/CherryYang05/CherryYang05.github.io.git
+    repo: https://github.com/CherryYang05/hexo-blog.git
     # git@github.com:CherryYang05/CherryYang05.github.io.git
     branch: gh-pages
   # - type: baidu_url_submitter
