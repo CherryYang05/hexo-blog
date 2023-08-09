@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="深入浅出 SSD（二）：SSD 核心技术：FTL 本文介绍 SSD 的核心技术 FTL（闪存转换层）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入浅出SSD（二）：SSD核心技术：FTL">
+<meta property="og:url" content="http://cherryyang05.github.io/bd809a3f.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="深入浅出 SSD（二）：SSD 核心技术：FTL 本文介绍 SSD 的核心技术 FTL（闪存转换层）">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220515204014.png">
+<meta property="article:published_time" content="2022-05-15T01:27:45.000Z">
+<meta property="article:modified_time" content="2023-08-08T12:35:27.418Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="SSD">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220515204014.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/bd809a3f.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>深入浅出SSD（二）：SSD核心技术：FTL | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/bd809a3f.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入浅出SSD（二）：SSD核心技术：FTL
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-15 09:27:45" itemprop="dateCreated datePublished" datetime="2022-05-15T09:27:45+08:00">2022-05-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-08 20:35:27" itemprop="dateModified" datetime="2023-08-08T20:35:27+08:00">2023-08-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OpenSSD/" itemprop="url" rel="index"><span itemprop="name">OpenSSD</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OpenSSD/SSD/" itemprop="url" rel="index"><span itemprop="name">SSD</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/bd809a3f.html" class="post-meta-item leancloud_visitors" data-flag-title="深入浅出SSD（二）：SSD核心技术：FTL" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/bd809a3f.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/bd809a3f.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="深入浅出-SSD（二）：SSD-核心技术：FTL"><a href="#深入浅出-SSD（二）：SSD-核心技术：FTL" class="headerlink" title="深入浅出 SSD（二）：SSD 核心技术：FTL"></a>深入浅出 SSD（二）：SSD 核心技术：FTL</h1><blockquote>
+<p>本文介绍 SSD 的核心技术 FTL（闪存转换层）</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、FTL-综述"><a href="#一、FTL-综述" class="headerlink" title="一、FTL 综述"></a>一、FTL 综述</h2><p>FTL（Flash Translation Layer，闪存转换层），是 SSD 固件的核心组成，完成主机（Host）逻辑地址空间到闪存（Flash）物理地址空间的翻译（Translation），或映射（Mapping）。SSD 使用的存储介质一般是 NAND Flash</p>
+<p>闪存块的有以下重要特性：</p>
+<ol>
+<li>闪存块需要先擦除才能写入，不能覆盖写，当写入新数据时，不能在老地方更改，因为闪存不允许在一个闪存页上重复写入，一次擦除只能写一次。因此 Firmware 固件需要维护一张逻辑地址到物理地址的映射表。当闪存空间不够时，FTL 就需要做垃圾回收，将若干个闪存块中的有效数据搬出，写到某个新的闪存块上，然后把之前的闪存块删除，得到新的闪存块。</li>
+<li>闪存块都是有一定寿命的，可以用 PE（Program&#x2F;EraseCount）数衡量，通过 Wear Leveling 让数据均摊到每个闪存块上，保证 SSD 的最大数据写入量。</li>
+<li>每个闪存块读的数量是有限的，读的太多会造成读干扰（Read Disturb）问题，FTL 需要处理读干扰问题，当某个闪存块读次数快到一定阈值的时候，FTL 需要将其从闪存块中移走，避免数据出错。</li>
+<li>闪存的数据保持问题（Data Retention）问题。（电荷流失）</li>
+<li>闪存的坏块。</li>
+<li>对 MLC 和 TLC 来说，存在 Lower page corruption 问题。</li>
+<li>MLC 或 TLC 的读写速度都不如 SLC，但它们都可以配成 SLC 模式来使用。</li>
+</ol>
+<p>FTL 分为 Host Based（基于主机）和 Device Based （基于设备），目前主流 SSD 都是基于设备。</p>
+<h2 id="二、映射管理"><a href="#二、映射管理" class="headerlink" title="二、映射管理"></a>二、映射管理</h2><h3 id="1-映射种类"><a href="#1-映射种类" class="headerlink" title="1. 映射种类"></a>1. 映射种类</h3><ul>
+<li>基于块的映射<ul>
+<li>对小尺寸数据写入不友好，对大尺寸数据写入友好</li>
+<li>U 盘一般采用块映射</li>
+</ul>
+</li>
+<li>基于页的映射<ul>
+<li>需要更大的映射表</li>
+<li>随机写性能更好</li>
+<li>SSD 一般采用页映射</li>
+</ul>
+</li>
+<li>混合映射（Hybrid Mapping）</li>
+</ul>
+<h3 id="2-映射基本原理"><a href="#2-映射基本原理" class="headerlink" title="2. 映射基本原理"></a>2. 映射基本原理</h3><p>用户通过 LBA（Login Block Address，逻辑块地址）访问 SSD，用户访问 SSD 的基本单元叫逻辑页，SSD 主控按照闪存页为基本单位读写 SSD，闪存页也叫物理页。</p>
+<p>映射表</p>
+<h3 id="3-HMB"><a href="#3-HMB" class="headerlink" title="3. HMB"></a>3. HMB</h3><p>映射表可以放在 DRAM、SRAM 和闪存中，也可以放到主机的内存中</p>
+<p>HMB（Host Memory Buffer，主机高速缓冲存储器），主机在内存中专门划出一部分空间给 SSD 用，SSD 可以把它当成自己的 DRAM 使用。在性能上，它应该介于带 DRAM 和不带 DRAM 之间。带 DRAM 的 SSD，性能好，但是能耗高，成本高；不带 DRAM 的 SSD 与其相反，需要访问两次闪存才能得到数据。</p>
+<h3 id="4-映射表刷新"><a href="#4-映射表刷新" class="headerlink" title="4. 映射表刷新"></a>4. 映射表刷新</h3><p>映射表在 SSD 掉电前需要将其写入到闪存中。下次上电初始化时，需要把它从闪存中部分或全部加载到 SSD 的缓存（DRAM或者SRAM）中。为防止异常掉电导致这些新的映射关系丢失，SSD 的固件不仅仅只在正常掉电前把这些映射关系刷新到闪存中去，而是在 SSD 运行过程中按照一定策略把映射表写进闪存，这样可以防止异常掉电带来的映射关系的丢失。</p>
+<p>触发映射表的写入时机：</p>
+<ul>
+<li>新产生的映射关系累积到一定的阈值</li>
+<li>用户写入的数据量达到一定的阈值</li>
+<li>闪存写完闪存块的数量达到一定的阈值</li>
+<li>其他</li>
+</ul>
+<p>写入策略一般有:</p>
+<ul>
+<li>全部更新</li>
+<li>增量更新</li>
+</ul>
+<h2 id="三、垃圾回收"><a href="#三、垃圾回收" class="headerlink" title="三、垃圾回收"></a>三、垃圾回收</h2><h3 id="1-垃圾回收原理"><a href="#1-垃圾回收原理" class="headerlink" title="1. 垃圾回收原理"></a>1. 垃圾回收原理</h3><h3 id="2-写放大"><a href="#2-写放大" class="headerlink" title="2. 写放大"></a>2. 写放大</h3><p>由于 GC 的存在，就有一个问题，用户要写入一定的数据，SSD 为了腾出空间写这些数据，需要额外的做一些数据的搬移，也就是额外的写，最后往往导致 SSD 往闪存中写人的数据量比实际用户写入 SSD 的数据量多。因此，SSD 中有个重要参数，就是 <strong>写放大(WA, Write Amplification):</strong></p>
+<p>$$写放大&#x3D;\cfrac{写入闪存的数据量}{用户写的数据量}$$</p>
+<p>空盘的写放大一般为 1，写放大越大，意味着额外写入闪存的数据越多，一方面磨损闪存，减少 SSD 寿命，另一方面，写人这些额外数据会占用底层闪存带宽，影响 SSD 性能。因此，SSD 设计的一个目标是让 WA 尽量小。减小写放大，可以使用前面提到的压缩办法（主控决定），顺序写也可以减小写放大（垃圾集中，但顺序写可遇不可求，取决于用户 Workload），还有就是增大OP（这个可控）。</p>
+<p>OP 定义：$OP比例&#x3D;(闪存空间-用户空间)&#x2F;用户空间$，增大 OP 能够减小写放大。</p>
+<p>总结一下: WA 越小越好，因为越小意味着对闪存的损耗越小，可以延长闪存使用寿命，从而支持更多的用户数据写入量；OP 越大越好，OP 越大，意味着写放大越小，也意味着 SSD 写性能越好。</p>
+<p>影响写放大的因素：</p>
+<ul>
+<li>OP</li>
+<li>用户写入数据的 Pattern（顺序写入还是随机写入）</li>
+<li>GC 策略</li>
+<li>磨损均衡</li>
+<li>读干扰和数据保存处理</li>
+<li>主控：是否对数据有压缩</li>
+<li>Trim</li>
+</ul>
+<h3 id="3-垃圾回收实现"><a href="#3-垃圾回收实现" class="headerlink" title="3. 垃圾回收实现"></a>3. 垃圾回收实现</h3><p>垃圾回收可以简单分为三步：</p>
+<ul>
+<li>挑选源闪存块</li>
+<li>从源闪存块中找到有效数据</li>
+<li>把有效数据写入到目标闪存块</li>
+</ul>
+<p><strong>1. 挑选源闪存块</strong></p>
+<ul>
+<li>挑选有效数据最小的块</li>
+<li>固件需要记录和维护每个闪存块的有效数据量</li>
+<li>这种 BPA 算法叫做 Greedy 算法，是大多数 SSD 使用的算法</li>
+<li>有的 BPA 还需要考虑到擦写次数</li>
+</ul>
+<p><strong>2. 从源闪存块中找到有效数据</strong></p>
+<p>最好的策略当然是只读出块中的有效数据</p>
+<ul>
+<li>固件在更新和维护闪存块中的有效数据量时，同时维护一张映射表，标识物理页的有效性</li>
+<li>当然这种策略也有一个问题，当 SSD 很大时，一个闪存块有上千个闪存页，一个闪存页有上千个逻辑页，因此每个闪存块需要的映射表就会非常大，对于没有 DRAM 的 SSD，没有那么多的 SRAM 空间存储映射表，只能加载部分映射表，因此还要实现映射表的换入换出，实现起来较为困难</li>
+</ul>
+<p>也可以选择把所有数据都读出来，这样就要判断哪些数据是有效的</p>
+<ul>
+<li>SSD 在将用户数据写入闪存时，会额外打包一些数据，叫<strong>元数据（Meta data）</strong>，它记录该用户数据的一些信息，例如该数据对应的逻辑地址、数据长度、时间戳等</li>
+<li>然后 GC 的时候，FW 读出该数据，得到该数据的逻辑块地址，然后查找映射表，获得物理地址，如果该地址和该数据在闪存中的地址一致，说明数据是有效的，否则无效</li>
+<li>该方法显而易见太过繁琐</li>
+</ul>
+<p>还有一个折中的办法，除了维护一张 <code>L2P(Logical to Physical)</code> 的表，还维护一张 <code>P2L(Physical to Logical)</code> 的表</p>
+<p>该表记录了每个闪存块写入的 LBA，该 P2L 数据写在该闪存块的某个位置（或单独存储）。当回收该闪存块时，首先把该 P2L 表加载上来，然后根据上面的 LBA，依次查找映射表，决定该数据是否有效，有效的数据会被读出来，然后重新写人。采用该方法，不需要把该闪存块上的所有数据一股脑地读出来，但还是需要查找映射表以决定数据是否有效。因此，该方法在性能上介于前面两种方法之间，在资源和固件开销上也是处于中间的。</p>
+<p>实际上就是将闪存单元中的逻辑地址信息提取出来放到一张表中，节省的是读取闪存块的时间。</p>
+<p><strong>3. 把有效数据写入到目标闪存块</strong></p>
+<p>当有效数据读出来时，最后一步就是重写，即把读出来的有效数据写入闪存。</p>
+<h3 id="4-垃圾回收时机"><a href="#4-垃圾回收时机" class="headerlink" title="4. 垃圾回收时机"></a>4. 垃圾回收时机</h3><ul>
+<li>可用闪存块小于一定阈值，就要进行 <code>Foreground GC（前台垃圾回收）</code>，这是被动的方式</li>
+<li>与之相对应的 <code>Background GC（后台垃圾回收）</code>，是在 SSD Idle（空闲）的时候主动进行 GC</li>
+</ul>
+<h2 id="四、Trim"><a href="#四、Trim" class="headerlink" title="四、Trim"></a>四、Trim</h2><p>对一个文件 File A 来说，用户看到的是文件，操作系统把文件划分为若干个逻辑块，然后写入 SSD 的闪存空间。当用户删除掉文件 File A 时，其实它只是切断用户与操作系统的联系，即用户访问不到这些地址空间；而在 SSD 内部，逻辑页与物理页的映射关系还在，文件数据在闪存当中也是有效的。</p>
+<p><code>Trim</code> 是一个新增的 ATA 命令（Data Set Management），专为 SSD 设计。当用户删除一个数据时，操作系统会发 Trim 命令给 SSD，告诉 SSD 该文件对应的数据已经无效。</p>
+<p>SCSI 里面的同等命令叫 <code>UNMAP</code>，<code>NVMe</code> 里面叫 <code>Deallocate</code>，它们指的都是同一个功能。</p>
+<p>SSD 收到 Trim 命令时，固件要按顺序做以下几件事：</p>
+<ol>
+<li>清除 L2P table 到空地址</li>
+<li>清除 Valid Page Bit map（VPBM） 上对应的 bit</li>
+<li>更新 Valid Page Count（VPC）</li>
+<li>重复以上 3 步直到完成每一个 LBA </li>
+<li>根据新的 VPC 重新计算 GC 的优先级</li>
+<li>回收最少 VPC 的 block</li>
+<li>擦除全是垃圾的 block</li>
+</ol>
+<p>步骤 5~7 是 Trim 命令处理后，GC 的处理，它们不是 Trim 命令要处理的事情，Trim 命令是不会触发 GC 的。</p>
+<h2 id="五、磨损平衡"><a href="#五、磨损平衡" class="headerlink" title="五、磨损平衡"></a>五、磨损平衡</h2><p>磨损平衡，就是让 SSD 中的每个闪存块的磨损（擦除）都保持均衡。</p>
+<p>在这之前，我们先抛出几个概念: 冷数据（Cold Data）和热数据（Hot Data），年老的（Old）块和年轻的（Young）块。</p>
+<p>所谓冷数据，就是用户不经常更新的数据，比如用户写入 SSD 的操作系统数据、只读文件数据、小电影等；相反，热数据就是用户更新频繁的数据。数据的频繁更新，会在 SSD 内部产生很多垃圾数据（新的数据写入导致老数据失效）。</p>
+<p>所谓年老的块，就是擦写次数比较多的闪存块；擦写次数比较少的闪存块，年纪相对小，我们叫它年轻的块。SSD 很容易区分年老的块和年轻的块，看它们的 EC（Erase Count，擦除次数）就可以了，大的就是老的，小的就是年轻的。</p>
+<p>动态磨损平衡（Dynamic WL）：将热数据写到年轻的块上</p>
+<p>静态磨损平衡（Static WL）：将冷数据写到年老的块上</p>
+<p>动态磨损均衡和静态磨损均衡可能导致冷数据和热数据放到同一个闪存块上，冷数据、用户刚写入的数据和 GC 数据可能混在一起。这样在 GC 的时候冷数据可能就会被经常移动，增大了写放大。</p>
+<p>解决的策略：做静态磨损均衡的时候，用专门的闪存块来存放冷数据，不与用户或者 GC 写入同一个闪存块</p>
+<h2 id="六、掉电恢复"><a href="#六、掉电恢复" class="headerlink" title="六、掉电恢复"></a>六、掉电恢复</h2><p>掉电分为两种：正常掉电和异常掉电。</p>
+<p><strong>正常掉电</strong></p>
+<p>掉电前，主机通过命令通知 SSD，收到命令之后，会做以下几件事：</p>
+<ul>
+<li>把 buffer 中缓存的用户数据刷入闪存</li>
+<li>把映射表刷入闪存</li>
+<li>把闪存的块信息写入闪存（比如当前写的是哪个闪存块，以及写到该闪存块的哪个位置，哪些闪存块已经写过,哪些闪存块又是无效的等）</li>
+<li>把 SSD 其他信息写入闪存</li>
+</ul>
+<p>正常掉电不会导致数据的丢失，重新上电之后 SSD 只需将上述信息重新加载即可。</p>
+<p><strong>异常掉电</strong></p>
+<p>SSD 中不只有闪存，还有用来存储映射表等用户数据的缓存，这用的是 RAM（DRAM 或 SRAM）。</p>
+<p>一个办法是将 SSD 加上电容，当检测到异常掉电时，电容放电，将 RAM 中的数据刷到闪存中，这样的 SSD 需要有异常掉电处理模块。</p>
+<p>还有一种前卫的想法，就是用一种掉电不会丢失数据的材料来代替 RAM，例如 3D XPoint.</p>
+<p>SSD 的异常掉电恢复主要是映射表的恢复，SSD 在把用户数据写到闪存的时候，会额外打包一些数据，我们叫它元数据（Meta Data），它记录着该笔用户数据的相关信息，比如该笔数据对应的逻辑地址、数据写入时间（时间戳）等，如下图：</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220515204014.png" alt="元数据和用户数据存储示例"></p>
+<p>以图 4-44 为例，如果我们读取物理地址 Pa x，就能读取到元数据 x 和用户数据 x，而元数据是有逻辑地址 La x 的，因此，我们就能获得映射: La x→Pa x。映射表的恢复原理其实很简单，只要全盘扫描整个闪存空间，就能获得所有的映射关系，最终完成整个映射表的重构。</p>
+<p>若同时存在新老数据，那么便会根据时间戳来获得最新的数据，从而构建映射。但是如果 SSD 容量很大的话，这样的全盘检查耗时会很久，其中一种办法就是 SSD 定期把 SSD RAM 中的数据（包括映射表和用户缓存的数据）和 SSD 相关的状态信息（诸如闪存块擦写次数、闪存块读次数、闪存块其他信息等）写到闪存中去，这个操作被称为 <strong>Checkpoint（检查点），或 “快照”</strong>，这样掉电后只需要扫描局部的物理空间，节省了大量时间。</p>
+<h2 id="七、坏块管理"><a href="#七、坏块管理" class="headerlink" title="七、坏块管理"></a>七、坏块管理</h2><p><strong>来源：</strong> 一般来自于出厂自带的坏块和使用中产生的。</p>
+<p><strong>坏块鉴别</strong> </p>
+<ul>
+<li>它会在出厂坏块的第一个闪存页和最后一个闪存页的数据区第一个字节和 Spare 区第一个字节写上一个非 OxFF 的值</li>
+<li>一部分厂商会将坏块的信息表存储在闪存中</li>
+</ul>
+<p><strong>坏块管理</strong></p>
+<ul>
+<li>略过（Skip）<ul>
+<li>用户写闪存的时候，一遇到坏块就越过，写下一个 Block</li>
+</ul>
+</li>
+<li>替换（Replace）<ul>
+<li>当某个 Die 上发现坏块时，会被 Die 上某个好块替换，用户写数据时，不是跳过这个坏块，而是写到替换的好块上</li>
+<li>整个 Die 空间分为用户空间和预留空间</li>
+<li>采用替换策略的话，SSD 内部需要维护一张重映射表（Remap Table），即坏块到替换块的映射</li>
+</ul>
+</li>
+</ul>
+<p>两种策略的优劣：</p>
+<p>略过策略的性能不稳定，并行度可能在 1~4 个 Die 之间（假设有 4 个 Die），但是替换策略有木桶效应，如果某个 Die 质量较差，整个 SSD 可用的闪存块受限于那个坏的 Die。</p>
+<h2 id="八、SLC-Cache"><a href="#八、SLC-Cache" class="headerlink" title="八、SLC Cache"></a>八、SLC Cache</h2><p>SLC 相比 MLC 和 TLC，有更好的性能和寿命，有些 SSD 用其来做 Cache，让 SSD 有更好的突发性能（Brust Performance）。</p>
+<p>这里所说的 SLC Cache，不是说单独拿 SLC 闪存来做 Cache，而是把 MLC 或者 TLC 里面的一些闪存块配置成 SLC 模式来访问，而这个特性一般的 MLC 或者 TLC 都是支持的。SLC 模式下的闪存块，相比 MLC 或者 TLC 模式下的闪存块，更快更耐写，可以用来做 Cache。</p>
+<p>SLC Cache写入策略有:</p>
+<ul>
+<li>强制 SLC 写入<ul>
+<li>用户写入数据时，必须先写人到 SLC 闪存块，然后通过 GC 搬到 MLC 或者 TLC 闪存块、</li>
+<li>能够保护 Lower Page 的数据</li>
+</ul>
+</li>
+<li>非强制 SLC 写入<ul>
+<li>用户写人数据时，如果有 SLC 闪存块，则写入到 SLC 闪存块，否则直接写到 MLC 或者 TLC 闪存块</li>
+<li>具有更好的后期写入性能</li>
+</ul>
+</li>
+</ul>
+<p>SLC Cache 办法：</p>
+<ul>
+<li>静态 SLC Cache：拿出一些 Block 专门做 SLC Cache</li>
+<li>动态 SLC Cache：所有的 MLC 和 TLC 都可以用来做 SLC Cache</li>
+<li>两者混合</li>
+</ul>
+<h2 id="九、RD-amp-DR"><a href="#九、RD-amp-DR" class="headerlink" title="九、RD &amp; DR"></a>九、RD &amp; DR</h2><p><code>RD</code> 指的是 <code>Read Disturb</code>，<code>DR</code> 指的是 <code>Data Retention</code>。两者都能导致数据丢失，但原理和固件处理方式都不一样，下面分别介绍。</p>
+<h3 id="1-RD"><a href="#1-RD" class="headerlink" title="1. RD"></a>1. RD</h3><p>闪存块在读取时需要在其他字线（Wordline）上施加电压，时间一长，电子进入浮栅极过多，从而导致比特翻转（1-&gt;0），当出错比特数超过 ECC 纠错能力时，数据便会丢失，这就是 RD。</p>
+<p>我们要保证每个闪存块读取的次数低于某个阈值，在比特翻转前就将其刷新，这样可以避免 RD。因此 FTL 应该要记录每个闪存块读取次数的表。当然为了避免“过刷新”的问题，可以在读次数超过阈值后，先检测比特翻转数，若不需要刷新，则可以设置一个更大的阈值。最理想的阈值是根据 SSD 的 PE 数动态设置。</p>
+<p>对于刷新动作，也分为阻塞（Block）和非阻塞（Non-Block），一般采用非阻塞。</p>
+<h3 id="2-DR"><a href="#2-DR" class="headerlink" title="2. DR"></a>2. DR</h3><p>SSD 使用时间长了之后，会有电子逃逸，当逃逸的电子到一定数量的时候，就会使存储单元的比特发生翻转（0-&gt;1，注意 RD 是 1-&gt;0），解决办法仍然是扫描闪存空间，若检测到比特翻转超出一定阈值，进行刷新。</p>
+<h2 id="十、Host-Based-FTL"><a href="#十、Host-Based-FTL" class="headerlink" title="十、Host Based FTL"></a>十、Host Based FTL</h2><p>按照 FTL 放在哪里进行划分，分为 Host Based FTL 和 Device Based FTL</p>
+<p>总体来说，Device Based 存在以下缺点:</p>
+<ul>
+<li>FTL 架构通用，不能针对具体应用做定制化。控制器芯片功能复杂，设计难度大，研发成本高</li>
+<li>闪存更新很快，一般每年闪存厂商都会推出新一代产品，有新的使用特性，需要控制器芯片做出修改，但是芯片改版成本很高</li>
+<li>企业级应用需要高性能、大容量，通用控制器芯片支持的最大性能和容量有限制企业级市场需求多种多样，有些需求需要控制器提供特殊功能支持，这些是通用 SSD 主控芯片无法提供的。</li>
+</ul>
+<p>百度的欧阳剑团队在国际著名的计算机体系结构学术会议 ASPLOS’14 上发表了一篇文章，介绍他们研发的软件定义闪存 SDF（Software Defined Flash）。相比市场上销售的 SSD，SDF 主要的特点有:</p>
+<ol>
+<li><p>没有垃圾回收。SDF 的使用者使用闪存块大小的整数倍为单位来写数据（比如8 MB），所以每个闪存块里面不会有垃圾，或者整体都是垃圾，写之前整体擦除就可以。这样的好处有:</p>
+<ul>
+<li>SSD 内部不用做垃圾回收，读写带宽得到提高</li>
+<li>不需要预留空间，释放出 20% 的额外空间</li>
+<li>没有内部搬移数据产生的写操作，闪存没有了写放大，寿命延长</li>
+</ul>
+</li>
+<li><p>没有闪存级 RAID。SSD 内部其实是闪存阵列，所以为了数据安全性，很多企业级 SSD 会用闪存组成 RAID 组，用一块或几块闪存保存RAID 数据。但是互联网公司的数据一般都有3个备份，所以不担心 SSD 内部数据丢失，因此，RAID是没有必要的</p>
+</li>
+<li><p>FPGA 作为控制芯片，功能很少:ECC、坏块管理、地址转换、动态磨损均衡。Virtex-5 FPGA 实现了 PCIe 接口和 DMA，Spartan FPGA 则是闪存控制芯片</p>
+</li>
+<li></li>
+<li><p>SSD 内部每个通道都向用户开放，由用户选择写哪个通道</p>
+</li>
+<li><p>软件接口层非常简单，相比传统的 Linux 存储堆栈，省略了文件系统、块设备、IO 调度、SATA 协议等，用户可以直接使用 IOCTRL（设备驱动程序中对 IO 设备的通道进行管理的函数）来发同步的写命令到 PCIe 驱动</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SSD/" rel="tag"># SSD</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/280b72d7.html" rel="prev" title="Rust入门教程（三）：Package、Crate 和 Module">
+      <i class="fa fa-chevron-left"></i> Rust入门教程（三）：Package、Crate 和 Module
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/1bd17c37.html" rel="next" title="Rust入门教程（四）：常用的集合">
+      Rust入门教程（四）：常用的集合 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-SSD%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ASSD-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%EF%BC%9AFTL"><span class="nav-text">深入浅出 SSD（二）：SSD 核心技术：FTL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81FTL-%E7%BB%BC%E8%BF%B0"><span class="nav-text">一、FTL 综述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%98%A0%E5%B0%84%E7%AE%A1%E7%90%86"><span class="nav-text">二、映射管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%98%A0%E5%B0%84%E7%A7%8D%E7%B1%BB"><span class="nav-text">1. 映射种类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%98%A0%E5%B0%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-text">2. 映射基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-HMB"><span class="nav-text">3. HMB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%98%A0%E5%B0%84%E8%A1%A8%E5%88%B7%E6%96%B0"><span class="nav-text">4. 映射表刷新</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-text">三、垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%8E%9F%E7%90%86"><span class="nav-text">1. 垃圾回收原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%86%99%E6%94%BE%E5%A4%A7"><span class="nav-text">2. 写放大</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%AE%9E%E7%8E%B0"><span class="nav-text">3. 垃圾回收实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%97%B6%E6%9C%BA"><span class="nav-text">4. 垃圾回收时机</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Trim"><span class="nav-text">四、Trim</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%A3%A8%E6%8D%9F%E5%B9%B3%E8%A1%A1"><span class="nav-text">五、磨损平衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E6%8E%89%E7%94%B5%E6%81%A2%E5%A4%8D"><span class="nav-text">六、掉电恢复</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%9D%8F%E5%9D%97%E7%AE%A1%E7%90%86"><span class="nav-text">七、坏块管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81SLC-Cache"><span class="nav-text">八、SLC Cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81RD-amp-DR"><span class="nav-text">九、RD &amp; DR</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-RD"><span class="nav-text">1. RD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-DR"><span class="nav-text">2. DR</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81Host-Based-FTL"><span class="nav-text">十、Host Based FTL</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">209k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/bd809a3f.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

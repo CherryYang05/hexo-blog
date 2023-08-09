@@ -43,12 +43,12 @@ jobs:
           npm install -g hexo-deployer-git
           npm install
 
-      - name: Git Config
-        run: |
-          git config --global user.email "754449629@qq.com"
-          git config --global user.name "CherryYang05"
-          git config --global user.password 'Bmy20178013'
-          git remote set-url origin https://github.com/CherryYang05/hexo-blog.git
+      # - name: Git Config
+      #   run: |
+      #     git config --global user.email "754449629@qq.com"
+      #     git config --global user.name "CherryYang05"
+      #     git config --global user.password 'Bmy20178013'
+      #     git remote set-url origin https://github.com/CherryYang05/hexo-blog.git
 
       - name: Build
         run: |

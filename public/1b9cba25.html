@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="闭包（closures）是可以保存在一个变量中或作为参数传递给其他函数的匿名函数，即可以捕获其所在环境的匿名函数。 可以在一个地方创建闭包，然后在不同的上下文中执行闭包运算。不同于函数，闭包允许捕获调用者作用域中的值。我们将展示闭包的这些功能如何复用代码和自定义行为。函数式编程的特点有：将函数作为参数或者作为其他函数的返回值，以及将函数赋值给一个变量，这些都是函数式编程的常见特点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust入门教程（十一）：闭包和迭代器">
+<meta property="og:url" content="http://cherryyang05.github.io/1b9cba25.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="闭包（closures）是可以保存在一个变量中或作为参数传递给其他函数的匿名函数，即可以捕获其所在环境的匿名函数。 可以在一个地方创建闭包，然后在不同的上下文中执行闭包运算。不同于函数，闭包允许捕获调用者作用域中的值。我们将展示闭包的这些功能如何复用代码和自定义行为。函数式编程的特点有：将函数作为参数或者作为其他函数的返回值，以及将函数赋值给一个变量，这些都是函数式编程的常见特点">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-07-08T08:49:31.000Z">
+<meta property="article:modified_time" content="2023-08-08T12:35:27.400Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="Rust">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://cherryyang05.github.io/1b9cba25.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Rust入门教程（十一）：闭包和迭代器 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/1b9cba25.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rust入门教程（十一）：闭包和迭代器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-07-08 16:49:31" itemprop="dateCreated datePublished" datetime="2022-07-08T16:49:31+08:00">2022-07-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-08 20:35:27" itemprop="dateModified" datetime="2023-08-08T20:35:27+08:00">2023-08-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/1b9cba25.html" class="post-meta-item leancloud_visitors" data-flag-title="Rust入门教程（十一）：闭包和迭代器" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/1b9cba25.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/1b9cba25.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>闭包（closures）是可以保存在一个变量中或作为参数传递给其他函数的匿名函数，即可以捕获其所在环境的匿名函数。 可以在一个地方创建闭包，然后在不同的上下文中执行闭包运算。不同于函数，闭包允许捕获调用者作用域中的值。我们将展示闭包的这些功能如何复用代码和自定义行为。<br>函数式编程的特点有：将函数作为参数或者作为其他函数的返回值，以及将函数赋值给一个变量，这些都是函数式编程的常见特点</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、闭包"><a href="#一、闭包" class="headerlink" title="一、闭包"></a>一、闭包</h2><h3 id="1-1-什么是闭包"><a href="#1-1-什么是闭包" class="headerlink" title="1.1 什么是闭包"></a>1.1 什么是闭包</h3><ul>
+<li>是匿名函数</li>
+<li>保存为变量、作为参数</li>
+<li>可在一个地方创建闭包，然后在另一个上下文中调用闭包来完成运算</li>
+<li>可从其定义的作用域捕获值</li>
+</ul>
+<h3 id="1-2-例子：生成自定义运动计划的程序"><a href="#1-2-例子：生成自定义运动计划的程序" class="headerlink" title="1.2 例子：生成自定义运动计划的程序"></a>1.2 例子：生成自定义运动计划的程序</h3><ul>
+<li>该算法的逻辑并不是重点，重点是算法中的计算过程需要几秒钟时间。</li>
+<li>目标：不让用户发生不必要的等待<ul>
+<li>仅在必要时调用该算法</li>
+</ul>
+</li>
+</ul>
+<p>例子如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">simulated_expensive_calculation</span>(intensity: <span class="type">u32</span>) <span class="punctuation">-&gt;</span> <span class="type">u32</span>&#123;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;calculating slowly...&quot;</span>);</span><br><span class="line">    thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">3</span>));</span><br><span class="line">    intensity</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">generate_workout</span>(intensity: <span class="type">u32</span>, random_number: <span class="type">u32</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> intensity &lt; <span class="number">25</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(</span><br><span class="line">            <span class="string">&quot;Today, do &#123;&#125; pushups!&quot;</span>,</span><br><span class="line">            <span class="title function_ invoke__">simulated_expensive_calculation</span>(intensity)</span><br><span class="line">        );</span><br><span class="line">        <span class="built_in">println!</span>(</span><br><span class="line">            <span class="string">&quot;Next, do &#123;&#125; situps!&quot;</span>,</span><br><span class="line">            <span class="title function_ invoke__">simulated_expensive_calculation</span>(intensity)</span><br><span class="line">        );</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> random_number == <span class="number">3</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;Take a break today!&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(</span><br><span class="line">                <span class="string">&quot;Today, run for &#123;&#125; minutes!&quot;</span>,</span><br><span class="line">                <span class="title function_ invoke__">simulated_expensive_calculation</span>(intensity)</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们用函数 <code>simulated_expensive_calculation</code> 模拟复杂的计算，我们不希望调用多次该函数，因为非常耗时，对用户不友好，因此首先想出的优化方案就是用一个变量接收该函数值，当 <code>generate_workout</code> 进入条件语句时，便只需要执行一次即可，如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">generate_workout</span>(intensity: <span class="type">u32</span>, random_number: <span class="type">u32</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">res</span> = <span class="title function_ invoke__">simulated_expensive_calculation</span>(intensity);</span><br><span class="line">    <span class="keyword">if</span> intensity &lt; <span class="number">25</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Today, do &#123;&#125; pushups!&quot;</span>, res);</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Next, do &#123;&#125; situps!&quot;</span>, res);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> random_number == <span class="number">3</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;Take a break today!&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(</span><br><span class="line">                <span class="string">&quot;Today, run for &#123;&#125; minutes!&quot;</span>,</span><br><span class="line">                <span class="title function_ invoke__">simulated_expensive_calculation</span>(intensity)</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然而这样又会产生一个新的问题：当进入 <code>else</code> 时，随机数值为 3 的时候，是无需执行复杂计算的，这时候用一个变量接收该复杂计算的函数值便会显得浪费。我们真正希望的是，函数定义单独在一个地方，等到函数真正被用到时再被执行，这就是闭包的功能。代码如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">generate_workout</span>(intensity: <span class="type">u32</span>, random_number: <span class="type">u32</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">expensive_closure</span> = |num| &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;calculating slowly...&quot;</span>);</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">3</span>));</span><br><span class="line">        num</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> intensity &lt; <span class="number">25</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Today, do &#123;&#125; pushups!&quot;</span>, <span class="title function_ invoke__">expensive_closure</span>(intensity));</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Next, do &#123;&#125; situps!&quot;</span>, <span class="title function_ invoke__">expensive_closure</span>(intensity));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> random_number == <span class="number">3</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;Take a break today!&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;Today, run for &#123;&#125; minutes!&quot;</span>, <span class="title function_ invoke__">expensive_closure</span>(intensity));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>expensive_closure</code> 只是定义了一个匿名函数，并没有执行。当然在条件语句中，该闭包还是执行了两次，对于这里的优化，后面会讲到。</p>
+<h3 id="1-3-闭包的类型推断和标注"><a href="#1-3-闭包的类型推断和标注" class="headerlink" title="1.3 闭包的类型推断和标注"></a>1.3 闭包的类型推断和标注</h3><ul>
+<li>闭包不要求标注参数和返回值的类型，和函数不同，无需对外暴露接口</li>
+<li>闭包通常很短小，只在狭小的上下文中工作，编译器通常能推断出类型</li>
+<li>可以手动添加类型标注</li>
+<li>注意：闭包的定义最终只会为参数&#x2F;返回值推断出唯一具体的类型</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">example_closure</span> = |x| x;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">s</span> = <span class="title function_ invoke__">example_closure</span>(<span class="type">String</span>::<span class="title function_ invoke__">from</span>(Hello));</span><br><span class="line"><span class="keyword">let</span> <span class="variable">a</span> = <span class="title function_ invoke__">example_closure</span>(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<p>变量 <code>s</code> 传给该闭包一个字符串类型，编译器便推断出来闭包中参数 <code>x</code> 是字符串类型，便与其绑定，因此变量 <code>a</code> 再传入一个整型便会报错。</p>
+<h3 id="1-4-使用泛型参数和-Fn-Trait-来存储闭包"><a href="#1-4-使用泛型参数和-Fn-Trait-来存储闭包" class="headerlink" title="1.4 使用泛型参数和 Fn Trait 来存储闭包"></a>1.4 使用泛型参数和 Fn Trait 来存储闭包</h3><h4 id="1-4-1-继续解决-1-2-中的例子"><a href="#1-4-1-继续解决-1-2-中的例子" class="headerlink" title="1.4.1 继续解决 1.2 中的例子"></a>1.4.1 继续解决 1.2 中的例子</h4><p>除了创建局部变量存储闭包的值，还有另一种解决方案：</p>
+<p>创建一个 struct，它持有闭包及其调用结果，只会在需要结果时才执行该闭包，可缓存结果。<br>这个模式通常叫做<strong>记忆化（memoization）</strong>或<strong>延迟计算（lazy evaluation）</strong></p>
+<p><strong>如何让 struct 持有闭包</strong></p>
+<ul>
+<li>struct 的定义需要知道所有字段的类型<ul>
+<li>需要指明闭包的类型</li>
+</ul>
+</li>
+<li>每个闭包实例都有自己唯一的匿名类型，即使两个闭包签名完全一样</li>
+<li>所以需要使用：泛型和 Trait Bound（第10章）</li>
+</ul>
+<p><strong>Fn Trait</strong></p>
+<ul>
+<li>Fn traits 由标准库提供</li>
+<li>所有的闭包都至少实现了以下 trait 之一：<ul>
+<li>Fn</li>
+<li>FnMut</li>
+<li>FnOnce</li>
+</ul>
+</li>
+</ul>
+<p>代码如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Cacher</span>&lt;F&gt;</span><br><span class="line"><span class="keyword">where</span> </span><br><span class="line">    F: <span class="title function_ invoke__">Fn</span>(<span class="type">u32</span>) <span class="punctuation">-&gt;</span> <span class="type">u32</span></span><br><span class="line">&#123;</span><br><span class="line">    calculation: F,</span><br><span class="line">    value: <span class="type">Option</span>&lt;<span class="type">u32</span>&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span>&lt;F&gt; Cacher&lt;F&gt;</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">    F: <span class="title function_ invoke__">Fn</span>(<span class="type">u32</span>) <span class="punctuation">-&gt;</span> <span class="type">u32</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">new</span>(calculation: F) <span class="punctuation">-&gt;</span> Cacher&lt;F&gt; &#123;</span><br><span class="line">        Cacher &#123;</span><br><span class="line">            calculation,</span><br><span class="line">            value: <span class="literal">None</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">value</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, arg: <span class="type">u32</span>) <span class="punctuation">-&gt;</span> <span class="type">u32</span> &#123;</span><br><span class="line">        <span class="keyword">match</span> <span class="keyword">self</span>.value &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(v) =&gt; v,</span><br><span class="line">            <span class="literal">None</span> =&gt; &#123;</span><br><span class="line">                <span class="keyword">let</span> <span class="variable">v</span> = (<span class="keyword">self</span>.calculation)(arg);</span><br><span class="line">                <span class="keyword">self</span>.value = <span class="title function_ invoke__">Some</span>(v);</span><br><span class="line">                v</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先定义了一个结构体，该结构体泛型参数要实现 Fn trait，然后为该结构体实现 <code>new</code> 和 <code>value</code> 函数（方法），如果已经执行过该闭包，则返回值，若没有执行过则执行闭包，将值存进结构体变量中。<code>generate_workout</code> 函数实现如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">generate_workout</span>(intensity: <span class="type">u32</span>, random_number: <span class="type">u32</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">expensive_closure</span> = Cacher::<span class="title function_ invoke__">new</span>(|num| &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;calculating slowly...&quot;</span>);</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">3</span>));</span><br><span class="line">        num</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> intensity &lt; <span class="number">25</span> &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Today, do &#123;&#125; pushups!&quot;</span>, expensive_closure.<span class="title function_ invoke__">value</span>(intensity));</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Next, do &#123;&#125; situps!&quot;</span>, expensive_closure.<span class="title function_ invoke__">value</span>(intensity));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> random_number == <span class="number">3</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;Take a break today!&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">println!</span>(<span class="string">&quot;Today, run for &#123;&#125; minutes!&quot;</span>, expensive_closure.<span class="title function_ invoke__">value</span>(intensity));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-4-2-使用缓存器（Cacher）实现的限制"><a href="#1-4-2-使用缓存器（Cacher）实现的限制" class="headerlink" title="1.4.2 使用缓存器（Cacher）实现的限制"></a>1.4.2 使用缓存器（Cacher）实现的限制</h4><ol>
+<li>Cacher 实例假定针对不同的参数 arg，value 方法总会得到同样的值<ul>
+<li>可以使用 HashMap 代替单个值：<ul>
+<li>key: arg 参数</li>
+<li>value：执行闭包的结果</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>只能接收一个 u32 类型的参数和 u32 类型的返回值<ul>
+<li>引入两个或多个泛型参数</li>
+</ul>
+</li>
+</ol>
+<h3 id="1-5-使用闭包捕获环境"><a href="#1-5-使用闭包捕获环境" class="headerlink" title="1.5 使用闭包捕获环境"></a>1.5 使用闭包捕获环境</h3><h4 id="1-5-1-利用闭包捕获环境中的变量"><a href="#1-5-1-利用闭包捕获环境中的变量" class="headerlink" title="1.5.1 利用闭包捕获环境中的变量"></a>1.5.1 利用闭包捕获环境中的变量</h4><p>闭包可以捕获他们所在的环境</p>
+<ul>
+<li>闭包可以访问定义它的作用域内的变量，而普通函数则不能</li>
+<li>会产生额外内存开销</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">x</span> = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">equal_to_x</span> = |z| z == x;</span><br><span class="line"><span class="keyword">let</span> <span class="variable">y</span> = <span class="number">4</span>;</span><br><span class="line"><span class="built_in">assert!</span>(<span class="title function_ invoke__">equal_to_x</span>(y));</span><br></pre></td></tr></table></figure>
+
+<p>上述代码中，闭包内的变量 <code>x</code> 并不是在闭包内定义的，但是却可以访问，因为闭包可以捕获和其在<strong>同一作用域内</strong>的其他变量，而函数却没有这样的作用。</p>
+<p><strong>闭包从所在环境捕获值的方式</strong></p>
+<p>与函数获得参数的三种方式一样：</p>
+<ul>
+<li>取得所有权：<code>FnOnce</code></li>
+<li>可变借用：<code>FnMut</code></li>
+<li>不可变借用： <code>Fn</code></li>
+</ul>
+<p>创建闭包时，通过闭包对环境值的使用，Rust 推断出具体使用哪个 frait：</p>
+<ul>
+<li>所有的闭包都实现了 FnOnce</li>
+<li>没有移动捕获变量的实现了 FnMut</li>
+<li>无需可变访问捕获变量的闭包实现了 Fn</li>
+</ul>
+<p>注：实现了 <code>Fn trait</code> 的闭包一定实现了 <code>Fn Mut</code>，实现了 <code>Fn Mut</code> 一定实现了 <code>Fn Once</code>。</p>
+<h4 id="1-5-2-move-关键字"><a href="#1-5-2-move-关键字" class="headerlink" title="1.5.2 move 关键字"></a>1.5.2 move 关键字</h4><p>在参数列表前使用 move 关键字，可以强制闭包取得它所使用的环境值的所有权。当将闭包传递给新线程以移动数据使其归新线程所有时，此技术最为有用。</p>
+<p>例子如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">equal_to_x</span> = <span class="keyword">move</span> |z| z == x;</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;can&#x27;t use x here：&#123;:?&#125;&quot;</span>, x);</span><br><span class="line"><span class="keyword">let</span> <span class="variable">y</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="built_in">assert!</span>(<span class="title function_ invoke__">equal_to_x</span>(y));</span><br></pre></td></tr></table></figure>
+
+<p>这里便不能使用 <code>x</code> 变量了。</p>
+<p><strong>最佳实践</strong><br>当指定 Fn trait bound 之一时，首先用 Fn，基于闭包体里的情况，如果需要 FnOnce 或 FnMut，编译器会再告诉你。<br>（面向编译器编程实锤 o_O）</p>
+<h2 id="二、迭代器"><a href="#二、迭代器" class="headerlink" title="二、迭代器"></a>二、迭代器</h2><p><strong>什么是迭代器</strong></p>
+<ul>
+<li>迭代器模式：对一系列项执行某些任务</li>
+<li>迭代器负责：<ul>
+<li>遍历每个项</li>
+<li>确定序列（遍历）何时完成</li>
+</ul>
+</li>
+</ul>
+<p><strong>Rust 的迭代器：</strong></p>
+<ul>
+<li>懒惰的：除非调用消费迭代器的方法，否则迭代器本身没有任何效果。</li>
+</ul>
+<p>先用一个最简单的迭代器的例子来进入本节的学习：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v1</span> = <span class="built_in">vec!</span>[<span class="number">3</span>, <span class="number">9</span>, <span class="number">100</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v1_iter</span> = v1.<span class="title function_ invoke__">iter</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> <span class="variable">val</span> <span class="keyword">in</span> v1_iter &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;Got: &#123;&#125;&quot;</span>, val);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>output：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">➜  it git:(master) ✗ cargo run   </span><br><span class="line">   Compiling it v0.<span class="number">1.0</span> (/Users/cherry/Code/Rust/learning/it)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] <span class="title function_ invoke__">target</span>(s) <span class="keyword">in</span> <span class="number">0.33</span>s</span><br><span class="line">     Running `target/debug/it`</span><br><span class="line">Got: <span class="number">3</span></span><br><span class="line">Got: <span class="number">9</span></span><br><span class="line">Got: <span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-1-Iterator-trait-和-next-方法"><a href="#2-1-Iterator-trait-和-next-方法" class="headerlink" title="2.1 Iterator trait 和 next 方法"></a>2.1 Iterator trait 和 next 方法</h3><ul>
+<li>所有迭代器都实现了 Iterator trait</li>
+<li>Iterator trait 定义于标准库，定义大致如下</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">Iterator</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">ltem</span>;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="keyword">Self</span>::tem&gt;;</span><br><span class="line">        <span class="comment">// methods with default implementations elided</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>type Item 和 Self::Item 定义了与此该 trait 关联的类型<ul>
+<li>实现 Iterator trait 需要你定义一个 Item 类型，它用于 next 方法的返回类型（迭代器的返回类型）</li>
+</ul>
+</li>
+</ul>
+<p><strong>Iterator trait 仅要求实现一个方法：next</strong></p>
+<ul>
+<li>next:<ul>
+<li>每次返回迭代器中的一项</li>
+<li>返回结果包裹在 Some 里</li>
+<li>迭代结束，返回 None</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">v1_iter_mut</span> = v1.<span class="title function_ invoke__">iter</span>();</span><br><span class="line"><span class="built_in">assert_eq!</span>(v1_iter_mut.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(&amp;<span class="number">3</span>));</span><br><span class="line"><span class="built_in">assert_eq!</span>(v1_iter_mut.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(&amp;<span class="number">9</span>));</span><br><span class="line"><span class="built_in">assert_eq!</span>(v1_iter_mut.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(&amp;<span class="number">100</span>));</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, v1_iter_mut.<span class="title function_ invoke__">len</span>());</span><br></pre></td></tr></table></figure>
+
+<p>上述的例子要定义一个可变的迭代器，因为 <code>next</code> 方法会更改迭代器内部的用来标示顺序的某些值，而上面的 for 之所以不用定义迭代器为可变，是因为用 for 来进行循环，实际上是取得了该迭代器的所有权，在其内部已经将其变成可变的了。</p>
+<p>需要注意的是，next 方法是一种消耗型行为，我们最后输出了迭代器 <code>v1_iter_mut</code> 的长度，结果为 0。</p>
+<p><strong>几个迭代方法</strong></p>
+<ul>
+<li>iter 方法：在不可变引用上创建迭代器</li>
+<li>into_iter 方法：创建的迭代器会获得所有权</li>
+<li>iter_mut 方法：迭代可变的引用</li>
+</ul>
+<h3 id="2-2-消耗-x2F-产生迭代器"><a href="#2-2-消耗-x2F-产生迭代器" class="headerlink" title="2.2 消耗&#x2F;产生迭代器"></a>2.2 消耗&#x2F;产生迭代器</h3><h4 id="2-2-1-消耗迭代器的方法"><a href="#2-2-1-消耗迭代器的方法" class="headerlink" title="2.2.1 消耗迭代器的方法"></a>2.2.1 消耗迭代器的方法</h4><ul>
+<li>在标准库中，Iterator trait 有一些带默认实现的方法</li>
+<li>其中有一些方法会调用 next 方法<ul>
+<li>实现 Iterator frait 时必须实现 nex† 方法的原因之一</li>
+</ul>
+</li>
+<li>调用 next 的方法叫做“消耗型适配器”<ul>
+<li>因为调用它们会把迭代器消耗尽</li>
+</ul>
+</li>
+<li>例如：sum 方法（就会耗尽迭代器）<ul>
+<li>取得迭代器的所有权</li>
+<li>通过反复调用 next，遍历所有元素</li>
+<li>每次迭代，把当前元素添加到一个总和里，迭代结束，返回总和</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">test02</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v1</span> = <span class="built_in">vec!</span>[<span class="number">4</span>, <span class="number">5</span>, <span class="number">8</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span>: <span class="type">i32</span> = v1.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">sum</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(sum, <span class="number">17</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>sum</code> 的时候要注意显示声明类型。</p>
+<h4 id="2-2-2-产生其它迭代器的方法-map"><a href="#2-2-2-产生其它迭代器的方法-map" class="headerlink" title="2.2.2 产生其它迭代器的方法(map)"></a>2.2.2 产生其它迭代器的方法(map)</h4><ul>
+<li>定义在 Iterator trait 上的另外一些方法叫做“迭代器适配器”<ul>
+<li>把迭代器转换为不同种类的迭代器</li>
+</ul>
+</li>
+<li>可以通过链式调用使用多个迭代器适配器来执行复杂的操作，这种调用可读性较高。</li>
+<li>例如：map<ul>
+<li>接收一个闭包，闭包作用于每个元素</li>
+<li>产生一个新的迭代器</li>
+</ul>
+</li>
+<li>collect 方法：消耗型适配器，把结果收集到一个集合类型中</li>
+</ul>
+<p>例子如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">test03</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v1</span> = <span class="built_in">vec!</span>[<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v2</span>: <span class="type">Vec</span>&lt;_&gt; = v1.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">map</span>(|x| x + <span class="number">1</span>).<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(v2, <span class="built_in">vec!</span>[<span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-使用闭包捕获环境-filter"><a href="#2-3-使用闭包捕获环境-filter" class="headerlink" title="2.3 使用闭包捕获环境(filter)"></a>2.3 使用闭包捕获环境(filter)</h3><ul>
+<li>filter 方法：<ul>
+<li>接收一个闭包</li>
+<li>这个闭包在遍历迭代器的每个元素时，返回 bool 类型</li>
+<li>如果闭包返回 true：当前元素将会包含在 filter 产生的迭代器中</li>
+<li>如果闭包返回 false：当前元素将不会包含在 filter 产生的迭代器中</li>
+</ul>
+</li>
+</ul>
+<p>我们现在实现一个功能，取出一个迭代器中所有为偶数的元素，将取出的元素再放入一个新的迭代器，例子如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">test04</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v1</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>];</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">v2</span>: <span class="type">Vec</span>&lt;_&gt; = v1.<span class="title function_ invoke__">into_iter</span>().<span class="title function_ invoke__">filter</span>(|x| x % <span class="number">2</span> == <span class="number">0</span>).<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(v2, <span class="built_in">vec!</span>[<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里有一点要注意：<code>iter</code> 方法里的元素都是引用类型，且不可变，因此若要进行 <code>x % 2 == 0</code> 操作的话，需要解引用 <code>*x</code>。上述代码中使用 <code>into_iter</code> 方法获得了迭代器中元素的所有权。</p>
+<h3 id="2-4-创建自定义迭代器"><a href="#2-4-创建自定义迭代器" class="headerlink" title="2.4 创建自定义迭代器"></a>2.4 创建自定义迭代器</h3><p><strong>使用 Iterator frait 来创建自定义迭代器</strong></p>
+<ul>
+<li>实现 next 方法</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    count: <span class="type">u32</span>,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">new</span>() <span class="punctuation">-&gt;</span> Counter &#123;</span><br><span class="line">        Counter &#123;count: <span class="number">0</span>&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">Iterator</span> <span class="keyword">for</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Item</span> = <span class="type">u32</span>;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">next</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>) <span class="punctuation">-&gt;</span> <span class="type">Option</span>&lt;<span class="keyword">Self</span>::Item&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">self</span>.count &lt; <span class="number">5</span> &#123;</span><br><span class="line">            <span class="keyword">self</span>.count += <span class="number">1</span>;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(<span class="keyword">self</span>.count)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="literal">None</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">test05</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">counter</span> = Counter::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(counter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">1</span>));</span><br><span class="line">    <span class="built_in">assert_eq!</span>(counter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">2</span>));</span><br><span class="line">    <span class="built_in">assert_eq!</span>(counter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">3</span>));</span><br><span class="line">    <span class="built_in">assert_eq!</span>(counter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">4</span>));</span><br><span class="line">    <span class="built_in">assert_eq!</span>(counter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>(<span class="number">5</span>));</span><br><span class="line">    <span class="built_in">assert_eq!</span>(counter.<span class="title function_ invoke__">next</span>(), <span class="literal">None</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个例子很容易理解，就是通过 <code>next</code> 方法不断迭代，范围是 1-5，至于为 Counter 实现 Iterator 特征，将来会介绍。</p>
+<p>下面要对迭代器的需求进行改进，有两个迭代器，第一个迭代器就是上面所说的，第二个迭代器的元素是 <code>[2, 3, 4, 5]</code>，现在要求将两个迭代器中的元素按顺序相乘，然后将结果存入一个新的迭代器，然后过滤出能被 3 整除的数，并求和。</p>
+<p>代码如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">test06</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">sum</span>: <span class="type">u32</span> = Counter::<span class="title function_ invoke__">new</span>()</span><br><span class="line">        .<span class="title function_ invoke__">zip</span>(Counter::<span class="title function_ invoke__">new</span>().<span class="title function_ invoke__">skip</span>(<span class="number">1</span>))</span><br><span class="line">        .<span class="title function_ invoke__">map</span>(|(a, b)| a * b)</span><br><span class="line">        .<span class="title function_ invoke__">filter</span>(|x| x % <span class="number">3</span> == <span class="number">0</span>)</span><br><span class="line">        .<span class="title function_ invoke__">sum</span>();</span><br><span class="line">    <span class="built_in">assert_eq!</span>(sum, <span class="number">18</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>介绍一下 <code>zip</code> 方法，这个单词本意是“拉链”，这里表示将两个迭代器“捏到一起”，形成一个新的迭代器，里面的每个元素就是一个元组 ，这个元组里有两个元素，这两个元素分别来自原来的两个迭代器。这里第一个迭代器就是通过 <code>Counter::new()</code> 得到的，第二个迭代器就是 <code>zip()</code> 方法内的参数 <code>Counter::new().skip(1)</code>，表示跳过第一个元素后剩下的元素组成的迭代器。</p>
+<p>为了更好展示每一个方法的实现过程，我们运行</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">v1</span> = Counter::<span class="title function_ invoke__">new</span>().<span class="title function_ invoke__">zip</span>(Counter::<span class="title function_ invoke__">new</span>().<span class="title function_ invoke__">skip</span>(<span class="number">1</span>));</span><br><span class="line"><span class="built_in">println!</span>(<span class="string">&quot;&#123;:?&#125;&quot;</span>, v1);</span><br></pre></td></tr></table></figure>
+
+<p>对于上例中的两个初始化后的迭代器，输出结果为：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  it git:(master) ✗ cargo run</span><br><span class="line">   Compiling it v0.<span class="number">1.0</span> (/Users/cherry/Code/Rust/learning/it)</span><br><span class="line">    Finished dev [unoptimized + debuginfo] <span class="title function_ invoke__">target</span>(s) <span class="keyword">in</span> <span class="number">0.20</span>s</span><br><span class="line">     Running `target/debug/it`</span><br><span class="line">Zip &#123; a: Counter &#123; count: <span class="number">0</span> &#125;, b: Skip &#123; iter: Counter &#123; count: <span class="number">0</span> &#125;, n: <span class="number">1</span> &#125; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>再来看官方文档中的实例就更清楚了：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="variable">a1</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"><span class="keyword">let</span> <span class="variable">a2</span> = [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">iter</span> = a1.<span class="title function_ invoke__">iter</span>().<span class="title function_ invoke__">zip</span>(a2.<span class="title function_ invoke__">iter</span>());</span><br><span class="line"></span><br><span class="line"><span class="built_in">assert_eq!</span>(iter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>((&amp;<span class="number">1</span>, &amp;<span class="number">4</span>)));</span><br><span class="line"><span class="built_in">assert_eq!</span>(iter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>((&amp;<span class="number">2</span>, &amp;<span class="number">5</span>)));</span><br><span class="line"><span class="built_in">assert_eq!</span>(iter.<span class="title function_ invoke__">next</span>(), <span class="title function_ invoke__">Some</span>((&amp;<span class="number">3</span>, &amp;<span class="number">6</span>)));</span><br><span class="line"><span class="built_in">assert_eq!</span>(iter.<span class="title function_ invoke__">next</span>(), <span class="literal">None</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-优化第十章的-I-x2F-O-项目"><a href="#2-5-优化第十章的-I-x2F-O-项目" class="headerlink" title="2.5 优化第十章的 I&#x2F;O 项目"></a>2.5 优化第十章的 I&#x2F;O 项目</h3><p>项目具体内容请参考 <a href="Rust%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%EF%BC%88%E5%8D%81%EF%BC%89.md">Rust入门教程（十）</a></p>
+<h4 id="2-5-1-利用迭代器优化-new-函数"><a href="#2-5-1-利用迭代器优化-new-函数" class="headerlink" title="2.5.1 利用迭代器优化 new 函数"></a>2.5.1 利用迭代器优化 new 函数</h4><p>我们来看一下 <code>minigrep</code> 项目中 <code>Config</code> 函数的 <code>new()</code> 函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">Config</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">new</span>(args: &amp;[<span class="type">String</span>]) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;Config, &amp;<span class="type">str</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> args.<span class="title function_ invoke__">len</span>() &lt; <span class="number">3</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(<span class="string">&quot;输入参数错误，请输入两个参数。&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">search_string</span> = args[<span class="number">1</span>].<span class="title function_ invoke__">clone</span>();</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">filename</span> = args[<span class="number">2</span>].<span class="title function_ invoke__">clone</span>();</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">case_sensitive</span> = env::<span class="title function_ invoke__">var</span>(<span class="string">&quot;CASE_INSENSITIVE&quot;</span>).<span class="title function_ invoke__">is_err</span>();</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(Config &#123;</span><br><span class="line">            search_string,</span><br><span class="line">            filename,</span><br><span class="line">            case_sensitive</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>new()</code> 函数中，传入的参数是字符串切片，为了返回 <code>Config</code> 结构体，需要获得命令行参数这两个变量的所有权，之前的解决方法是将那两个参数进行克隆，但是这样会对性能带来一定的损耗。现在我们学习完了闭包和迭代器，便可以通过迭代器获取其实例，并且可以使用迭代器所带的一些方法进行长度检查和索引。通过迭代器的 <code>next</code> 方法，便将读取具体值的功能分离了出去。</p>
+<p>原来的 <code>main</code> 函数中，通过 <code>env::args().collect()</code> 将参数列表转化成 vector，然后将这个 vector 传到 <code>new()</code> 函数中，其实 <code>env::args()</code> 返回的就是迭代器，我们直接把它当做 <code>new()</code> 的参数即可。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">args</span>: <span class="type">Vec</span>&lt;<span class="type">String</span>&gt; = env::<span class="title function_ invoke__">args</span>().<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = Config::<span class="title function_ invoke__">new</span>(&amp;args).<span class="title function_ invoke__">unwrap_or_else</span>(|err| &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>更改过后的 <code>main</code> 函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = Config::<span class="title function_ invoke__">new</span>(env::<span class="title function_ invoke__">args</span>()).<span class="title function_ invoke__">unwrap_or_else</span>(|err| &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改过后的 <code>new()</code> 函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">Config</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">new</span>(<span class="keyword">mut</span> args: std::env::Args) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;Config, &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> args.<span class="title function_ invoke__">len</span>() &lt; <span class="number">3</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(<span class="string">&quot;输入参数错误，请输入两个参数。&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        args.<span class="title function_ invoke__">next</span>();</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">search_string</span> = <span class="keyword">match</span> args.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(args) =&gt; args,</span><br><span class="line">            <span class="literal">None</span> =&gt; <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(<span class="string">&quot;无法读取要查询的字符串参数&quot;</span>)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">filename</span> = <span class="keyword">match</span> args.<span class="title function_ invoke__">next</span>() &#123;</span><br><span class="line">            <span class="title function_ invoke__">Some</span>(args) =&gt; args,</span><br><span class="line">            <span class="literal">None</span> =&gt; <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(<span class="string">&quot;无法读取文件名参数&quot;</span>)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">case_sensitive</span> = env::<span class="title function_ invoke__">var</span>(<span class="string">&quot;CASE_INSENSITIVE&quot;</span>).<span class="title function_ invoke__">is_err</span>();</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(Config &#123;</span><br><span class="line">            search_string,</span><br><span class="line">            filename,</span><br><span class="line">            case_sensitive</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-2-利用迭代器优化-search-函数"><a href="#2-5-2-利用迭代器优化-search-函数" class="headerlink" title="2.5.2 利用迭代器优化 search 函数"></a>2.5.2 利用迭代器优化 search 函数</h4><p>原来的 <code>search()</code> 函数实现如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">search</span>&lt;<span class="symbol">&#x27;a</span>&gt;(query: &amp;<span class="type">str</span>, content: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;&amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">vec</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">lines</span> <span class="keyword">in</span> content.<span class="title function_ invoke__">lines</span>() &#123;</span><br><span class="line">        <span class="keyword">if</span> lines.<span class="title function_ invoke__">contains</span>(query) &#123;</span><br><span class="line">            vec.<span class="title function_ invoke__">push</span>(lines);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    vec</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现思路是先将文本内容每一行取出来，然后手动遍历，判断当前行是否包含所要查询的字符串，将结果放入新的 vector 中，最后返回这个 vector。但是学完了迭代器适配器的知识点后，应该很容易想到 <code>filter</code> 这个方法。实现如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">search</span>&lt;<span class="symbol">&#x27;a</span>&gt;(query: &amp;<span class="type">str</span>, content: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;&amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>&gt; &#123;</span><br><span class="line">    content.<span class="title function_ invoke__">lines</span>().<span class="title function_ invoke__">filter</span>(|line| line.<span class="title function_ invoke__">contains</span>(query)).<span class="title function_ invoke__">collect</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同理 <code>search_case_insensitive</code> 修改如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">search_case_insensitive</span>&lt;<span class="symbol">&#x27;a</span>&gt;(query: &amp;<span class="type">str</span>, content: &amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>) <span class="punctuation">-&gt;</span> <span class="type">Vec</span>&lt;&amp;<span class="symbol">&#x27;a</span> <span class="type">str</span>&gt; &#123;</span><br><span class="line">    content.<span class="title function_ invoke__">lines</span>()</span><br><span class="line">        .<span class="title function_ invoke__">filter</span>(|line| line.<span class="title function_ invoke__">to_uppercase</span>().<span class="title function_ invoke__">contains</span>(&amp;query.<span class="title function_ invoke__">to_uppercase</span>()))</span><br><span class="line">        .<span class="title function_ invoke__">collect</span>()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>现在我们将原来的七行代码简化成了一行，这一行代码和之前的七行实现的功能是相同的，但是显然利用迭代器实现的这一行代码更加易读（熟悉了迭代器的使用之后，这种写法会非常简单），不仅从代码，减少了临时变量，同时消除了可变状态 <code>result</code>，这样可以使得将来通过并行来提升搜索效率，因为并行时不用再考虑并发访问 <code>result</code> 这个变量时会出现的安全问题了。</p>
+<p>实际上，对于大多数 Rust 程序员会更喜欢使用迭代器这样的方式来实现，因为这样可以更加专注于实现逻辑本身，而不是总是浪费时间在大量的循环和维护临时变量这些细节工作上。至于两者的效率问题，并非像表面上那样，使用迭代器效率会降低，具体的我们下节再介绍。</p>
+<h3 id="2-6-性能比较：循环-vs-迭代器"><a href="#2-6-性能比较：循环-vs-迭代器" class="headerlink" title="2.6 性能比较：循环 vs 迭代器"></a>2.6 性能比较：循环 vs 迭代器</h3><p><strong>零开销抽象 Zero-Cost Abstraction</strong></p>
+<ul>
+<li>使用抽象时不会引入额外的运行时开销</li>
+</ul>
+<p>对于迭代器，编译器会自行判断底层代码展开策略，对于某些特定次数的循环，编译器底层会手动将迭代器展开特定的次数，这样对于流水线 CPU 来说，会减少因跳转或延迟槽产生的停顿周期，使得流水线的吞吐量增大，从而使得效率提高。</p>
+<p>因此在 Rust 中，尽量使用迭代器实现。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/461e5b43.html" rel="prev" title="Rust入门教程（十）：项目实战">
+      <i class="fa fa-chevron-left"></i> Rust入门教程（十）：项目实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/af9cf945.html" rel="next" title="Rust入门教程（十二）：cargo 和 crates.io">
+      Rust入门教程（十二）：cargo 和 crates.io <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%97%AD%E5%8C%85"><span class="nav-text">一、闭包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E9%97%AD%E5%8C%85"><span class="nav-text">1.1 什么是闭包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E4%BE%8B%E5%AD%90%EF%BC%9A%E7%94%9F%E6%88%90%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%90%E5%8A%A8%E8%AE%A1%E5%88%92%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-text">1.2 例子：生成自定义运动计划的程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E9%97%AD%E5%8C%85%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%8E%A8%E6%96%AD%E5%92%8C%E6%A0%87%E6%B3%A8"><span class="nav-text">1.3 闭包的类型推断和标注</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E4%BD%BF%E7%94%A8%E6%B3%9B%E5%9E%8B%E5%8F%82%E6%95%B0%E5%92%8C-Fn-Trait-%E6%9D%A5%E5%AD%98%E5%82%A8%E9%97%AD%E5%8C%85"><span class="nav-text">1.4 使用泛型参数和 Fn Trait 来存储闭包</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-%E7%BB%A7%E7%BB%AD%E8%A7%A3%E5%86%B3-1-2-%E4%B8%AD%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-text">1.4.1 继续解决 1.2 中的例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-2-%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98%E5%99%A8%EF%BC%88Cacher%EF%BC%89%E5%AE%9E%E7%8E%B0%E7%9A%84%E9%99%90%E5%88%B6"><span class="nav-text">1.4.2 使用缓存器（Cacher）实现的限制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-%E4%BD%BF%E7%94%A8%E9%97%AD%E5%8C%85%E6%8D%95%E8%8E%B7%E7%8E%AF%E5%A2%83"><span class="nav-text">1.5 使用闭包捕获环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-1-%E5%88%A9%E7%94%A8%E9%97%AD%E5%8C%85%E6%8D%95%E8%8E%B7%E7%8E%AF%E5%A2%83%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">1.5.1 利用闭包捕获环境中的变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-5-2-move-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-text">1.5.2 move 关键字</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">二、迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Iterator-trait-%E5%92%8C-next-%E6%96%B9%E6%B3%95"><span class="nav-text">2.1 Iterator trait 和 next 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E6%B6%88%E8%80%97-x2F-%E4%BA%A7%E7%94%9F%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">2.2 消耗&#x2F;产生迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-%E6%B6%88%E8%80%97%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">2.2.1 消耗迭代器的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-%E4%BA%A7%E7%94%9F%E5%85%B6%E5%AE%83%E8%BF%AD%E4%BB%A3%E5%99%A8%E7%9A%84%E6%96%B9%E6%B3%95-map"><span class="nav-text">2.2.2 产生其它迭代器的方法(map)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E4%BD%BF%E7%94%A8%E9%97%AD%E5%8C%85%E6%8D%95%E8%8E%B7%E7%8E%AF%E5%A2%83-filter"><span class="nav-text">2.3 使用闭包捕获环境(filter)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E5%88%9B%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">2.4 创建自定义迭代器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E4%BC%98%E5%8C%96%E7%AC%AC%E5%8D%81%E7%AB%A0%E7%9A%84-I-x2F-O-%E9%A1%B9%E7%9B%AE"><span class="nav-text">2.5 优化第十章的 I&#x2F;O 项目</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-1-%E5%88%A9%E7%94%A8%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%BC%98%E5%8C%96-new-%E5%87%BD%E6%95%B0"><span class="nav-text">2.5.1 利用迭代器优化 new 函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-2-%E5%88%A9%E7%94%A8%E8%BF%AD%E4%BB%A3%E5%99%A8%E4%BC%98%E5%8C%96-search-%E5%87%BD%E6%95%B0"><span class="nav-text">2.5.2 利用迭代器优化 search 函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-%E6%80%A7%E8%83%BD%E6%AF%94%E8%BE%83%EF%BC%9A%E5%BE%AA%E7%8E%AF-vs-%E8%BF%AD%E4%BB%A3%E5%99%A8"><span class="nav-text">2.6 性能比较：循环 vs 迭代器</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">209k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/1b9cba25.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

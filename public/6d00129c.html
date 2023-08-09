@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="自旋锁 该篇博客参考了《多处理器编程的艺术》第七章——自旋锁与争用，相关代码可在 GitHub 仓库 中查看。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自旋锁">
+<meta property="og:url" content="http://cherryyang05.github.io/6d00129c.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="自旋锁 该篇博客参考了《多处理器编程的艺术》第七章——自旋锁与争用，相关代码可在 GitHub 仓库 中查看。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20221030211520.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/239b8e7f91620c96909e40c1792ae9e6.png">
+<meta property="article:published_time" content="2022-10-30T12:12:56.000Z">
+<meta property="article:modified_time" content="2023-08-08T12:35:27.421Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="并发多核">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20221030211520.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/6d00129c.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>自旋锁 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/6d00129c.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          自旋锁
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-30 20:12:56" itemprop="dateCreated datePublished" datetime="2022-10-30T20:12:56+08:00">2022-10-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-08 20:35:27" itemprop="dateModified" datetime="2023-08-08T20:35:27+08:00">2023-08-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">计算机原理知识</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/6d00129c.html" class="post-meta-item leancloud_visitors" data-flag-title="自旋锁" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/6d00129c.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/6d00129c.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h1><blockquote>
+<p>该篇博客参考了《多处理器编程的艺术》第七章——自旋锁与争用，相关代码可在 <a target="_blank" rel="noopener" href="https://github.com/CherryYang05/MultiProcessor">GitHub 仓库</a> 中查看。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、前置知识"><a href="#一、前置知识" class="headerlink" title="一、前置知识"></a>一、前置知识</h2><p>关于自旋锁的内容，需要有以下几个方面的基础知识：基本数据结构（链表，队列）、操作系统中进程调度、锁及死锁、计算机体系结构中 cache 一致性、计算机组成原理中 cache 结构、Java 基本语法及 concurrent 包的基本用法。</p>
+<h2 id="二、背景介绍"><a href="#二、背景介绍" class="headerlink" title="二、背景介绍"></a>二、背景介绍</h2><p>在如今多线程环境下对于共享临界资源的访问，需要加锁实现互斥。拿到锁的线程获得 CPU 执行临界区代码，而未拿到锁的线程通常来说有两种处理方式，一种是该线程进入循环等待，直到它等待的那个 CPU 空闲，然后获得 CPU 开始执行；另一种便是将自己阻塞，等待操作系统重新调度。</p>
+<p>前一种锁叫 <code>自旋锁</code>，后一种锁叫 <code>互斥锁</code>。</p>
+<!-- 实现两个线程间互斥有 `Peterson` 算法、`Bakery` 算法等，在这里暂时不做讨论，这里主要介绍自旋锁 -->
+<p>先举一个很容易理解的例子。有两个进程，分别为 <code>P1</code> 和 <code>P2</code>，这两个线程做的工作都是将变量 a 加 1，就像这样：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> a = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">P1</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> a + <span class="number">1</span>; </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">P2</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> a + <span class="number">1</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果执行这两个线程各 100 次，我们预期的结果是 <code>a = 200</code>，但是实际上结果并不是我们想象的这样，它有可能是 200，但是更多的情况是一个小于 200 的数。</p>
+<p>在计算机底层上，对一个数执行加一操作，编译器会将其编译成下面三条指令：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov ax, mem</span><br><span class="line">add ax, <span class="number">1</span></span><br><span class="line">mov mem, ax</span><br></pre></td></tr></table></figure>
+
+<p>当多线程执行时，代码执行顺序将不可控，因此会出现一个线程还未将值写进内存的时候，其他线程就读取内存中的值，造成数据相关问题。</p>
+<h2 id="三、TAS-锁与-TTAS-锁"><a href="#三、TAS-锁与-TTAS-锁" class="headerlink" title="三、TAS 锁与 TTAS 锁"></a>三、TAS 锁与 TTAS 锁</h2><h3 id="3-1-TAS-锁"><a href="#3-1-TAS-锁" class="headerlink" title="3.1 TAS 锁"></a>3.1 TAS 锁</h3><p><code>TAS(testAndSet)</code> 是一个原子操作，它的功能是将 <code>true</code> 原子地写入变量，然后获取变量之前的值，即用 <code>true</code> 来交换变量的值。</p>
+<p>为什么这个操作是原子的呢？因为在 x86 汇编中有个指令叫 <code>xchg</code>，它的功能便是交换两个数。</p>
+<p>在 Java 中，有个与其功能一致的函数叫 <code>getAndSet()</code>，下面是 <code>TASLock</code> 的实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TASLock</span> &#123;</span><br><span class="line">    <span class="type">AtomicBoolean</span> <span class="variable">state</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (state.getAndSet(<span class="literal">true</span>)) &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">        state.set(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>AtomicBoolean</code> 是原子布尔类型，能够实现原子的赋值，来自 <code>java.util.concurrent.atomic.AtomicBoolean</code>。</p>
+<p>这个锁通过代码很容易理解：当线程 A 获取锁时，将 <code>state</code> 置为 <code>true</code>，若线程 A 还未释放锁时，其他线程 B 若也要申请锁，便会在 <code>while (state.getAndSet(true)) &#123;&#125;</code> 空转，直到 <code>state</code> 为 <code>false</code>，然后线程 B 便可以申请到锁了。</p>
+<p>我们先来看一下另一种形式的 <code>TAS</code> 锁，然后将两者进行比较。</p>
+<h3 id="3-2-TTAS-锁"><a href="#3-2-TTAS-锁" class="headerlink" title="3.2 TTAS 锁"></a>3.2 TTAS 锁</h3><p>直接看具体实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TTASLock</span> &#123;</span><br><span class="line">    <span class="type">AtomicBoolean</span> <span class="variable">state</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="keyword">while</span> (state.get()) &#123;&#125;;</span><br><span class="line">            <span class="keyword">if</span> (!state.getAndSet(<span class="literal">true</span>))</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">        state.set(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>TTAS</code> 锁并没有每次都直接调用 <code>getAndSet(boolean)</code> 方法，而是先判断 <code>state</code> 变量是否为 <code>true</code>，若为 <code>true</code> 便无需用 <code>true</code> 和原先的值进行交换。而若 <code>state</code> 变量是 <code>false</code>，则再对 <code>state</code> 执行 <code>getAndSet</code>。</p>
+<p>因为这里有两次 test，因此该锁叫 <code>TTAS(testTestAndSet)</code> 锁。</p>
+<p>当然从加锁的正确性来说，这两种锁是等价的，都可以保证无死锁的互斥，对于简单的情况，这两种并无明显差别。但是在多处理器上运行大量线程，这两种锁将会展现出指数级别的效率差距。</p>
+<p>下面是 n 个线程分别执行一段临界区代码所需的时间图，在没有任何争用干扰的情况下，最下面的平直曲线应该是理想情况（实际上并不可能）。可以看出这三条曲线差距非常明显。</p>
+<img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20221030211520.png" alt="n个线程执行时间图" style="zoom: 40%;">
+
+<p>上图的情况可以用多处理器的系统结构进行解释。</p>
+<h3 id="3-3-比较两种锁的性能差距"><a href="#3-3-比较两种锁的性能差距" class="headerlink" title="3.3 比较两种锁的性能差距"></a>3.3 比较两种锁的性能差距</h3><p>首先我们要确定的是，现代处理器几乎都包含高速缓存（cache），cache 与内存的一致性问题是现代处理器研究的重要问题；CPU 访问内存的时间时间比访问 cache 的时间多 2～3 个数量级。</p>
+<p>多处理器中的 cache 一致性问题这里不展开讲述，大致内容如下。</p>
+<p>每个处理器都有一个自己的 cache，考虑以下情况：处理器 A 访问数据 <code>x</code>（假设 <code>x = a</code>），将 x 放入 <code>cache_A</code> 中，处理器 B 也想访问 <code>x</code>，而 <code>cache_B</code> 中没有对 x 的缓存，这个时候处理器 B 便会在 <code>cache_A</code> 中查找 <code>x</code>，找到之后将其放入自己的缓存中（此时 <code>x = a</code>）。这时处理器 A 修改了 <code>x</code> 的值（假设修改为 b），并更新自己的 cache，若此时处理器 B 再次访问 <code>x</code>，它首先会从自己的 cache 中找，而目前 <code>cache_B</code> 中存放了 <code>x = a</code>，但是目前最新的值是 <code>x = b</code>，产生了错误，这就是 cache 一致性问题。</p>
+<p>解决 cache 一致性问题的一个解决办法便是在一个处理器更新自己的 cache 后，该处理器在总线上广播这个地址，其他处理器监听总线，如果其他处理器在自己的 cache 中发现了同样的地址，则将对应的 cache 置为无效。</p>
+<p>然后我们再来分析 <code>TAS</code> 锁。</p>
+<p>在 <code>TAS</code> 锁中，每个线程每次执行都将调用 <code>getAndSet</code> 方法，而这个方法需要写入变量，因此在修改变量前需要在总线上进行广播，通知其他处理器将该 cache 行置为无效。而这便会带来两种问题：一是广播占用了总线流量，当的确需要从内存中读取值时便会造成总线上的延迟；二是每次修改变量是会造成其他处理器的 cache 缺失，即其他自旋的线程每次都会遇到 cache 不命中的情况，便需要通过总线获取新的值。同时，当持有锁的线程尝试释放锁时，因为总线拥挤而不得不被迫延迟，这样的多米诺骨牌效应只会导致效率越来越低。</p>
+<p>总结来说，<code>TAS</code> 锁存在着大量的总线占用，每个线程每一次自旋都会产生大量的总线流量，从而使得其他线程也必须延迟，最终造成了系统的效率急剧降低。</p>
+<p>而 <code>TTAS</code> 锁中，当线程 A 持有锁时，线程 B 第一次读锁时会发生 cache 缺失，但是只要线程 A 持有锁，线程 B 便只要不断读取值，这样每次 cache 都将命中，不产生总线流量，也不会影响其他线程对总线的使用。</p>
+<p>当然当持有锁的线程释放锁时，会导致所有正在自旋的线程的 cache 失效，从而导致大量总线流量，但是短暂过后所有线程将归于平静，又将回到本地自旋的状态。</p>
+<h2 id="四、指数后退锁"><a href="#四、指数后退锁" class="headerlink" title="四、指数后退锁"></a>四、指数后退锁</h2><p>我们现在考虑如何改进 <code>TTAS</code> 锁的算法，这里先引出一个术语：争用，争用的意思是多个线程试图同时获得一个锁。在上面的 <code>TTAS</code> 锁中，在两个 while 循环之间可能会产生高争用现象，此时线程获得锁的几率非常小，并且还会带来极高的总线流量。我们可以考虑将某些线程推迟一段时间再去尝试获得锁，这样同时申请锁的线程将减少，实际证明这样的效果行之有效。</p>
+<p>那么应该将线程退后多长时间呢？了解过计算机网络中 CSMA&#x2F;CD（载波监听多路访问&#x2F;碰撞检测）中的二进制指数退避应该很容易想到，这里的指数后退与其相似。线程随机在 <code>(0, limit)</code> 中后退一段时间，若还未获得锁，那么将 <code>limit</code> 加倍，再次重新在 <code>(0, limit)</code> 获取一个随机值进行后退，直到 <code>limit</code> 到达一个设定的最大值 <code>maxDelay</code>。下面是代码实现。</p>
+<p><code>Backoff.java</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Backoff</span> &#123;</span><br><span class="line">    <span class="type">int</span> minDelay, maxDelay;     <span class="comment">// 限定最大和最小时延，避免无意义的过小的后退以及无限制后退</span></span><br><span class="line">    <span class="type">int</span> limit;                  <span class="comment">// 当前的时延限制</span></span><br><span class="line">    <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Backoff</span><span class="params">(<span class="type">int</span> min, <span class="type">int</span> max)</span> &#123;</span><br><span class="line">        minDelay = min;</span><br><span class="line">        maxDelay = max;</span><br><span class="line">        limit = min;</span><br><span class="line">        random = <span class="keyword">new</span> <span class="title class_">Random</span>();    </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在 0 和 limit 之间随机选取一个值进行退避，然后倍乘 limit，但是不能超过 maxDelay</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">backoff</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">delay</span> <span class="operator">=</span> random.nextInt(limit);</span><br><span class="line">        limit = Math.max(maxDelay, limit * <span class="number">2</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(delay);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>BackoffLock.java</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BackoffLock</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">AtomicBoolean</span> <span class="variable">state</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">minDelay</span> <span class="operator">=</span> <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">maxDelay</span> <span class="operator">=</span> <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">Backoff</span> <span class="variable">backoff</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Backoff</span>(minDelay, maxDelay);</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="keyword">while</span> (state.get()) &#123;&#125;;</span><br><span class="line">            <span class="keyword">if</span> (!state.getAndSet(<span class="literal">true</span>)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                backoff.backoff();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">        state.set(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于 <code>BackoffLock</code> 的性能，与 <code>minDelay</code> 和 <code>maxDelay</code> 的值的选取密切相关，要根据实际任务及自身处理器及架构的情况合理设置阈值。</p>
+<h2 id="五、队列锁"><a href="#五、队列锁" class="headerlink" title="五、队列锁"></a>五、队列锁</h2><h3 id="5-0-队列锁的介绍"><a href="#5-0-队列锁的介绍" class="headerlink" title="5.0 队列锁的介绍"></a>5.0 队列锁的介绍</h3><p>队列锁是一种易于扩展的自旋锁，尽管稍微复杂一点 <del>(亿点)</del>，但是具有更好的移植性。</p>
+<p>在指数后退锁中，存在两个问题。</p>
+<ul>
+<li>一是所有线程获得锁都依赖于同一个变量 <code>state</code>，因此每个线程都在同一个共享存储单元上自旋，每一次成功的锁访问都会带来 cache 一致性流量（尽管相比之下比 TASLock 低）；</li>
+<li>二是临界区利用率低，因为很多线程被“后退”了，因此延迟带来的开销是无法忽略的。</li>
+</ul>
+<p>可以将这些线程组织成一个链表（队列）来解决这些问题，在队列中，每个线程只要检测前一个线程是否已经完成来判断自己能否成功获取锁，这样每个线程就在不同存储单元上自旋了，也不会有延迟带来的开销。</p>
+<p>下面介绍三种队列锁，基于数组的队列锁，CLH 队列锁和 MCS 队列锁。</p>
+<h3 id="5-1-基于数组的队列锁"><a href="#5-1-基于数组的队列锁" class="headerlink" title="5.1 基于数组的队列锁"></a>5.1 基于数组的队列锁</h3><p>基于数组的队列锁 ALock，其有一个 tail 字段，初始值为 0，它被所有的线程共享，用来表示数组的下标。每个线程原子地增加 tail 字段的值，每个线程还有一个局部变量用来保存这个当前的 tail 值，称为 slot（槽）。如果 flag[j] 为 true，那么表示下标为 j 的线程有权获得锁。</p>
+<p>初始状态时，flag 数组只有下标为 0 的那个值为 true，其他均为 false。其他线程调用 lock() 方法尝试获得锁时，会不断地在 <code>flag[slot]</code> 上旋转，直到 <code>flag[slot] == true</code>。在释放锁时，线程将对应于它自己的槽点 flag 设为 false，然后将下一个槽的 slot 设为 true。上述所有操作都要对 n 取模，n 的大小至少为最大的并发线程数。</p>
+<p>下面用具体例子来说明基于数组的队列锁。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/239b8e7f91620c96909e40c1792ae9e6.png" alt="基于数组的自旋锁"></p>
+<p>上图的 a) 中，当前获得锁的线程是 A，<code>flag[2] == true</code>，线程 B 和 C 也尝试获得锁，线程 B 和 C 在 flag[3] 和 flag[4] 上自旋等待。当线程 A 释放锁后，flag[2] 设置为 false，flag[3] 设置为 true，线程 B 获得锁。</p>
+<p><code>ALock.java</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ALock</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// mySLotIndex 是线程的局部变量，线程局部变量无需保存在共享存储器中，无需同步，不产生一致性流量</span></span><br><span class="line">    ThreadLocal&lt;Integer&gt; mySlotIndex = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;&gt;() &#123;</span><br><span class="line">        <span class="keyword">protected</span> Integer <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    AtomicInteger tail;</span><br><span class="line">    <span class="keyword">volatile</span> <span class="type">boolean</span>[] flag;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ALock</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">        size = capacity;</span><br><span class="line">        tail = <span class="keyword">new</span> <span class="title class_">AtomicInteger</span>(<span class="number">0</span>);</span><br><span class="line">        flag = <span class="keyword">new</span> <span class="title class_">boolean</span>[capacity];</span><br><span class="line">        <span class="comment">// 为了避免假共享现象，可以将数组开大，让每一个项独占一个 cache 行</span></span><br><span class="line">        <span class="comment">// flag = new boolean[capacity * 4];</span></span><br><span class="line">        flag[<span class="number">0</span>] = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">slot</span> <span class="operator">=</span> tail.getAndIncrement() % size;</span><br><span class="line">        mySlotIndex.set(slot);</span><br><span class="line">        <span class="keyword">while</span> (!flag[slot]) &#123;&#125;;     <span class="comment">// 当前域为 false 则表明锁被占用，陷入空转等待</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">slot</span> <span class="operator">=</span> mySlotIndex.get();</span><br><span class="line">        flag[slot] = <span class="literal">false</span>;</span><br><span class="line">        flag[(slot + <span class="number">1</span>) % size] = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在基于数组的队列锁中，mySlotIndex 是线程的局部变量，局部变量不需要与其他线程共享，不需要同步，也就不会产生一致性流量，因为它只能被一个线程访问。尽管 flag 数组是被多个线程共享的，但是在任意特定的时刻，线程对应的 flag 存储单元会被存放在对应的 cache 中，线程是在本地 cache 中旋转，大大降低了无效流量，从而使得对数组的存储单元的争用大大降低。</p>
+<p>但是值得注意的是，争用仍然可能发生，因为存在一种“假共享”现象，当相邻的数组元素在同一个 cache 行时，就会发生这样的现象。继续看上面的图 a)，假设一个 cache 行能够存放 4 个数组元素，那么 flag[0] ~ flag[3] 都将存放在同一个 cache 行中。当某一个线程对 cache 行执行写操作时，会导致当前 cache 行无效，从而导致其他在该 cache 旋转的线程产生无效流量。</p>
+<p>一种解决办法就是上图中的 b)，于是我们将数组进行填，充让一个 cache 行只存放一个数组元素，具体实现上只需要将 <code>(i + 1) % 8</code> 改成 <code>4 * (i + 1) % 32</code> 即可。</p>
+<h3 id="5-2-CLH-队列锁"><a href="#5-2-CLH-队列锁" class="headerlink" title="5.2 CLH 队列锁"></a>5.2 CLH 队列锁</h3><h3 id="5-3-MCS-队列锁"><a href="#5-3-MCS-队列锁" class="headerlink" title="5.3 MCS 队列锁"></a>5.3 MCS 队列锁</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E5%B9%B6%E5%8F%91%E5%A4%9A%E6%A0%B8/" rel="tag"># 并发多核</a>
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/8ce3ab1f.html" rel="prev" title="Rust中Clap库的使用">
+      <i class="fa fa-chevron-left"></i> Rust中Clap库的使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/ea380076.html" rel="next" title="重构：改善既有代码的设计 学习笔记">
+      重构：改善既有代码的设计 学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E6%97%8B%E9%94%81"><span class="nav-text">自旋锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-text">一、前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D"><span class="nav-text">二、背景介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81TAS-%E9%94%81%E4%B8%8E-TTAS-%E9%94%81"><span class="nav-text">三、TAS 锁与 TTAS 锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-TAS-%E9%94%81"><span class="nav-text">3.1 TAS 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-TTAS-%E9%94%81"><span class="nav-text">3.2 TTAS 锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%AF%94%E8%BE%83%E4%B8%A4%E7%A7%8D%E9%94%81%E7%9A%84%E6%80%A7%E8%83%BD%E5%B7%AE%E8%B7%9D"><span class="nav-text">3.3 比较两种锁的性能差距</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%8C%87%E6%95%B0%E5%90%8E%E9%80%80%E9%94%81"><span class="nav-text">四、指数后退锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E9%98%9F%E5%88%97%E9%94%81"><span class="nav-text">五、队列锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-0-%E9%98%9F%E5%88%97%E9%94%81%E7%9A%84%E4%BB%8B%E7%BB%8D"><span class="nav-text">5.0 队列锁的介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E5%9F%BA%E4%BA%8E%E6%95%B0%E7%BB%84%E7%9A%84%E9%98%9F%E5%88%97%E9%94%81"><span class="nav-text">5.1 基于数组的队列锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-CLH-%E9%98%9F%E5%88%97%E9%94%81"><span class="nav-text">5.2 CLH 队列锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-MCS-%E9%98%9F%E5%88%97%E9%94%81"><span class="nav-text">5.3 MCS 队列锁</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">209k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/6d00129c.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

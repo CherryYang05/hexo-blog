@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本篇文章介绍 C 语言中类似 #define, #if, #ifdef 等预处理指令以及宏的高级用法，最后整理出项目中一些常用的宏，例如打印调试信息等。本篇文章将不会介绍简单的宏用法，例如 #define ADD(a, b) ((a)+(b))本篇文章大部分参考《C Primer Plus 第六版》第 16 章">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言预处理器和宏的高级用法">
+<meta property="og:url" content="http://cherryyang05.github.io/aaaac292.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="本篇文章介绍 C 语言中类似 #define, #if, #ifdef 等预处理指令以及宏的高级用法，最后整理出项目中一些常用的宏，例如打印调试信息等。本篇文章将不会介绍简单的宏用法，例如 #define ADD(a, b) ((a)+(b))本篇文章大部分参考《C Primer Plus 第六版》第 16 章">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20230122232752.png">
+<meta property="article:published_time" content="2023-01-22T14:27:45.000Z">
+<meta property="article:modified_time" content="2023-08-08T12:35:27.364Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="C">
+<meta property="article:tag" content="宏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20230122232752.png">
+
+<link rel="canonical" href="http://cherryyang05.github.io/aaaac292.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>C 语言预处理器和宏的高级用法 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/aaaac292.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C 语言预处理器和宏的高级用法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-01-22 22:27:45" itemprop="dateCreated datePublished" datetime="2023-01-22T22:27:45+08:00">2023-01-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-08 20:35:27" itemprop="dateModified" datetime="2023-08-08T20:35:27+08:00">2023-08-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/aaaac292.html" class="post-meta-item leancloud_visitors" data-flag-title="C 语言预处理器和宏的高级用法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/aaaac292.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/aaaac292.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本篇文章介绍 C 语言中类似 <code>#define</code>, <code>#if</code>, <code>#ifdef</code> 等预处理指令以及宏的高级用法，最后整理出项目中一些常用的宏，例如打印调试信息等。<br>本篇文章将不会介绍简单的宏用法，例如 <code>#define ADD(a, b) ((a)+(b))</code><br>本篇文章大部分参考《C Primer Plus 第六版》第 16 章</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、预处理及宏"><a href="#一、预处理及宏" class="headerlink" title="一、预处理及宏"></a>一、预处理及宏</h2><h3 id="1-1-“-”-运算符"><a href="#1-1-“-”-运算符" class="headerlink" title="1.1 “#” 运算符"></a>1.1 “#” 运算符</h3><p><code>#</code> 是一个预处理运算符，可以将记号转化成字符串。例如 <code>#define TYPE(x) #x</code>，若使用宏 <code>TYPE(int)</code>，则将其替换成<strong>字符串</strong> <code>&quot;int&quot;</code>，<code>#x</code> 就是转换为 <code>x</code> 的形参名。</p>
+<p>下面是一个例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TYPE(x) #x</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;The num 3 is an &quot;</span>TYPE(<span class="type">int</span>)<span class="string">&quot; type&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果为：<code>The num 3 is an int type</code></p>
+<h3 id="1-2-“-”-运算符"><a href="#1-2-“-”-运算符" class="headerlink" title="1.2 “##” 运算符"></a>1.2 “##” 运算符</h3><p>与 <code>#</code> 运算符类似，<code>##</code> 运算符可以用于类函数宏的替换部分，而且还可以用于对象宏的替换部分。<code>##</code> 运算符将两个记号组合成一个记号，例如 <code>#define TEST(n) TEST_##n</code>，然后宏 <code>TEST1</code> 将其展开为 <code>TEST_1</code>。</p>
+<p>下面是一个具体的例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> XNAME(n) x##n</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PRINT_XN(n) printf(<span class="string">&quot;x&quot;</span>#n<span class="string">&quot; = %d\n&quot;</span>, x##n) </span></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="title function_">XNAME</span><span class="params">(<span class="number">1</span>)</span> = <span class="number">14</span>;      <span class="comment">// 展开成 int x1 = 14;</span></span><br><span class="line">    <span class="type">int</span> <span class="title function_">XNAME</span><span class="params">(<span class="number">2</span>)</span> = <span class="number">20</span>;      <span class="comment">// 展开成 int x2 = 20;</span></span><br><span class="line">    <span class="type">int</span> x3 = <span class="number">30</span>;</span><br><span class="line">    PRINT_XN(<span class="number">1</span>);            <span class="comment">// 展开成 printf(&quot;x1 = %d\n&quot;, x1);</span></span><br><span class="line">    PRINT_XN(<span class="number">2</span>);            <span class="comment">// 展开成 printf(&quot;x2 = %d\n&quot;, x2);</span></span><br><span class="line">    PRINT_XN(<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意，<code>#</code> 运算符组合成<strong>字符串</strong>，而 <code>##</code> 运算符组合成为一个新的<strong>标识符</strong>。</p>
+</blockquote>
+<h3 id="1-3-undef-指令"><a href="#1-3-undef-指令" class="headerlink" title="1.3 #undef 指令"></a>1.3 #undef 指令</h3><p><code>#undef</code> 指令用于取消已定义的 <code>#define</code> 指令。若之前没有定义某个宏，取消对其的定义也是有效的，如果想使用一个名称，但不确定之前是否已经用过，使用 <code>#undef</code> 先取消定义是一个安全的方法。</p>
+<h3 id="1-4-条件编译指令"><a href="#1-4-条件编译指令" class="headerlink" title="1.4 条件编译指令"></a>1.4 条件编译指令</h3><h4 id="1-4-1-ifdef、-else-和-endif-指令"><a href="#1-4-1-ifdef、-else-和-endif-指令" class="headerlink" title="1.4.1 #ifdef、#else 和 #endif 指令"></a>1.4.1 #ifdef、#else 和 #endif 指令</h4><p>先用一个简单的例子来说明这三个条件编译指令。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> MAVIS</span></span><br><span class="line">    <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;horse.h&quot;</span></span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> STABLES 5</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">    <span class="meta">#<span class="keyword">include</span> <span class="string">&quot;cow.h&quot;</span></span></span><br><span class="line">    <span class="meta">#<span class="keyword">define</span> STABLES 15</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>上述代码理解起来应该挺简单，若用 <code>#define</code> 定义了 <code>MAVIS</code>，就引入 <code>horse.h</code> 头文件，若没有定义 <code>MAVIS</code> 就引入头文件 <code>cow.h</code>。</p>
+<p><code>#ifdef</code> 测试的宏可以是对象宏，也可以是函数宏。</p>
+<h4 id="1-4-2-ifndef"><a href="#1-4-2-ifndef" class="headerlink" title="1.4.2 #ifndef"></a>1.4.2 #ifndef</h4><p><code>#ifndef</code> 用法和 <code>#ifdef</code> 类似，但是意思相反。除此之外 <code>#ifndef</code> 还可以防止相同的宏被重复定义，例如下面的例子。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> _MATH_H_</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _MATH_H_</span></span><br></pre></td></tr></table></figure>
+
+<p>通过 <code>#ifndef</code> 也可以避免头文件被引入多次。</p>
+<h4 id="1-4-3-if、-elif"><a href="#1-4-3-if、-elif" class="headerlink" title="1.4.3 #if、#elif"></a>1.4.3 #if、#elif</h4><p><code>#if</code> 和 <code>#elif</code> 后面跟一个常量表达式，如果表达式的值为非零，则表达式为真，类似于 C 语言中的 if else，可以使用关系运算符和逻辑运算符。</p>
+<p><code>#if</code> 和 <code>#elif</code> 后面的宏只能是对象宏，不能是函数宏。</p>
+<h4 id="1-4-4-defined"><a href="#1-4-4-defined" class="headerlink" title="1.4.4 #defined"></a>1.4.4 #defined</h4><p><code>#defined</code> 用于判断宏是否已经被定义，可以是对象宏，也可以是函数宏，可以和 <code>#elif</code> 嵌套使用。</p>
+<p>条件编译可以让程序更容易移植，改变文件开头的几个关键定义，可以根据不同的架构或系统设置不同的值和包含不同的文件。</p>
+<h3 id="1-5-预定义宏"><a href="#1-5-预定义宏" class="headerlink" title="1.5 预定义宏"></a>1.5 预定义宏</h3><p>C 标准规定了一些预定义宏，如下列表格所示。</p>
+<table>
+<thead>
+<tr>
+<th>宏</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>DATE</strong></td>
+<td>预处理的日期（“Mmm dd yyyy”形式的字面量，如 Nov 12 2023）</td>
+</tr>
+<tr>
+<td><strong>FILE</strong></td>
+<td>表示当前源代码文件名的字符串字面量</td>
+</tr>
+<tr>
+<td><strong>LINE</strong></td>
+<td>表示当前源代码文件中行号的整型量</td>
+</tr>
+<tr>
+<td><strong>STDC</strong></td>
+<td>设置为 1 时表示遵循 C 标准</td>
+</tr>
+<tr>
+<td><strong>STDC_HOSTED</strong></td>
+<td>本机环境设置为 1，否则设置为 0</td>
+</tr>
+<tr>
+<td><strong>STDC_VERSION</strong></td>
+<td>支持 C99 标准，设置为 199901L；支持 C11标准，设置为 201112L</td>
+</tr>
+<tr>
+<td><strong>TIME</strong></td>
+<td>翻译代码的时间，格式为 “hh:mm:ss”</td>
+</tr>
+</tbody></table>
+<h3 id="1-6-line-和-error"><a href="#1-6-line-和-error" class="headerlink" title="1.6 #line 和 #error"></a>1.6 #line 和 #error</h3><p><code>#line</code> 指令重置 <code>__LINE__</code> 和 <code>__FILE__</code> 宏报告的行号和文件名，用法如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">line</span> 1000          <span class="comment">// 将当前行号重置为 1000</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">line</span> 10 cool.c     <span class="comment">// 将当前行号重置为 10，文件名重置为 cool.c</span></span></span><br></pre></td></tr></table></figure>
+
+<p><code>#error</code> 指令让预处理器发出一条错误信息，该消息包含指令中的文本，用法如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> __STDC_VERSION__ != 201112L</span></span><br><span class="line"><span class="meta">#<span class="keyword">error</span> Not C11</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>编译上述代码将会产生 error，并且提示 <code>Not C11</code>。</p>
+<h3 id="1-7-变参宏-…-和-VA-ARGS"><a href="#1-7-变参宏-…-和-VA-ARGS" class="headerlink" title="1.7 变参宏 … 和 __VA_ARGS__"></a>1.7 变参宏 … 和 __VA_ARGS__</h3><p>一些函数可以接受数量可变的参数，例如 <code>printf</code>，在头文件 <code>stdvar.h</code> 中提供了相关操作。</p>
+<p>同样，宏定义中也可以实现可变参数，通过将宏列表中最后的参数写成 <code>...</code> 来实现这一功能。这样，预定义宏 <code>__VA_ARGS__</code> 可用在替换部分中，用来表示省略号代表什么。例如定义 <code>#define PRINT(...) printf(__VA_ARGS__)</code>，调用宏 <code>PRINT(&quot;Hello&quot;)</code>，<code>__VA_ARGS__</code> 展开为一个参数 <code>Hello</code>，调用宏 <code>PRINT(&quot;My name is %s&quot;, name)</code>，<code>__VA_ARGS__</code> 展开为两个参数 <code>&quot;My name is %s&quot;</code> 和 <code>name</code>。</p>
+<h3 id="1-8-attribute"><a href="#1-8-attribute" class="headerlink" title="1.8 attribute"></a>1.8 <strong>attribute</strong></h3><p>GNU C 的一大特色就是 <code>__attribute__</code> 机制。<code>__attribute__</code> 可以设置函数属性（Function Attribute ）、变量属性（Variable Attribute ）和类型属性（Type Attribute）。</p>
+<p>具体内容请参见链接 <a target="_blank" rel="noopener" href="https://blog.csdn.net/qlexcel/article/details/92656797">C语言__attribute__的使用</a>、<a target="_blank" rel="noopener" href="https://blog.csdn.net/weaiken/article/details/88085360"><strong>attribute</strong> 机制详解</a></p>
+<h2 id="二、宏模板"><a href="#二、宏模板" class="headerlink" title="二、宏模板"></a>二、宏模板</h2><p>由于 C 语言中库比较少，而一些比较基础的操作又无需通过函数实现，因此可以将一些基础功能写成宏进行展开，并集成到头文件中，在今后的项目中可以很方便的进行调用。</p>
+<p>在这里我自己总结并整理了若干个常用的宏。</p>
+<table>
+<thead>
+<tr>
+<th>宏名称</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LOG</td>
+<td>打印调试信息（带颜色）</td>
+</tr>
+<tr>
+<td>UPPERCASE</td>
+<td>转化为大写字母</td>
+</tr>
+<tr>
+<td>LOWERCASE</td>
+<td>转化为小写字母</td>
+</tr>
+<tr>
+<td>FPOS</td>
+<td>获取结构体成员偏移量</td>
+</tr>
+<tr>
+<td>FSIZ</td>
+<td>获取结构体成员所占用字节数</td>
+</tr>
+<tr>
+<td>container_of</td>
+<td>根据成员指针、结构体类型、结构体成员名称获取结构体起始地址</td>
+</tr>
+<tr>
+<td>offsetof</td>
+<td>获取结构体成员偏移量</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="2-1-打印调试信息"><a href="#2-1-打印调试信息" class="headerlink" title="2.1 打印调试信息"></a>2.1 打印调试信息</h3><p>调试信息是任何项目必不可少的内容，下面的宏可以在终端中输出带颜色的调试标签，方便观察错误和警告信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _LOG_</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _LOG_</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_ERROR_STYLE <span class="string">&quot;\x1b[31m&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_INFO_STYLE <span class="string">&quot;\x1b[32m&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_WARNING_STYLE <span class="string">&quot;\x1b[33m&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_STYLE_CLEAR <span class="string">&quot;\x1b[0m &quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_ERROR(...) printf(LOG_ERROR_STYLE<span class="string">&quot;[ERROR]&quot;</span>LOG_STYLE_CLEAR __VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_INFO(...) printf(LOG_INFO_STYLE<span class="string">&quot;[INFO]&quot;</span>LOG_STYLE_CLEAR __VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_WARNING(...) printf(LOG_WARNING_STYLE<span class="string">&quot;[WARN]&quot;</span>LOG_STYLE_CLEAR __VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG(TYPE, ...) LOG_##TYPE(__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>调用上面的 <code>LOG</code> 宏，可以看到结果如下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    LOG(ERROR, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;This is an error msg...\n&quot;</span>);</span><br><span class="line">    LOG(INFO, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;This is an info msg...\n&quot;</span>);</span><br><span class="line">    LOG(WARNING, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;This is a warning msg...\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20230122232752.png" alt="LOG宏实现效果"></p>
+<h3 id="2-2-大小写转化"><a href="#2-2-大小写转化" class="headerlink" title="2.2 大小写转化"></a>2.2 大小写转化</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> UPPERCASE(c) (c &amp; 0xdf)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOWERCASE(c) (c | 0x20)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-得到一个结构体成员-member-在结构体-struct-中的偏移量"><a href="#2-3-得到一个结构体成员-member-在结构体-struct-中的偏移量" class="headerlink" title="2.3 得到一个结构体成员 member 在结构体 struct 中的偏移量"></a>2.3 得到一个结构体成员 member 在结构体 struct 中的偏移量</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FPOS(type, member) (&amp;((type*)0)-&gt;member)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-得到一个结构体中某个成员字段-member-所占用的字节数"><a href="#2-4-得到一个结构体中某个成员字段-member-所占用的字节数" class="headerlink" title="2.4 得到一个结构体中某个成员字段 member 所占用的字节数"></a>2.4 得到一个结构体中某个成员字段 member 所占用的字节数</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FSIZ(type, member) sizeof(((type*)0)-&gt;member)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-container-of"><a href="#2-5-container-of" class="headerlink" title="2.5 container_of"></a>2.5 container_of</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> container_of(ptr, type, member) (&#123;              \</span></span><br><span class="line"><span class="meta">const typeof(((type *)0)-&gt;member) *__mptr = (ptr);    \</span></span><br><span class="line"><span class="meta">(type *)((char *)__mptr - __offsetof(type,member)); &#125;)</span></span><br></pre></td></tr></table></figure>
+
+<p><code>container_of</code> 宏函数的作用是 <strong>已知结构体 type 的成员 member 的地址 ptr，得到结构体 type 的起始地址</strong>。</p>
+<p>第一行用于“类型检查”。它确保 type 有一个名为 member 的成员（不过我认为这也是由 offsetof 宏完成的），并且如果 ptr 不是指向正确类型（成员的类型）的指针，编译器将打印警告，这对调试很有用。</p>
+<p>在上述宏的第三行，用了 <code>char *</code> 进行指针转化，这是因为 <code>offsetof</code> 指针偏移量是按照字节计算的，同时 <code>char *</code> 的指针也是以字节计算的，若转化为例如 <code>int *</code> 等类型，则 C 的指针算法将会计算 <code>sizeof(int) * offsetof</code> 作为最终的结果，也就是 4 字节乘以偏移量。</p>
+<p>具体说明参考链接 <a target="_blank" rel="noopener" href="https://blog.csdn.net/s2603898260/article/details/79371024">container of()函数简介</a> 和 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/54932270">linux 内核宏container_of剖析</a></p>
+<h3 id="2-6-offsetof"><a href="#2-6-offsetof" class="headerlink" title="2.6 offsetof"></a>2.6 offsetof</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> offsetof(type, member) ((size_t) &amp; ((type *)0)-&gt;member)</span></span><br></pre></td></tr></table></figure>
+
+<p><code>offsetof</code> 宏函数的作用是 <strong>得到结构体 type 的成员 member 所在的内存偏移量</strong></p>
+<p>对于 <code>container of</code> 以及 <code>offsetof</code> 我会单独用一篇博客进行详细讲解。</p>
+<h3 id="2-7"><a href="#2-7" class="headerlink" title="2.7"></a>2.7</h3><h3 id="2-8"><a href="#2-8" class="headerlink" title="2.8"></a>2.8</h3><h3 id="2-9"><a href="#2-9" class="headerlink" title="2.9"></a>2.9</h3><h3 id="2-10"><a href="#2-10" class="headerlink" title="2.10"></a>2.10</h3><h3 id="2-11"><a href="#2-11" class="headerlink" title="2.11"></a>2.11</h3><h3 id="2-12"><a href="#2-12" class="headerlink" title="2.12"></a>2.12</h3><h3 id="2-13"><a href="#2-13" class="headerlink" title="2.13"></a>2.13</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C</a>
+              <a href="/tags/%E5%AE%8F/" rel="tag"># 宏</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/84b8101e.html" rel="prev" title="Rust实现进度条功能">
+      <i class="fa fa-chevron-left"></i> Rust实现进度条功能
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/1ea0c606.html" rel="next" title="用 gdb 调试程序">
+      用 gdb 调试程序 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E9%A2%84%E5%A4%84%E7%90%86%E5%8F%8A%E5%AE%8F"><span class="nav-text">一、预处理及宏</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E2%80%9C-%E2%80%9D-%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">1.1 “#” 运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E2%80%9C-%E2%80%9D-%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">1.2 “##” 运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-undef-%E6%8C%87%E4%BB%A4"><span class="nav-text">1.3 #undef 指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E6%9D%A1%E4%BB%B6%E7%BC%96%E8%AF%91%E6%8C%87%E4%BB%A4"><span class="nav-text">1.4 条件编译指令</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-ifdef%E3%80%81-else-%E5%92%8C-endif-%E6%8C%87%E4%BB%A4"><span class="nav-text">1.4.1 #ifdef、#else 和 #endif 指令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-2-ifndef"><span class="nav-text">1.4.2 #ifndef</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-3-if%E3%80%81-elif"><span class="nav-text">1.4.3 #if、#elif</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-4-defined"><span class="nav-text">1.4.4 #defined</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-%E9%A2%84%E5%AE%9A%E4%B9%89%E5%AE%8F"><span class="nav-text">1.5 预定义宏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-line-%E5%92%8C-error"><span class="nav-text">1.6 #line 和 #error</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-%E5%8F%98%E5%8F%82%E5%AE%8F-%E2%80%A6-%E5%92%8C-VA-ARGS"><span class="nav-text">1.7 变参宏 … 和 __VA_ARGS__</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-8-attribute"><span class="nav-text">1.8 attribute</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%AE%8F%E6%A8%A1%E6%9D%BF"><span class="nav-text">二、宏模板</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E6%89%93%E5%8D%B0%E8%B0%83%E8%AF%95%E4%BF%A1%E6%81%AF"><span class="nav-text">2.1 打印调试信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%A4%A7%E5%B0%8F%E5%86%99%E8%BD%AC%E5%8C%96"><span class="nav-text">2.2 大小写转化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E5%BE%97%E5%88%B0%E4%B8%80%E4%B8%AA%E7%BB%93%E6%9E%84%E4%BD%93%E6%88%90%E5%91%98-member-%E5%9C%A8%E7%BB%93%E6%9E%84%E4%BD%93-struct-%E4%B8%AD%E7%9A%84%E5%81%8F%E7%A7%BB%E9%87%8F"><span class="nav-text">2.3 得到一个结构体成员 member 在结构体 struct 中的偏移量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E5%BE%97%E5%88%B0%E4%B8%80%E4%B8%AA%E7%BB%93%E6%9E%84%E4%BD%93%E4%B8%AD%E6%9F%90%E4%B8%AA%E6%88%90%E5%91%98%E5%AD%97%E6%AE%B5-member-%E6%89%80%E5%8D%A0%E7%94%A8%E7%9A%84%E5%AD%97%E8%8A%82%E6%95%B0"><span class="nav-text">2.4 得到一个结构体中某个成员字段 member 所占用的字节数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-container-of"><span class="nav-text">2.5 container_of</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-offsetof"><span class="nav-text">2.6 offsetof</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-7"><span class="nav-text">2.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-8"><span class="nav-text">2.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9"><span class="nav-text">2.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-10"><span class="nav-text">2.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-11"><span class="nav-text">2.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-12"><span class="nav-text">2.12</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-13"><span class="nav-text">2.13</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">209k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:10</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/aaaac292.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
