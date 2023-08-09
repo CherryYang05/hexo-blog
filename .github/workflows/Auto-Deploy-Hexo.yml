@@ -3,9 +3,9 @@ name: Auto-Deploy-Hexo
 on:
   # 触发条件：在 push 到 master 分支后触发
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   build-and-deploy:

@@ -102,7 +102,7 @@ deploy:
   - type: git
     repo: https://github.com/CherryYang05/CherryYang05.github.io.git
     # git@github.com:CherryYang05/CherryYang05.github.io.git
-    branch: master
+    branch: gh-pages
   # - type: baidu_url_submitter
 # Markdown-it config
 ## Docs: https://github.com/celsomiranda/hexo-renderer-markdown-it/wiki
