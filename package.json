@@ -14,7 +14,7 @@
   "dependencies": {
     "eslint": "^8.18.0",
     "g": "^2.0.1",
-    "hexo": "^5.3.0",
+    "hexo": "^5.4.2",
     "hexo-abbrlink": "^2.2.1",
     "hexo-admin": "^2.3.0",
     "hexo-asset-image": "^1.0.0",
@@ -33,7 +33,7 @@
     "hexo-renderer-kramed": "^0.1.4",
     "hexo-renderer-marked": "^6.0.0",
     "hexo-renderer-stylus": "^1.1.0",
-    "hexo-renderer-swig": "^1.1.0",
+    "hexo-renderer-swig": "^2.0.0",
     "hexo-server": "^1.0.0",
     "hexo-symbols-count-time": "^0.6.2",
     "hexo-wordcount": "^6.0.1",
