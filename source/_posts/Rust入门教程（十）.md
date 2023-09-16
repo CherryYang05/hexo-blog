@@ -28,6 +28,7 @@ cargo run <string> <filename>
 
 因此我们首先要读取命令行中的参数，我们导入函数 `use std::env::args()`，`args()` 函数返回一个迭代器，迭代器部分的内容将在后面才会介绍。然后使用 `collect` 方法，将迭代器中的值转化成一个集合，但是该函数不能处理命令行中非 `Unicode` 的字符（这种情况可以使用 `env::args _os()` 函数，这种情况下返回的迭代器值的类型是 `OsString`，在这里不做介绍）。
 
+
 ```rust
 use std::env;
 

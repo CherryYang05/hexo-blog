@@ -37,7 +37,7 @@ layout reg  // 寄存器窗口
 要想使用这些窗口，需要通过源码编译 gdb，在编译时添加参数 `--enable-tui`。
 
 ```shell
-./configure --prefix=/usr/local/gdb-11.2
+./configure --prefix=/usr/local/gdb-11.2 --enable-tui
 make -j32
 make install
 ```
@@ -48,9 +48,17 @@ make install
 configure: error: no enhanced curses library found; disable TUI
 ```
 
-在 CentOS 下需要安装 `ncurses-devel` 包，Ubuntu 下安装 `libncurses5-dev`
+在 CentOS 下需要安装 `yum install ncurses-devel` 包，Ubuntu 下安装 `libncurses5-dev`
 
+提示这个错误：
 
+```shell
+GMP is missing or unusable
+```
+
+需要安装 `yum install gmp-devel.x86_64`
+
+gcc 编译安装可能会提示：`致命错误： zlib.h：没有那个文件或目录`，需要安装 `yum install zlib-devel`
 
 
 

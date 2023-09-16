@@ -85,6 +85,7 @@ fn generate_workout(intensity: u32, random_number: u32) {
 
 然而这样又会产生一个新的问题：当进入 `else` 时，随机数值为 3 的时候，是无需执行复杂计算的，这时候用一个变量接收该复杂计算的函数值便会显得浪费。我们真正希望的是，函数定义单独在一个地方，等到函数真正被用到时再被执行，这就是闭包的功能。代码如下：
 
+
 ```rust
 fn generate_workout(intensity: u32, random_number: u32) {
     let expensive_closure = |num| {
@@ -185,6 +186,7 @@ where
 ```
 
 首先定义了一个结构体，该结构体泛型参数要实现 Fn trait，然后为该结构体实现 `new` 和 `value` 函数（方法），如果已经执行过该闭包，则返回值，若没有执行过则执行闭包，将值存进结构体变量中。`generate_workout` 函数实现如下：
+
 
 ```rust
 fn generate_workout(intensity: u32, random_number: u32) {
