@@ -182,25 +182,28 @@ GNU C 的一大特色就是 `__attribute__` 机制。`__attribute__` 可以设�
 #include<stdio.h>
 
 #define _LOG_
+
 #ifdef _LOG_
 #define LOG_ERROR_STYLE "\x1b[31m"
 #define LOG_INFO_STYLE "\x1b[32m"
 #define LOG_WARNING_STYLE "\x1b[33m"
+#define LOG_DEBUG_STYLE "\x1b[34m"
 #define LOG_STYLE_CLEAR "\x1b[0m "
 #define LOG_ERROR(...) printf(LOG_ERROR_STYLE"[ERROR]"LOG_STYLE_CLEAR __VA_ARGS__)
 #define LOG_INFO(...) printf(LOG_INFO_STYLE"[INFO]"LOG_STYLE_CLEAR __VA_ARGS__)
 #define LOG_WARNING(...) printf(LOG_WARNING_STYLE"[WARN]"LOG_STYLE_CLEAR __VA_ARGS__)
+#define LOG_DEBUG(...) printf(LOG_DEBUG_STYLE"[DEBUG]"LOG_STYLE_CLEAR __VA_ARGS__)
 #define LOG(TYPE, ...) LOG_##TYPE(__VA_ARGS__)
-#endif
 ```
 
 调用上面的 `LOG` 宏，可以看到结果如下。
 
 ```c
 int main() {
-    LOG(ERROR, "%s", "This is an error msg...\n");
-    LOG(INFO, "%s", "This is an info msg...\n");
-    LOG(WARNING, "%s", "This is a warning msg...\n");
+    LOG(ERROR, "%s\n", "This is an error msg...");
+    LOG(DEBUG, "%s\n", "This is a debug msg...");
+    LOG(INFO, " %s\n", "This is an info msg...");
+    LOG(WARNING, " %s\n", "This is a warning msg...");
 }
 ```
 
