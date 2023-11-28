@@ -7,7 +7,6 @@ tags:
 categories:
   - 编程语言
   - Rust
-categories:
 ---
 
 >Rust 异步编程
