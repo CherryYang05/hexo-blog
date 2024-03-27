@@ -11263,16 +11263,16 @@ LRU 实现策略</p>
       </tags>
   </entry>
   <entry>
-    <title>执行yum提示CRITICAL</title>
+    <title>执行 yum 提示CRITICAL</title>
     <url>/hexo-blog/3b07dfa1.html</url>
     <content><![CDATA[<h1 id="执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf"><a href="#执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf" class="headerlink" title="执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:&#x2F;&#x2F;&#x2F;etc&#x2F;yum.conf"></a>执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:&#x2F;&#x2F;&#x2F;etc&#x2F;yum.conf</h1><p>关于这个问题，网上可以找到很多解决方案，包括但不限于：</p>
 <ol>
-<li>重新安装yum</li>
-<li>重新创建&#x2F;etc&#x2F;yum.conf文件</li>
-<li>使用rpm卸载当前安装的包</li>
+<li>重新安装 yum</li>
+<li>重新创建 &#x2F;etc&#x2F;yum.conf文件</li>
+<li>使用 rpm 卸载当前安装的包</li>
 </ol>
 <p>但是最后仍然报同样的错误。</p>
-<p>因为之前在更换 libc 版本，手动编译安装了 glibc，最后搜到这个<a href="https://www.silverdragon.cn/archives/7252/">博客</a>，得知是 curl 出了问题，是 libcurl 版本过低，libcurl是c&#x2F;cpp使用时的链接库，常用的http get，post请求，http，ftp 下载等都支持</p>
+<p>因为之前在更换 libc 版本，手动编译安装了 glibc，最后搜到这个<a href="https://www.silverdragon.cn/archives/7252/">博客</a>，得知是 curl 出了问题，是 libcurl 版本过低，libcurl 是 c&#x2F;cpp 使用时的链接库，常用的 http get，post 请求，http，ftp 下载等都支持</p>
 <p>curl 的功能实现是依赖 libcurl.so 这个动态链接库的，通常位于 &#x2F;lib64 或者 &#x2F;usr&#x2F;lib64 中，4.x 版本的链接库地址为 libcurl.so.4</p>
 <p>最后发现 libcurl 版本为 4.3.0，可能不支持 glibc-2.30 高版本的运行时，因此重新下载了高版本的 libcurl，具体操作见<a href="https://www.silverdragon.cn/archives/7252/">博客</a></p>
 ]]></content>
@@ -11281,6 +11281,7 @@ LRU 实现策略</p>
         <category>配置</category>
       </categories>
       <tags>
+        <tag>Linux</tag>
         <tag>yum</tag>
         <tag>配置</tag>
         <tag>Centos</tag>
@@ -11370,6 +11371,94 @@ LRU 实现策略</p>
       <tags>
         <tag>Rust</tag>
         <tag>log4rs</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>清理git记录中的大文件</title>
+    <url>/hexo-blog/f6c73689.html</url>
+    <content><![CDATA[<p>前几天我想把一个本地仓库推送到 github 仓库中时提示：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">remote: error: Trace: 9222dcf96227a19766567c1da4183cfef7b9ec21689a2ee21f6c1c3b2f1fab7a</span><br><span class="line">remote: error: See https://gh.io/lfs for more information.</span><br><span class="line">remote: error: File 18T.trace is 771.88 MB; this exceeds GitHub&#x27;s file size limit of 100.00 MB</span><br><span class="line">remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.</span><br><span class="line">To https://github.com/CherryYang05/DiskPine.git</span><br><span class="line"> ! [remote rejected] master -&gt; master (pre-receive hook declined)</span><br><span class="line">错误：无法推送一些引用到 &#x27;https://github.com/CherryYang05/DiskPine.git&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>发现在之前的 git 记录中有一个大文件（18T.trace 771.88MB），但是在最新的提交记录中，我已经将其删除了，却依然无法推送。</p>
+<p>经过查询资料，找到了解决方法：</p>
+<ol>
+<li>若文件还没有删除，并且需要将其推送到远程仓库，使用 LFS(Large File Storage) 修改文件大小的限制；</li>
+<li>若文件已经删除，使用 BFG Repo-Cleaner 清理 git 历史记录中对大文件的引用。</li>
+</ol>
+<span id="more"></span>
+
+<h2 id="1-LFS"><a href="#1-LFS" class="headerlink" title="1. LFS"></a>1. LFS</h2><p>Git LFS 是一个命令行扩展，用于使用 Git 管理大文件。git-lfs <a href="https://github.com/git-lfs/git-lfs">Github 链接</a></p>
+<h3 id="1-1-安装"><a href="#1-1-安装" class="headerlink" title="1.1 安装"></a>1.1 安装</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | sudo bash</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-使用"><a href="#1-2-使用" class="headerlink" title="1.2 使用"></a>1.2 使用</h3><ol>
+<li>初始化 lfs：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git lfs install</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>添加需要上传的文件：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git lfs track &quot;your_big_file&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>将文件添加到暂存区：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add &quot;your_big_file&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>提交文件：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git commit -m &quot;Add big file&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>推送到远程仓库：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-注意"><a href="#1-3-注意" class="headerlink" title="1.3 注意"></a>1.3 注意</h3><ul>
+<li>LFS 仅支持新的提交记录，无法修改历史记录中的引用；</li>
+<li>若需要清理历史记录中的引用，需要使用 BFG Repo-Cleaner。</li>
+</ul>
+<p>其他使用方式见 <a href="https://github.com/git-lfs/git-lfs?tab=readme-ov-file#example-usage">Example Usage</a>。</p>
+<h2 id="2-BFG"><a href="#2-BFG" class="headerlink" title="2. BFG"></a>2. BFG</h2><p>BFG Repo-Cleaner 是一个由 Scala 编写的命令行工具，用于快速、精确地从 Git 仓库中删除不需要的数据。相比于 git-filter-branch 命令，BFG 的速度更快，使用也更简单。无论是大文件还是敏感数据，只需简单的命令，就能将其从所有提交历史中移除。</p>
+<h3 id="2-1-安装"><a href="#2-1-安装" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>在 <a href="https://rtyley.github.io/bfg-repo-cleaner/">这里</a> 下载 bfg-1.14.0.jar 包，或者使用 curl 下载：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">curl -o bfg.jar -L https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-使用"><a href="#2-2-使用" class="headerlink" title="2.2 使用"></a>2.2 使用</h3><ol>
+<li>首先，将要清理的文件添加到 <code>.gitignore</code> 文件中，以免再次出现在提交中；</li>
+<li>然后，使用 BFG 清理大文件：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">java -jar bfg.jar --strip-blobs-bigger-than 100M &lt;repo&gt;.git</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>--strip-blobs-bigger-than 100M</code> 表示删除大于 100M 的文件。</p>
+<ol start="3">
+<li>接着，清理 git 历史记录中的引用：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd &lt;repo&gt;</span><br><span class="line">git reflog expire --expire=now --all &amp;&amp; git gc --prune=now --aggressive</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>最后，推送到远程仓库：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-注意"><a href="#2-3-注意" class="headerlink" title="2.3 注意"></a>2.3 注意</h3><ul>
+<li>BFG Repo-Cleaner 只会修改本地仓库，不会修改远程仓库；</li>
+<li>BFG Repo-Cleaner 会修改 commit 的 hash 值，因此不要使用 <code>git pull</code> 同步远程仓库，而是使用 <code>git fetch</code>；</li>
+<li>BFG Repo-Cleaner 会修改提交记录，因此可能会导致冲突，需要手动解决。</li>
+</ul>
+<h3 id="2-4-参考链接"><a href="#2-4-参考链接" class="headerlink" title="2.4 参考链接"></a>2.4 参考链接</h3><ol>
+<li><a href="https://rtyley.github.io/bfg-repo-cleaner/">BFG Repo-Cleaner</a></li>
+<li>[BFG Repo-Cleaner - GitHub](</li>
+</ol>
+<h3 id="2-1-安装-1"><a href="#2-1-安装-1" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>jar 包<a href="https://rtyley.github.io/bfg-repo-cleaner/">下载链接</a></p>
+]]></content>
+      <categories>
+        <category>生产力工具</category>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>git</tag>
       </tags>
   </entry>
 </search>
