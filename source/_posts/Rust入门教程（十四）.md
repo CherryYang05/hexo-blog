@@ -1,12 +1,13 @@
 ---
 title: Rust入门教程（十四）：异步编程
 mathjax: true
-date: 2023-11-02 15:54:33
 tags:
   - Rust
 categories:
   - 编程语言
   - Rust
+abbrlink: 1bd98bb8
+date: 2023-11-02 15:54:33
 ---
 
 >Rust 异步编程

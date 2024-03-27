@@ -1,13 +1,14 @@
 ---
 title: log4rs日志库解析
 mathjax: true
-date: 2023-11-28 13:44:55
 tags:
   - Rust
   - log4rs
 categories:
   - 编程语言
   - Rust
+abbrlink: faf96547
+date: 2023-11-28 13:44:55
 ---
 
 [log4rs](https://github.com/sfackler/log4rs) 是rust实现的高度可配置日志库，该库配置的方式比较灵活，功能相对丰富，可以满足绝大部分的项目需要。
