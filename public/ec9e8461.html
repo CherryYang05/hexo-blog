@@ -28,15 +28,15 @@
 <meta property="og:site_name" content="北极熊不吃企鹅宝宝">
 <meta property="og:description" content="makefile脚本的实现在此之前，我们编译内核都是通过手动输入一条一条命令实现的，但是随着我们的模块越来越多，每次编译内核再手动链接成一个二进制文件，最后再手动反汇编是很麻烦的。作为一名合格的计算机专业的大学生，这种手动模式是很不专业的，一是手输代码很容易出错，倘若我们更新了某个模块，却忘了重新编译链接的话，那么最后的内核就会出现一些难以排除的诡异 bug；二是，作为计算机专业的大学生，将工作自">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cherryyang05.github.io/ec9e8461/001.png">
-<meta property="og:image" content="https://cherryyang05.github.io/ec9e8461/002.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/ec9e8461/001.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/ec9e8461/002.png">
 <meta property="article:published_time" content="2021-03-12T13:26:06.000Z">
 <meta property="article:modified_time" content="2023-08-08T12:35:27.418Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="脚本">
 <meta property="article:tag" content="makefile">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cherryyang05.github.io/ec9e8461/001.png">
+<meta name="twitter:image" content="https://cherryyang05.github.io/hexo-blog/ec9e8461/001.png">
 
 <link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/ec9e8461.html">
 
@@ -321,8 +321,8 @@
 <p>makefile脚本中转义字符为<code>\$</code>，在要转义字符的前面加上这个符号表示转义单个字符。</p>
 <p>我们将不想显示的命令前面加<code>@</code>来隐藏，然后再将我们需要操作的文件夹在虚拟机上共享。</p>
 <p>最终运行效果如下：</p>
-<p><img data-src="/ec9e8461/001.png" alt="001"></p>
-<p><img data-src="/ec9e8461/002.png" alt="002"></p>
+<p><img data-src="/hexo-blog/ec9e8461/001.png" alt="001"></p>
+<p><img data-src="/hexo-blog/ec9e8461/002.png" alt="002"></p>
 <p>感觉makefile脚本中all指令执行有点繁琐，总是将字节码移来移去，最好的方式是在src源代码目录下运行Java，处理asm文件，运行nasm命令，然后在根目录下生成boot, kernel二进制文件并生成system.img镜像</p>
 
     </div>

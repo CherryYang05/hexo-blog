@@ -6,7 +6,7 @@
   <link href="https://cherryyang05.github.io/hexo-blog/atom.xml" rel="self"/>
   
   <link href="https://cherryyang05.github.io/hexo-blog/"/>
-  <updated>2024-03-27T13:02:37.343Z</updated>
+  <updated>2024-03-28T11:23:04.064Z</updated>
   <id>https://cherryyang05.github.io/hexo-blog/</id>
   
   <author>
@@ -17,11 +17,41 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>执行 yum 提示CRITICAL</title>
+    <link href="https://cherryyang05.github.io/hexo-blog/d74c62dc.html"/>
+    <id>https://cherryyang05.github.io/hexo-blog/d74c62dc.html</id>
+    <published>2024-03-28T11:19:00.647Z</published>
+    <updated>2024-03-28T11:23:04.064Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf"><a href="#执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf" class="headerlink" title="执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:&#x2F;&#x2F;&#x2F;etc&#x2F;yum.conf"></a>执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:&#x2F;&#x2F;&#x2F;etc&#x2F;yum.conf</h1><p>关于这个问题，网上可以找到很多解决方案，包括但不限于：</p><ol><li>重新安装 yum</li><li>重新创建 &#x2F;etc&#x2F;yum.conf文件</li><li>使用 rpm 卸载当前安装的包</li></ol><p>但是最后仍然报同样的错误。</p><p>因为之前在更换 libc 版本，手动编译安装了 glibc，最后搜到这个<a href="https://www.silverdragon.cn/archives/7252/">博客</a>，得知是 curl 出了问题，是 libcurl 版本过低，libcurl 是 c&#x2F;cpp 使用时的链接库，常用的 http get，post 请求，http，ftp 下载等都支持</p><p>curl 的功能实现是依赖 libcurl.so 这个动态链接库的，通常位于 &#x2F;lib64 或者 &#x2F;usr&#x2F;lib64 中，4.x 版本的链接库地址为 libcurl.so.4</p><p>最后发现 libcurl 版本为 4.3.0，可能不支持 glibc-2.30 高版本的运行时，因此重新下载了高版本的 libcurl，具体操作见<a href="https://www.silverdragon.cn/archives/7252/">博客</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf&quot;&gt;&lt;a href=&quot;#执行-yum-命令提示-C</summary>
+      
+    
+    
+    
+    <category term="运维" scheme="https://cherryyang05.github.io/hexo-blog/categories/%E8%BF%90%E7%BB%B4/"/>
+    
+    <category term="配置" scheme="https://cherryyang05.github.io/hexo-blog/categories/%E8%BF%90%E7%BB%B4/%E9%85%8D%E7%BD%AE/"/>
+    
+    
+    <category term="yum" scheme="https://cherryyang05.github.io/hexo-blog/tags/yum/"/>
+    
+    <category term="配置" scheme="https://cherryyang05.github.io/hexo-blog/tags/%E9%85%8D%E7%BD%AE/"/>
+    
+    <category term="Centos" scheme="https://cherryyang05.github.io/hexo-blog/tags/Centos/"/>
+    
+  </entry>
+  
+  <entry>
     <title>使用patchelf解决vscode远程连接不支持低版本glibc的问题</title>
     <link href="https://cherryyang05.github.io/hexo-blog/2cbef437.html"/>
     <id>https://cherryyang05.github.io/hexo-blog/2cbef437.html</id>
     <published>2024-03-27T08:52:56.000Z</published>
-    <updated>2024-03-27T13:02:37.343Z</updated>
+    <updated>2024-03-27T13:02:49.703Z</updated>
     
     <content type="html"><![CDATA[<p>VScode 1.86 版本的 remote 要求 glibc 2.28 及以上，于是在各种旧版本服务器上就不支持了。</p><p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/image.png" alt="不支持的 OS 版本"></p><p>新版本刚发布就在 github 上的 <a href="https://github.com/microsoft/vscode/issues/203375">issue</a> 上讨论起来了，<a href="https://code.visualstudio.com/docs/remote/faq#_can-i-run-vs-code-server-on-older-linux-distributions">VScode 官方文档</a> 中也说明了，从 VS Code 版本 1.86.1（2024 年 1 月）开始提高了远程服务器构建工具链的最低要求。VS Code 分发的预构建服务器与基于 glibc 2.28 或更高版本的 Linux 发行版兼容。</p><p>当然给服务器升级 glibc 是一个极其危险的操作，本人曾经就瞎捣鼓升级了 glibc，结果导致系统崩溃，不得已重装了系统。</p><p><strong>我们可以利用 patchelf 手动指定动态库，避免了重新编译系统的 glibc。</strong></p><span id="more"></span><h2 id="1-动态链接库下载"><a href="#1-动态链接库下载" class="headerlink" title="1. 动态链接库下载"></a>1. 动态链接库下载</h2><p>github 上有较为方便的下载 glibc 的仓库 <a href="https://github.com/matrix1001/glibc-all-in-one">glibc-all-in-one</a></p><p>根据仓库的 README，查看支持的版本：<code>cat list</code></p><p>我选择的是 <code>2.31-0ubuntu9.14_amd64</code>，然后执行 <code>./download 2.31-0ubuntu9.14_amd64</code></p><p>在当前文件夹下会生成 <code>libs</code> 文件夹，就是刚刚下载的 <code>2.31-0ubuntu9.14_amd64</code> 的动态库。</p><p>然后执行 <code>./build 2.31 arm64</code>，这一步会在根目录下编译生成 <code>/glibc</code> 文件夹，可以将其移动到 <code>glibc-all-in-one</code> 文件夹中。</p><h2 id="2-用-patchelf-修改-vscode-server-依赖的-glibc-版本"><a href="#2-用-patchelf-修改-vscode-server-依赖的-glibc-版本" class="headerlink" title="2. 用 patchelf 修改 vscode-server 依赖的 glibc 版本"></a>2. 用 patchelf 修改 vscode-server 依赖的 glibc 版本</h2><p>在执行命令前，先删除 <code>.vscode-server</code> 文件夹，用 vscode 连接服务器，让它自动重新下载 vscode-server 相关文件，这个时候在 <code>~/.vscode-server/bin</code> 中应该只有一个由数字和字母组成随机字符串的文件夹（我的服务器上是 <code>863d2581ecda6849923a2118d93a088b0745d9d6</code>，不同人应该不一样），进入这个文件夹，有一个 <code>node</code> 二进制文件，我们要重新 patch 的就是这个文件。</p><p>执行命令：</p><p><code>patchelf --set-interpreter ~/pack/glibc-all-in-one/libs/2.31-0ubuntu9.14_amd64/ld-linux-x86-64.so.2 --set-rpath ~/pack/glibc-all-in-one/libs/2.31-0ubuntu9.14_amd64/:~/pack/glibc-all-in-one/glibc/2.31/amd64/lib --force-rpath ~/.vscode-server/bin/863d2581ecda6849923a2118d93a088b0745d9d6/node</code></p><p><code>--set-interpreter</code> 后面跟的是可执行文件的解释器路径，需要指定动态链接器的路径，路径为 <code>./glibc-all-in-one/libs/[your downloaded glibc version]/ld-linux-x86-64.so.2</code>，动态链接器负责在程序运行时加载所需的共享库。</p><p><code>--set-rpath</code> 这部分设置了可执行文件的运行时搜索路径（Runtime PATH），指定了程序在运行时搜索共享库时应该查找的路径。这里指定了两个路径包含了 glibc 核心库和其他库。这里的路径为 <code>glibc-all-in-one/libs</code> 文件夹下的你下载的不同版本的 glibc 文件夹和编译生成的 <code>glibc/[version]/[arch]/lib</code> 文件夹。</p><p><code>--force-rpath</code> 后面跟的就是要修改的 vscode-server 的 node 文件。</p><p>如果执行命令时提示：<code>patchelf: open: Text file busy</code>，将本机上 vscode 运行的远程连接关掉再执行就可以了。</p><p>重新打开 vscode，就不会有操作系统版本不支持的提示了~~</p><p><a href="https://zhangjk98.xyz/patchelf/">参考链接</a></p>]]></content>
     
@@ -123,38 +153,6 @@
     
     
     <category term="Rust" scheme="https://cherryyang05.github.io/hexo-blog/tags/Rust/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>执行 yum 提示CRITICAL</title>
-    <link href="https://cherryyang05.github.io/hexo-blog/3b07dfa1.html"/>
-    <id>https://cherryyang05.github.io/hexo-blog/3b07dfa1.html</id>
-    <published>2023-09-16T14:29:32.000Z</published>
-    <updated>2024-03-27T07:28:46.565Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf"><a href="#执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf" class="headerlink" title="执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:&#x2F;&#x2F;&#x2F;etc&#x2F;yum.conf"></a>执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:&#x2F;&#x2F;&#x2F;etc&#x2F;yum.conf</h1><p>关于这个问题，网上可以找到很多解决方案，包括但不限于：</p><ol><li>重新安装 yum</li><li>重新创建 &#x2F;etc&#x2F;yum.conf文件</li><li>使用 rpm 卸载当前安装的包</li></ol><p>但是最后仍然报同样的错误。</p><p>因为之前在更换 libc 版本，手动编译安装了 glibc，最后搜到这个<a href="https://www.silverdragon.cn/archives/7252/">博客</a>，得知是 curl 出了问题，是 libcurl 版本过低，libcurl 是 c&#x2F;cpp 使用时的链接库，常用的 http get，post 请求，http，ftp 下载等都支持</p><p>curl 的功能实现是依赖 libcurl.so 这个动态链接库的，通常位于 &#x2F;lib64 或者 &#x2F;usr&#x2F;lib64 中，4.x 版本的链接库地址为 libcurl.so.4</p><p>最后发现 libcurl 版本为 4.3.0，可能不支持 glibc-2.30 高版本的运行时，因此重新下载了高版本的 libcurl，具体操作见<a href="https://www.silverdragon.cn/archives/7252/">博客</a></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;执行-yum-命令提示-CRITICAL-yum-cli-Config-Error-Error-accessing-file-for-config-file-x2F-x2F-x2F-etc-x2F-yum-conf&quot;&gt;&lt;a href=&quot;#执行-yum-命令提示-C</summary>
-      
-    
-    
-    
-    <category term="运维" scheme="https://cherryyang05.github.io/hexo-blog/categories/%E8%BF%90%E7%BB%B4/"/>
-    
-    <category term="配置" scheme="https://cherryyang05.github.io/hexo-blog/categories/%E8%BF%90%E7%BB%B4/%E9%85%8D%E7%BD%AE/"/>
-    
-    
-    <category term="Linux" scheme="https://cherryyang05.github.io/hexo-blog/tags/Linux/"/>
-    
-    <category term="yum" scheme="https://cherryyang05.github.io/hexo-blog/tags/yum/"/>
-    
-    <category term="配置" scheme="https://cherryyang05.github.io/hexo-blog/tags/%E9%85%8D%E7%BD%AE/"/>
-    
-    <category term="Centos" scheme="https://cherryyang05.github.io/hexo-blog/tags/Centos/"/>
     
   </entry>
   

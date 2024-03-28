@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="北极熊不吃企鹅宝宝">
 <meta property="og:description" content="二、简单数学表达式的语法分析当前所实现的简易编译器是将一条或一组数学表达式编译成类似汇编语言的代码，因此就要给算术表达式设立一组语法规则，判断是否是合法的算数表达式，那么程序才能对输入的表达式进行分析，我们将一组带有分号的算数表达式称为 statements，例如 1+2*3+4; 41*2;1+2+3+4;，这三个表达式的集合称为 statements，同时将一组表达式中的某一条带有分号的表达式">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cherryyang05.github.io/f73c25d7/%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E6%A0%91.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/f73c25d7/%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E6%A0%91.png">
 <meta property="article:published_time" content="2022-01-06T08:14:27.000Z">
 <meta property="article:modified_time" content="2023-08-08T12:35:27.417Z">
 <meta property="article:author" content="Cherry">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="编译原理">
 <meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cherryyang05.github.io/f73c25d7/%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E6%A0%91.png">
+<meta name="twitter:image" content="https://cherryyang05.github.io/hexo-blog/f73c25d7/%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E6%A0%91.png">
 
 <link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/f73c25d7.html">
 
@@ -317,7 +317,7 @@
 <p>回到语法规则上，箭头右边有两种替换规则，那么我们应该选取哪一种进行替换呢？在编译原理中，有一种方法叫做 <code>lookahead</code>，举个例子，对于语法：<br>$statements\rightarrow expression;|expression;statements$<br>我们按照顺序读取到第一个分号，若下一个字符有意义，那么就选取后者进行解析；如果下一个字符是 <code>EOI</code>，那么说明该表达式已经读完，那么选取前者进行解析。</p>
 <p>那么如何解决语法规则中的循环调用呢？我们更改语法规则如下：<br>$1. \quad statements \rightarrow 空|expression;statements$<br>$2. \quad expression \rightarrow term ,, expression’$<br>$3. \quad expression \rightarrow +term ,, expression’ | 空$<br>$4. \quad term \rightarrow factor ,, term’$<br>$5. \quad term’ \rightarrow *factor ,, term’ | 空$<br>$6. \quad factor \rightarrow number | (expression)$</p>
 <p>语法解析树如下：</p>
-<p><img data-src="/f73c25d7/%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E6%A0%91.png" alt="语法解析树"></p>
+<p><img data-src="/hexo-blog/f73c25d7/%E8%AF%AD%E6%B3%95%E8%A7%A3%E6%9E%90%E6%A0%91.png" alt="语法解析树"></p>
 
     </div>
 
