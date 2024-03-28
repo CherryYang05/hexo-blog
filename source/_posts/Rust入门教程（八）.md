@@ -7,6 +7,7 @@ categories:
   - 编程语言
   - Rust
 abbrlink: 290a7a7a
+date: 2022-06-30 16:52:56
 ---
 
 # Rust入门教程（八）：编写和运行测试

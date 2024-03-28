@@ -9,6 +9,7 @@ categories:
   - - 运维
     - 配置
 abbrlink: d74c62dc
+date: 2024-03-21 16:52:56
 ---
 
 # 执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:///etc/yum.conf
