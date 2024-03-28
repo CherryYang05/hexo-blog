@@ -5,40 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 5.4.2">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/hexo-blog/images/logo.svg" color="#222">
 
-<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/hexo-blog/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/hexo-blog/lib/font-awesome/css/all.min.css">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="makefile脚本的实现在此之前，我们编译内核都是通过手动输入一条一条命令实现的，但是随着我们的模块越来越多，每次编译内核再手动链接成一个二进制文件，最后再手动反汇编是很麻烦的。作为一名合格的计算机专业的大学生，这种手动模式是很不专业的，一是手输代码很容易出错，倘若我们更新了某个模块，却忘了重新编译链接的话，那么最后的内核就会出现一些难以排除的诡异 bug；二是，作为计算机专业的大学生，将工作自">
 <meta property="og:type" content="article">
 <meta property="og:title" content="自动化的实现（包括makefile脚本的使用）">
-<meta property="og:url" content="http://cherryyang05.github.io/ec9e8461.html">
+<meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/ec9e8461.html">
 <meta property="og:site_name" content="北极熊不吃企鹅宝宝">
 <meta property="og:description" content="makefile脚本的实现在此之前，我们编译内核都是通过手动输入一条一条命令实现的，但是随着我们的模块越来越多，每次编译内核再手动链接成一个二进制文件，最后再手动反汇编是很麻烦的。作为一名合格的计算机专业的大学生，这种手动模式是很不专业的，一是手输代码很容易出错，倘若我们更新了某个模块，却忘了重新编译链接的话，那么最后的内核就会出现一些难以排除的诡异 bug；二是，作为计算机专业的大学生，将工作自">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cherryyang05.github.io/ec9e8461/001.png">
-<meta property="og:image" content="http://cherryyang05.github.io/ec9e8461/002.png">
+<meta property="og:image" content="https://cherryyang05.github.io/ec9e8461/001.png">
+<meta property="og:image" content="https://cherryyang05.github.io/ec9e8461/002.png">
 <meta property="article:published_time" content="2021-03-12T13:26:06.000Z">
 <meta property="article:modified_time" content="2023-08-08T12:35:27.418Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="脚本">
 <meta property="article:tag" content="makefile">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cherryyang05.github.io/ec9e8461/001.png">
+<meta name="twitter:image" content="https://cherryyang05.github.io/ec9e8461/001.png">
 
-<link rel="canonical" href="http://cherryyang05.github.io/ec9e8461.html">
+<link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/ec9e8461.html">
 
 
 <script id="page-configurations">
@@ -82,7 +82,7 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+<link rel="alternate" href="/hexo-blog/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -101,7 +101,7 @@
 
   <div class="site-meta">
 
-    <a href="/" class="brand" rel="start">
+    <a href="/hexo-blog/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
       <span class="logo-line-after"><i></i></span>
@@ -123,32 +123,32 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+    <a href="/hexo-blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+    <a href="/hexo-blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">29</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+    <a href="/hexo-blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+    <a href="/hexo-blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">56</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
 
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+    <a href="/hexo-blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
 
   </li>
         <li class="menu-item menu-item-sitemap">
 
-    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+    <a href="/hexo-blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -208,10 +208,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/ec9e8461.html">
+    <link itemprop="mainEntityOfPage" href="https://cherryyang05.github.io/hexo-blog/ec9e8461.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="image" content="/hexo-blog/images/avatar2.png">
       <meta itemprop="name" content="Cherry">
       <meta itemprop="description" content="">
     </span>
@@ -246,16 +246,16 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">生产力工具</span></a>
+                  <a href="/hexo-blog/categories/%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">生产力工具</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/%E8%84%9A%E6%9C%AC/" itemprop="url" rel="index"><span itemprop="name">脚本</span></a>
+                  <a href="/hexo-blog/categories/%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/%E8%84%9A%E6%9C%AC/" itemprop="url" rel="index"><span itemprop="name">脚本</span></a>
                 </span>
             </span>
 
           
-            <span id="/ec9e8461.html" class="post-meta-item leancloud_visitors" data-flag-title="自动化的实现（包括makefile脚本的使用）" title="阅读次数">
+            <span id="/hexo-blog/ec9e8461.html" class="post-meta-item leancloud_visitors" data-flag-title="自动化的实现（包括makefile脚本的使用）" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -277,8 +277,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/ec9e8461.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/ec9e8461.html" itemprop="commentCount"></span>
+    <a title="valine" href="/hexo-blog/ec9e8461.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/ec9e8461.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -333,8 +333,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E8%84%9A%E6%9C%AC/" rel="tag"># 脚本</a>
-              <a href="/tags/makefile/" rel="tag"># makefile</a>
+              <a href="/hexo-blog/tags/%E8%84%9A%E6%9C%AC/" rel="tag"># 脚本</a>
+              <a href="/hexo-blog/tags/makefile/" rel="tag"># makefile</a>
           </div>
 
         
@@ -343,11 +343,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/37079a34.html" rel="prev" title="C/C++常用函数整理">
+    <a href="/hexo-blog/37079a34.html" rel="prev" title="C/C++常用函数整理">
       <i class="fa fa-chevron-left"></i> C/C++常用函数整理
     </a></div>
       <div class="post-nav-item">
-    <a href="/200b33f8.html" rel="next" title="笔试题总结">
+    <a href="/hexo-blog/200b33f8.html" rel="next" title="笔试题总结">
       笔试题总结 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -416,29 +416,29 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Cherry"
-      src="/images/avatar2.png">
+      src="/hexo-blog/images/avatar2.png">
   <p class="site-author-name" itemprop="name">Cherry</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/archives/">
+          <a href="/hexo-blog/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/categories/">
+            <a href="/hexo-blog/categories/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/tags/">
+            <a href="/hexo-blog/tags/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">56</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -473,7 +473,7 @@
 <div class="copyright">
   
   &copy; 2020 – 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -483,13 +483,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">209k</span>
+    <span title="站点总字数">215k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:10</span>
+    <span title="站点阅读时长">3:15</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -617,36 +617,36 @@
   </div>
 
   
-  <script src="/lib/anime.min.js"></script>
+  <script src="/hexo-blog/lib/anime.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.ui.min.js"></script>
 
-<script src="/js/utils.js"></script>
+<script src="/hexo-blog/js/utils.js"></script>
 
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
+<script src="/hexo-blog/js/motion.js"></script>
 
 
-<script src="/js/next-boot.js"></script>
-
-<script src="/js/bookmark.js"></script>
+<script src="/hexo-blog/js/schemes/muse.js"></script>
 
 
+<script src="/hexo-blog/js/next-boot.js"></script>
 
-
-  
+<script src="/hexo-blog/js/bookmark.js"></script>
 
 
 
 
   
-<script src="/js/local-search.js"></script>
+
+
+
+
+  
+<script src="/hexo-blog/js/local-search.js"></script>
 
 
 
@@ -667,7 +667,7 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
     view     : 'FitH'
   };
   let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
-  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+  let fullURL = `/hexo-blog/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
 
   if (NexT.utils.supportsPDFs()) {
     element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
@@ -759,7 +759,7 @@ if (document.querySelectorAll('pre.mermaid').length) {
       quicklink({
         timeout : 3000,
         priority: true,
-        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/ec9e8461.html',]
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://cherryyang05.github.io/hexo-blog/ec9e8461.html',]
       });
       });
   </script>

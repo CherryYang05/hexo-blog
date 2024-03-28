@@ -5,97 +5,97 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 5.4.2">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/hexo-blog/images/logo.svg" color="#222">
 
-<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/hexo-blog/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+<link rel="stylesheet" href="/hexo-blog/lib/font-awesome/css/all.min.css">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="本系列笔记来自于国防科技大学的计算机体系结构课程作者：Cherry时间：2022.1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机体系结构课程笔记（一）">
-<meta property="og:url" content="http://cherryyang05.github.io/bc5a2705.html">
+<meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/bc5a2705.html">
 <meta property="og:site_name" content="北极熊不吃企鹅宝宝">
 <meta property="og:description" content="本系列笔记来自于国防科技大学的计算机体系结构课程作者：Cherry时间：2022.1">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/RISC%E6%8C%87%E4%BB%A4%E9%9B%86%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E4%B8%BE%E4%BE%8B.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%8F%96%E6%8C%87%E4%BB%A4%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%8C%87%E4%BB%A4%E8%AF%91%E7%A0%81%EF%BC%8C%E8%AF%BB%E5%AF%84%E5%AD%98%E5%99%A8%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%89%A7%E8%A1%8C%EF%BC%8C%E6%9C%89%E6%95%88%E5%9C%B0%E5%9D%80%E8%AE%A1%E7%AE%97%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%86%99%E5%9B%9E%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E7%AE%80%E5%8D%95%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%90%84%E6%B5%81%E6%B0%B4%E6%AE%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E9%94%81%E5%AD%98%E5%99%A8.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%91%BD%E5%90%8D.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%9E%84%E6%88%90.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C%EF%BC%88%E7%BB%AD%EF%BC%89.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E5%AF%B9%E5%A4%9A%E8%B7%AF%E9%80%89%E6%8B%A9%E5%99%A8MUX%E7%9A%84%E6%8E%A7%E5%88%B6.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%97%B6%E7%A9%BA%E5%9B%BE%EF%BC%88%E5%90%84%E6%AE%B5%E6%97%B6%E9%97%B4%E4%B8%8D%E7%AD%89%EF%BC%89.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E9%9D%99%E6%80%81%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D%EF%BC%88%E6%AD%A3%E7%A1%AE%EF%BC%89.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E8%AE%BF%E5%AD%98%E5%86%B2%E7%AA%81.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E6%8F%92%E5%85%A5%E6%9A%82%E5%81%9C%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E5%86%99%E5%90%8E%E5%86%99%E7%9B%B8%E5%85%B3.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%AE%9A%E5%90%91%E6%8A%80%E6%9C%AF%E4%B8%8D%E8%83%BD%E8%A7%A3%E5%86%B3%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9B%B8%E5%85%B3%E6%A3%80%E6%B5%8B%E7%A1%AC%E4%BB%B6%E5%8F%AF%E4%BB%A5%E6%A3%80%E6%B5%8B%E5%88%B0%E7%9A%84%E5%90%84%E7%A7%8D%E7%9B%B8%E5%85%B3%E6%83%85%E5%86%B5.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%AE%9A%E5%90%91%E8%B7%AF%E5%BE%84.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E5%B0%86%E5%AF%BC%E8%87%B4%E6%9A%82%E5%81%9C3%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E6%93%8D%E4%BD%9C.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80%EF%BC%88%E5%86%8D%E6%94%B9%E8%BF%9B%EF%BC%89.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E7%9A%84%E6%A6%82%E7%8E%87.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%B9%E5%88%86%E6%94%AF%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%BB%B6%E8%BF%9F%E5%88%86%E6%94%AF%E4%BB%A5%E5%8F%8A%E6%8C%87%E4%BB%A4%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%85%B7%E6%9C%89%E4%B8%80%E4%B8%AA%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%A7%BD%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%8C%87%E4%BB%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95%E7%9A%84%E8%A6%81%E6%B1%82%E5%8F%8A%E6%95%88%E6%9E%9C.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%8F%96%E6%B6%88%E5%88%86%E6%94%AF.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%90%84%E7%A7%8D%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E6%8D%9F%E5%A4%B1%E6%96%B9%E6%B3%95%E7%9A%84%E6%95%88%E6%9E%9C.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%90%84%E6%AE%B5%E5%8A%9F%E8%83%BD.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%8C%87%E4%BB%A4%E5%BA%8F%E5%88%97%E5%9C%A8R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E7%9A%84%E9%87%8D%E5%8F%A0%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E8%BD%BD%E5%85%A5%E5%BB%B6%E8%BF%9F%E4%B8%BA%E4%B8%A4%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BFALU%E8%BE%93%E5%85%A5%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%AE%9A%E5%90%91%E6%BA%90.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%9F%BA%E6%9C%AC%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%A4%84%E7%90%86%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E7%9A%84%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/R4000%E6%B5%AE%E7%82%B9%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD8%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E5%8F%8C%E7%B2%BE%E5%BA%A6%E6%B5%AE%E7%82%B9%E6%93%8D%E4%BD%9C%E6%8C%87%E4%BB%A4%E5%BB%B6%E8%BF%9F%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96%E9%97%B4%E9%9A%94%E5%92%8C%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/%E6%9A%82%E5%81%9C%E5%AF%B9R4000%E6%B5%81%E6%B0%B4%E7%BA%BFCPI%E7%9A%84%E5%BD%B1%E5%93%8D.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/N%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E64.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/N%E5%A4%A7%E4%BA%8E64.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E5%90%91%E9%87%8F%E6%8C%87%E4%BB%A4%E7%B1%BB%E5%9E%8B.png">
-<meta property="og:image" content="http://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E9%93%BE%E6%8E%A5%E6%8A%80%E6%9C%AF.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/RISC%E6%8C%87%E4%BB%A4%E9%9B%86%E5%8A%9F%E8%83%BD%E8%AE%BE%E8%AE%A1.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E9%9B%86%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/MIPS%E6%8C%87%E4%BB%A4%E4%B8%BE%E4%BE%8B.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/MIPS%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/MIPS%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%8F%96%E6%8C%87%E4%BB%A4%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%8C%87%E4%BB%A4%E8%AF%91%E7%A0%81%EF%BC%8C%E8%AF%BB%E5%AF%84%E5%AD%98%E5%99%A8%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%89%A7%E8%A1%8C%EF%BC%8C%E6%9C%89%E6%95%88%E5%9C%B0%E5%9D%80%E8%AE%A1%E7%AE%97%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%86%99%E5%9B%9E%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E7%AE%80%E5%8D%95%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%90%84%E6%B5%81%E6%B0%B4%E6%AE%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E9%94%81%E5%AD%98%E5%99%A8.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E5%91%BD%E5%90%8D.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E4%BD%9C%E7%94%A8.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%84%E5%AD%98%E5%99%A8%E7%9A%84%E6%9E%84%E6%88%90.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%AF%8F%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E6%93%8D%E4%BD%9C%EF%BC%88%E7%BB%AD%EF%BC%89.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E5%AF%B9%E5%A4%9A%E8%B7%AF%E9%80%89%E6%8B%A9%E5%99%A8MUX%E7%9A%84%E6%8E%A7%E5%88%B6.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E6%97%B6%E7%A9%BA%E5%9B%BE%EF%BC%88%E5%90%84%E6%AE%B5%E6%97%B6%E9%97%B4%E4%B8%8D%E7%AD%89%EF%BC%89.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E9%9D%99%E6%80%81%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%20%E6%80%A7%E8%83%BD%E8%AE%A1%E7%AE%97.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%A4%9A%E5%8A%9F%E8%83%BD%E6%B5%81%E6%B0%B4%E7%BA%BF.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BE%8B3.1%E6%94%B9%E8%BF%9B%EF%BC%9A%E5%8A%A0%E6%B3%95%E6%B5%81%E6%B0%B4%E6%8F%90%E5%89%8D%EF%BC%88%E6%AD%A3%E7%A1%AE%EF%BC%89.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E8%AE%BF%E5%AD%98%E5%86%B2%E7%AA%81.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E7%BB%93%E6%9E%84%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E6%8F%92%E5%85%A5%E6%9A%82%E5%81%9C%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3%E2%80%94%E2%80%94%E5%86%99%E5%90%8E%E5%86%99%E7%9B%B8%E5%85%B3.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%AE%9A%E5%90%91%E6%8A%80%E6%9C%AF%E4%B8%8D%E8%83%BD%E8%A7%A3%E5%86%B3%E7%9A%84%E6%95%B0%E6%8D%AE%E7%9B%B8%E5%85%B3.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9B%B8%E5%85%B3%E6%A3%80%E6%B5%8B%E7%A1%AC%E4%BB%B6%E5%8F%AF%E4%BB%A5%E6%A3%80%E6%B5%8B%E5%88%B0%E7%9A%84%E5%90%84%E7%A7%8D%E7%9B%B8%E5%85%B3%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%AE%9A%E5%90%91%E8%B7%AF%E5%BE%84.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E5%B0%86%E5%AF%BC%E8%87%B4%E6%9A%82%E5%81%9C3%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E6%93%8D%E4%BD%9C.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%BF%AE%E6%94%B9DLX%E4%BB%A5%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E5%BC%80%E9%94%80%EF%BC%88%E5%86%8D%E6%94%B9%E8%BF%9B%EF%BC%89.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%9D%A1%E4%BB%B6%E5%88%86%E6%94%AF%E8%BD%AC%E7%A7%BB%E6%88%90%E5%8A%9F%E7%9A%84%E6%A6%82%E7%8E%87.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/DLX%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%AF%B9%E5%88%86%E6%94%AF%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%BB%B6%E8%BF%9F%E5%88%86%E6%94%AF%E4%BB%A5%E5%8F%8A%E6%8C%87%E4%BB%A4%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%85%B7%E6%9C%89%E4%B8%80%E4%B8%AA%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%A7%BD%E7%9A%84MIPS%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F%E6%8C%87%E4%BB%A4%E7%9A%84%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E4%B8%89%E7%A7%8D%E8%B0%83%E5%BA%A6%E6%96%B9%E6%B3%95%E7%9A%84%E8%A6%81%E6%B1%82%E5%8F%8A%E6%95%88%E6%9E%9C.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%8F%96%E6%B6%88%E5%88%86%E6%94%AF.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%90%84%E7%A7%8D%E5%87%8F%E5%B0%91%E5%88%86%E6%94%AF%E6%8D%9F%E5%A4%B1%E6%96%B9%E6%B3%95%E7%9A%84%E6%95%88%E6%9E%9C.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%90%84%E6%AE%B5%E5%8A%9F%E8%83%BD.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%8C%87%E4%BB%A4%E5%BA%8F%E5%88%97%E5%9C%A8R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD%E7%9A%84%E9%87%8D%E5%8F%A0%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E8%BD%BD%E5%85%A5%E5%BB%B6%E8%BF%9F%E4%B8%BA%E4%B8%A4%E4%B8%AA%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BFALU%E8%BE%93%E5%85%A5%E7%9A%84%E5%9B%9B%E4%B8%AA%E5%AE%9A%E5%90%91%E6%BA%90.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%9F%BA%E6%9C%AC%E5%88%86%E6%94%AF%E5%BB%B6%E8%BF%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/R4000%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%A4%84%E7%90%86%E5%88%86%E6%94%AF%E6%8C%87%E4%BB%A4%E7%9A%84%E6%97%B6%E7%A9%BA%E5%9B%BE.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/R4000%E6%B5%AE%E7%82%B9%E6%B5%81%E6%B0%B4%E7%BA%BF%E4%B8%AD8%E4%B8%AA%E6%B5%81%E6%B0%B4%E6%AE%B5.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E5%8F%8C%E7%B2%BE%E5%BA%A6%E6%B5%AE%E7%82%B9%E6%93%8D%E4%BD%9C%E6%8C%87%E4%BB%A4%E5%BB%B6%E8%BF%9F%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96%E9%97%B4%E9%9A%94%E5%92%8C%E6%B5%81%E6%B0%B4%E6%AE%B5%E7%9A%84%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/%E6%9A%82%E5%81%9C%E5%AF%B9R4000%E6%B5%81%E6%B0%B4%E7%BA%BFCPI%E7%9A%84%E5%BD%B1%E5%93%8D.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/N%E5%B0%8F%E4%BA%8E%E7%AD%89%E4%BA%8E64.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/N%E5%A4%A7%E4%BA%8E64.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E5%90%91%E9%87%8F%E6%8C%87%E4%BB%A4%E7%B1%BB%E5%9E%8B.png">
+<meta property="og:image" content="https://cherryyang05.github.io/bc5a2705/CRAY-1%E7%9A%84%E9%93%BE%E6%8E%A5%E6%8A%80%E6%9C%AF.png">
 <meta property="article:published_time" content="2021-12-31T04:10:32.000Z">
 <meta property="article:modified_time" content="2023-08-08T12:35:27.421Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="体系结构">
 <meta property="article:tag" content="笔记">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://cherryyang05.github.io/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png">
+<meta name="twitter:image" content="https://cherryyang05.github.io/bc5a2705/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95%E5%8E%86%E5%8F%B2.png">
 
-<link rel="canonical" href="http://cherryyang05.github.io/bc5a2705.html">
+<link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/bc5a2705.html">
 
 
 <script id="page-configurations">
@@ -139,7 +139,7 @@
   </style>
 </noscript>
 
-<link rel="alternate" href="/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+<link rel="alternate" href="/hexo-blog/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -158,7 +158,7 @@
 
   <div class="site-meta">
 
-    <a href="/" class="brand" rel="start">
+    <a href="/hexo-blog/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
       <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
       <span class="logo-line-after"><i></i></span>
@@ -180,32 +180,32 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+    <a href="/hexo-blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">26</span></a>
+    <a href="/hexo-blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">29</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">56</span></a>
+    <a href="/hexo-blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
 
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">50</span></a>
+    <a href="/hexo-blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">56</span></a>
 
   </li>
         <li class="menu-item menu-item-about">
 
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+    <a href="/hexo-blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
 
   </li>
         <li class="menu-item menu-item-sitemap">
 
-    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+    <a href="/hexo-blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -265,10 +265,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://cherryyang05.github.io/bc5a2705.html">
+    <link itemprop="mainEntityOfPage" href="https://cherryyang05.github.io/hexo-blog/bc5a2705.html">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar2.png">
+      <meta itemprop="image" content="/hexo-blog/images/avatar2.png">
       <meta itemprop="name" content="Cherry">
       <meta itemprop="description" content="">
     </span>
@@ -303,16 +303,16 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课程笔记</span></a>
+                  <a href="/hexo-blog/categories/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课程笔记</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">体系结构</span></a>
+                  <a href="/hexo-blog/categories/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">体系结构</span></a>
                 </span>
             </span>
 
           
-            <span id="/bc5a2705.html" class="post-meta-item leancloud_visitors" data-flag-title="计算机体系结构课程笔记（一）" title="阅读次数">
+            <span id="/hexo-blog/bc5a2705.html" class="post-meta-item leancloud_visitors" data-flag-title="计算机体系结构课程笔记（一）" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -334,8 +334,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/bc5a2705.html#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/bc5a2705.html" itemprop="commentCount"></span>
+    <a title="valine" href="/hexo-blog/bc5a2705.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/bc5a2705.html" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1657,8 +1657,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" rel="tag"># 体系结构</a>
-              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/hexo-blog/tags/%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/" rel="tag"># 体系结构</a>
+              <a href="/hexo-blog/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
           </div>
 
         
@@ -1667,11 +1667,11 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/33fe21e.html" rel="prev" title="LeetCode题解（一）">
+    <a href="/hexo-blog/33fe21e.html" rel="prev" title="LeetCode题解（一）">
       <i class="fa fa-chevron-left"></i> LeetCode题解（一）
     </a></div>
       <div class="post-nav-item">
-    <a href="/a74ee18.html" rel="next" title="PTA Basic 部分题解">
+    <a href="/hexo-blog/a74ee18.html" rel="next" title="PTA Basic 部分题解">
       PTA Basic 部分题解 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
@@ -1740,29 +1740,29 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <img class="site-author-image" itemprop="image" alt="Cherry"
-      src="/images/avatar2.png">
+      src="/hexo-blog/images/avatar2.png">
   <p class="site-author-name" itemprop="name">Cherry</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
-          <a href="/archives/">
+          <a href="/hexo-blog/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
-            <a href="/categories/">
+            <a href="/hexo-blog/categories/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-            <a href="/tags/">
+            <a href="/hexo-blog/tags/">
           
-        <span class="site-state-item-count">50</span>
+        <span class="site-state-item-count">56</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1797,7 +1797,7 @@
 <div class="copyright">
   
   &copy; 2020 – 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -1807,13 +1807,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">209k</span>
+    <span title="站点总字数">215k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:10</span>
+    <span title="站点阅读时长">3:15</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -1941,36 +1941,36 @@
   </div>
 
   
-  <script src="/lib/anime.min.js"></script>
+  <script src="/hexo-blog/lib/anime.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
   <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.ui.min.js"></script>
 
-<script src="/js/utils.js"></script>
+<script src="/hexo-blog/js/utils.js"></script>
 
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/muse.js"></script>
+<script src="/hexo-blog/js/motion.js"></script>
 
 
-<script src="/js/next-boot.js"></script>
-
-<script src="/js/bookmark.js"></script>
+<script src="/hexo-blog/js/schemes/muse.js"></script>
 
 
+<script src="/hexo-blog/js/next-boot.js"></script>
 
-
-  
+<script src="/hexo-blog/js/bookmark.js"></script>
 
 
 
 
   
-<script src="/js/local-search.js"></script>
+
+
+
+
+  
+<script src="/hexo-blog/js/local-search.js"></script>
 
 
 
@@ -1991,7 +1991,7 @@ document.querySelectorAll('.pdfobject-container').forEach(element => {
     view     : 'FitH'
   };
   let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
-  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+  let fullURL = `/hexo-blog/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
 
   if (NexT.utils.supportsPDFs()) {
     element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
@@ -2083,7 +2083,7 @@ if (document.querySelectorAll('pre.mermaid').length) {
       quicklink({
         timeout : 3000,
         priority: true,
-        ignores : [uri => uri.includes('#'),uri => uri === 'http://cherryyang05.github.io/bc5a2705.html',]
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://cherryyang05.github.io/hexo-blog/bc5a2705.html',]
       });
       });
   </script>

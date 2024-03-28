@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/hexo-blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/hexo-blog/css/main.css">
+
+
+<link rel="stylesheet" href="/hexo-blog/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="log4rs 是rust实现的高度可配置日志库，该库配置的方式比较灵活，功能相对丰富，可以满足绝大部分的项目需要。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="log4rs日志库解析">
+<meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/faf96547.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="log4rs 是rust实现的高度可配置日志库，该库配置的方式比较灵活，功能相对丰富，可以满足绝大部分的项目需要。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-28T05:44:55.000Z">
+<meta property="article:modified_time" content="2024-03-27T06:14:44.861Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="log4rs">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/faf96547.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>log4rs日志库解析 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/hexo-blog/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/hexo-blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/hexo-blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/hexo-blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/hexo-blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/hexo-blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/hexo-blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/hexo-blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cherryyang05.github.io/hexo-blog/faf96547.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/hexo-blog/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          log4rs日志库解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-11-28 13:44:55" itemprop="dateCreated datePublished" datetime="2023-11-28T13:44:55+08:00">2023-11-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-03-27 14:14:44" itemprop="dateModified" datetime="2024-03-27T14:14:44+08:00">2024-03-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/hexo-blog/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/hexo-blog/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/hexo-blog/faf96547.html" class="post-meta-item leancloud_visitors" data-flag-title="log4rs日志库解析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/hexo-blog/faf96547.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/faf96547.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://github.com/sfackler/log4rs">log4rs</a> 是rust实现的高度可配置日志库，该库配置的方式比较灵活，功能相对丰富，可以满足绝大部分的项目需要。</p>
+<span id="more"></span>
+
+<h2 id="一、用法示例"><a href="#一、用法示例" class="headerlink" title="一、用法示例"></a>一、用法示例</h2><p>首先先给个简单示例，通过这个示例就可以看出log4rs进行日志配置非常的灵活：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[macro_use]</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    log4rs::<span class="title function_ invoke__">init_file</span>(<span class="string">&quot;log.yaml&quot;</span>,<span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>()).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    info!(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>日志配置文件如下：（文件格式不唯一，可以是yaml,json,toml等格式，下面是yaml格式的配置文件）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Scan this file for changes every 30 seconds</span></span><br><span class="line"><span class="attr">refresh_rate:</span> <span class="number">30</span> <span class="string">seconds</span></span><br><span class="line"></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="comment"># An appender named &quot;stdout&quot; that writes to stdout</span></span><br><span class="line">  <span class="attr">stdout:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># An appender named &quot;requests&quot; that writes to a file with a custom pattern encoder</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;log/requests.log&quot;</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; - &#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set the default logging level to &quot;info&quot; and attach the &quot;stdout&quot; appender to the root</span></span><br><span class="line"><span class="attr">root:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">stdout</span></span><br><span class="line"></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line">  <span class="comment"># Raise the maximum log level for events sent to the &quot;app::backend::db&quot; logger to &quot;info&quot;</span></span><br><span class="line">  <span class="attr">app::backend::db:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Route log events sent to the &quot;app::requests&quot; logger to the &quot;requests&quot; appender,</span></span><br><span class="line">  <span class="comment"># and *not* the normal appenders installed at the root</span></span><br><span class="line">  <span class="attr">app::requests:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">requests</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sl@Li:~/Works/study/helloworld$ cargo run</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.09s</span><br><span class="line">     Running `target/debug/helloworld`</span><br><span class="line">2018-12-10T10:11:45.240346970+08:00 INFO helloworld - Hello, world!</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里因为appenders配置的是stdout对应的输出到控制台，所以日志信息输出在了控制台上，如果选择的是requests，则日志信息就输出在了对应路径文件上。</p>
+<p>当然日志配置的方式除了配置文件，还可以在程序代码中进行配置，代码如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> log::LogLevelFilter;</span><br><span class="line"><span class="keyword">use</span> log4rs::append::console::ConsoleAppender;</span><br><span class="line"><span class="keyword">use</span> log4rs::append::file::FileAppender;</span><br><span class="line"><span class="keyword">use</span> log4rs::encode::pattern::PatternEncoder;</span><br><span class="line"><span class="keyword">use</span> log4rs::config::&#123;Appender, Config, Logger, Root&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">stdout</span> = ConsoleAppender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">requests</span> = FileAppender::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">        .<span class="title function_ invoke__">encoder</span>(<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(PatternEncoder::<span class="title function_ invoke__">new</span>(<span class="string">&quot;&#123;d&#125; - &#123;m&#125;&#123;n&#125;&quot;</span>)))</span><br><span class="line">        .<span class="title function_ invoke__">build</span>(<span class="string">&quot;log/requests.log&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = Config::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">        .<span class="title function_ invoke__">appender</span>(Appender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;stdout&quot;</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(stdout)))</span><br><span class="line">        .<span class="title function_ invoke__">appender</span>(Appender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;requests&quot;</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(requests)))</span><br><span class="line">        .<span class="title function_ invoke__">logger</span>(Logger::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;app::backend::db&quot;</span>, LogLevelFilter::Info))</span><br><span class="line">        .<span class="title function_ invoke__">logger</span>(Logger::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">            .<span class="title function_ invoke__">appender</span>(<span class="string">&quot;requests&quot;</span>)</span><br><span class="line">            .<span class="title function_ invoke__">additive</span>(<span class="literal">false</span>)</span><br><span class="line">            .<span class="title function_ invoke__">build</span>(<span class="string">&quot;app::requests&quot;</span>, LogLevelFilter::Info))</span><br><span class="line">        .<span class="title function_ invoke__">build</span>(Root::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">appender</span>(<span class="string">&quot;stdout&quot;</span>).<span class="title function_ invoke__">build</span>(LogLevelFilter::Warn))</span><br><span class="line">        .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = log4rs::<span class="title function_ invoke__">init_config</span>(config).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="comment">//配置完成，下面输出日志信息即可</span></span><br><span class="line">    <span class="comment">// use handle to change logger configuration at runtime</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//可以看到用代码的方式比较麻烦，所以推荐使用配置文件的方式，程序简洁，修改方便，配置灵活，何乐不为啊。</span></span><br></pre></td></tr></table></figure>
+
+<p>log4rs有上面的两种配置形式，函数如下：</p>
+<ul>
+<li>init_config 	—— Initializes the global logger as a log4rs logger with the provided config.（通过代码配置）</li>
+<li>init_file —— Initializes the global logger as a log4rs logger configured via a file.（通过配置文件配置）</li>
+</ul>
+<p>其实init_file函数实现的内部调用了init_config函数，也就是说是通过读配置文件通过序列化的方式得到config，再调用init_config。（源代码：<a target="_blank" rel="noopener" href="https://docs.rs/log4rs/0.7.0/src/log4rs/priv_file.rs.html#23-51%EF%BC%89">https://docs.rs/log4rs/0.7.0/src/log4rs/priv_file.rs.html#23-51）</a></p>
+<p>通过程序配置较好理解，通过配置文件的话，是有一定的格式及定义要求的，yaml,json,toml等要按一定的规则才能生成正确的配置文件，下面以yaml格式为例：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># If set, log4rs will scan the file at the specified rate for changes and</span></span><br><span class="line"><span class="comment"># automatically reconfigure the logger. The input string is parsed by the</span></span><br><span class="line"><span class="comment"># humantime crate.</span></span><br><span class="line"><span class="attr">refresh_rate:</span> <span class="number">30</span> <span class="string">seconds#配置文件的刷新速率，可以理解为每隔30s重新读取一次配置文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The &quot;appenders&quot; map contains the set of appenders, indexed by their names.</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">foo:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># All appenders must specify a &quot;kind&quot;, which will be used to look up the</span></span><br><span class="line">    <span class="comment"># logic to construct the appender in the `Deserializers` passed to the</span></span><br><span class="line">    <span class="comment"># deserialization function.</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Filters attached to an appender are specified inside the &quot;filters&quot;</span></span><br><span class="line">    <span class="comment"># array.</span></span><br><span class="line">    <span class="attr">filters:</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span></span><br><span class="line">        <span class="comment"># Like appenders, filters are identified by their &quot;kind&quot;.</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">threshold</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># The remainder of the configuration is passed along to the</span></span><br><span class="line">        <span class="comment"># filter&#x27;s builder, and will vary based on the kind of filter.</span></span><br><span class="line">        <span class="attr">level:</span> <span class="string">error</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The remainder of the configuration is passed along to the appender&#x27;s</span></span><br><span class="line">    <span class="comment"># builder, and will vary based on the kind of appender.</span></span><br><span class="line">    <span class="comment"># Appenders will commonly be associated with an encoder.</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># Like appenders, encoders are identified by their &quot;kind&quot;.</span></span><br><span class="line">      <span class="comment">#</span></span><br><span class="line">      <span class="comment"># Default: pattern</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># The remainder of the configuration is passed along to the</span></span><br><span class="line">      <span class="comment"># encoder&#x27;s builder, and will vary based on the kind of encoder.</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; [&#123;t&#125;] &#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The root logger is configured by the &quot;root&quot; map.</span></span><br><span class="line"><span class="attr">root:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The maximum log level for the root logger.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># Default: warn</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">warn</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The list of appenders attached to the root logger.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># Default: empty list</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The &quot;loggers&quot; map contains the set of configured loggers, indexed by their</span></span><br><span class="line"><span class="comment"># names.</span></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">foo::bar::baz:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The maximum log level.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Default: parent logger&#x27;s level</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">trace</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The list of appenders attached to the logger.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Default: empty list</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The additivity of the logger. If true, appenders attached to the logger&#x27;s</span></span><br><span class="line">    <span class="comment"># parent will also be attached to this logger.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="attr">Default:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>通过上面的示例，基本用法就差不多了，下面继续深入学习一下log4rs。</p>
+<h2 id="二、log4rs"><a href="#二、log4rs" class="headerlink" title="二、log4rs"></a>二、log4rs</h2><p>log4rs由4部分组成：appenders（输出到什么地方去）， encoders（按什么格式输出）， filters（那些可以输出，那些不能输出），loggers（日志实例）。</p>
+<h4 id="【1】appenders"><a href="#【1】appenders" class="headerlink" title="【1】appenders"></a>【1】appenders</h4><blockquote>
+<p>An appender takes a log record and logs it somewhere, for example, to a file, the console, or the syslog.</p>
+</blockquote>
+<p>appenders主要有以下三种：</p>
+<ul>
+<li>console  —— The console appender.（输出到控制台）</li>
+<li>file 	——The file appender.（输出到文件）</li>
+<li>rolling_file ——  A rolling file appender.（实现文件回滚）</li>
+</ul>
+<p>分别实现了输出到控制台，输出到文件，实现文件回滚等功能。其中较为复杂的是rolling_file，这也是我们工程中常用到的，比如实现日志大小的控制（控制日志文件大小为10MB，到达10MB后，自动清空日志，重新开始记录），实现日志文件数量的控制(限制数量的同时限制单个文件大小)等等。下面给一个rolling_file的示例程序，说明一下它的用法。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[macro_use]</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::default::<span class="built_in">Default</span>;</span><br><span class="line"><span class="keyword">use</span> std::thread;</span><br><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    log4rs::<span class="title function_ invoke__">init_file</span>(<span class="string">&quot;config/log4rs.yaml&quot;</span>,<span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>()).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">2</span>&#123;</span><br><span class="line">        info!(<span class="string">&quot;booting up &#123;&#125;&quot;</span>,i);</span><br><span class="line">        error!(<span class="string">&quot;error test &#123;&#125;&quot;</span>,i);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//无限循环，不断记录日志</span></span><br><span class="line">    <span class="keyword">loop</span>&#123;</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        info!(<span class="string">&quot;booting up &quot;</span>);</span><br><span class="line">        error!(<span class="string">&quot;error test&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重点是配置文件，通过不同的配置去实现不同功能：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#实现了限制日志文件大小为1024Byte的功能。</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="attr">stdout:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;requests.log&quot;</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; [&#123;t&#125;] &#123;l&#125; &#123;M&#125;:&#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"> <span class="comment">################################################## </span></span><br><span class="line">  <span class="string">roll:#定义rooling_file的appenders</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;roll.log&quot;</span></span><br><span class="line">    <span class="attr">append:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">encoder:</span> </span><br><span class="line">      <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line">      <span class="attr">trigger:</span> </span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">1024</span> <span class="comment">#限制大小为1024Byte</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">delete#回滚方式为直接删除</span></span><br><span class="line">  <span class="comment">##################################################</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">root:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">roll#使用roll</span> <span class="string">appenders</span></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line">  <span class="attr">app::backend::db:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">app::requests:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">requests</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>另为附加限制日志文件大小的配置文件及限制日志文件数量的配置参考代码：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#yaml文件</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="string">foo:#限制日志文件大小的配置</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> &#123;<span class="number">0</span>&#125;<span class="string">/foo.log</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">1024</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">delete</span></span><br><span class="line">  <span class="string">bar:#限制日志文件数量的配置</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> &#123;<span class="number">0</span>&#125;<span class="string">/foo.log</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">5</span> <span class="string">mb</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">fixed_window</span></span><br><span class="line">        <span class="attr">pattern:</span> <span class="string">&#x27;&#123;0&#125;/foo.log.<span class="template-variable">&#123;&#123;&#125;&#125;</span>&#x27;</span></span><br><span class="line">        <span class="attr">base:</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">count:</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>对应的配置项的解说：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">///</span> <span class="comment"># Configuration</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="string">```yaml</span></span><br><span class="line"><span class="string">///</span> <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The path of the log file. Required.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">path:</span> <span class="string">log/foo.log</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># Specifies if the appender should append to or truncate the log file if it</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># already exists. Defaults to `true`.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">append:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The encoder to use to format output. Defaults to `kind: pattern`.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">encoder:</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The policy which handles rotation of the log file. Required.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">policy:</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># Identifies which policy is to be used. If no kind is specified, it will</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># default to &quot;compound&quot;.</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># The remainder of the configuration is passed along to the policy&#x27;s</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># deserializer, and will vary based on the kind of policy.</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">trigger:</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">limit:</span> <span class="number">10</span> <span class="string">mb</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">roller:</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">kind:</span> <span class="string">delete</span></span><br><span class="line"><span class="string">///</span> <span class="string">```</span></span><br></pre></td></tr></table></figure>
+
+<p>为什么是这样配置呢，或者说，这些配置项是从哪里来的，就要分析源代码了，以rolling_file为例：<br>rolling_file中含有5个结构体，分别是：</p>
+<ul>
+<li>LogFile 	—— Information about the active log file.</li>
+<li>RollingFileAppender 	—— An appender which archives log files in a configurable strategy.</li>
+<li>RollingFileAppenderBuilder 	—— A builder for the RollingFileAppender.</li>
+<li><strong>RollingFileAppenderConfig 	—— Configuration for the rolling file appender.</strong></li>
+<li>RollingFileAppenderDeserializer 	—— A deserializer for the RollingFileAppender.</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Configuration for the rolling file appender.</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">RollingFileAppenderConfig</span> &#123;</span><br><span class="line">    path: <span class="type">String</span>,</span><br><span class="line">    append: <span class="type">Option</span>&lt;<span class="type">bool</span>&gt;,</span><br><span class="line">    encoder: <span class="type">Option</span>&lt;EncoderConfig&gt;,</span><br><span class="line">    policy: Policy,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个就列出了rolling_file appender的需要的配置项，其他的配置也是在***Config中，道理是一样的。</p>
+<h4 id="【2】encoders"><a href="#【2】encoders" class="headerlink" title="【2】encoders"></a>【2】encoders</h4><blockquote>
+<p>An encoder is responsible for taking a log record, transforming it into the appropriate output format, and writing it out.</p>
+</blockquote>
+<p>encoders主要由以下三部分组成：</p>
+<ul>
+<li>json ——	An encoder which writes a JSON object.</li>
+<li>pattern ——	A simple pattern-based encoder.</li>
+<li>writer —— 	Implementations of the encode::Write trait.</li>
+</ul>
+<p>最常用的是pattern，所以着重分析一下pattern。这个有些类似与其他语言的格式化器或者日志属性等概念，链接：<a target="_blank" rel="noopener" href="https://docs.rs/log4rs/0.7.0/log4rs/encode/pattern/index.html">https://docs.rs/log4rs/0.7.0/log4rs/encode/pattern/index.html</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">d, date - The current time. By default, the ISO 8601 format is used. A custom format may be provided in the syntax accepted by chrono. The timezone defaults to local, but can be specified explicitly by passing a second argument of utc for UTC or local for local time.</span><br><span class="line">&#123;d&#125; - 2016-03-20T14:22:20.644420340-08:00</span><br><span class="line">&#123;d(%Y-%m-%d %H:%M:%S)&#125; - 2016-03-20 14:22:20</span><br><span class="line">&#123;d(%Y-%m-%d %H:%M:%S %Z)(utc)&#125; - 2016-03-20 22:22:20 UTC</span><br><span class="line">f, file - The source file that the log message came from, or ??? if not provided.</span><br><span class="line">h, highlight - Styles its argument according to the log level. The style is intense red for errors, red for warnings, blue for info, and the default style for all other levels.</span><br><span class="line">&#123;h(the level is &#123;l&#125;)&#125; - the level is ERROR</span><br><span class="line">l``, level - The log level.</span><br><span class="line">L, line - The line that the log message came from, or ??? if not provided.</span><br><span class="line">m, message - The log message.</span><br><span class="line">M, module - The module that the log message came from, or ??? if not provided.</span><br><span class="line">n - A platform-specific newline.</span><br><span class="line">t, target - The target of the log message.</span><br><span class="line">T, thread - The name of the current thread.</span><br><span class="line">I, thread_id - The ID of the current thread.</span><br><span class="line">X, mdc - A value from the MDC. The first argument specifies the key, and the second argument specifies the default value if the key is not present in the MDC. The second argument is optional, and defaults to the empty string.</span><br><span class="line">&#123;X(user_id)&#125; - 123e4567-e89b-12d3-a456-426655440000</span><br><span class="line">&#123;X(nonexistent_key)(no mapping)&#125; - no mapping</span><br><span class="line">An &quot;unnamed&quot; formatter simply formats its argument, applying the format specification.</span><br><span class="line">&#123;(&#123;l&#125; &#123;m&#125;)&#125; - INFO hello</span><br></pre></td></tr></table></figure>
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/hexo-blog/tags/Rust/" rel="tag"># Rust</a>
+              <a href="/hexo-blog/tags/log4rs/" rel="tag"># log4rs</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/hexo-blog/1bd98bb8.html" rel="prev" title="Rust入门教程（十四）：异步编程">
+      <i class="fa fa-chevron-left"></i> Rust入门教程（十四）：异步编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/hexo-blog/f6c73689.html" rel="next" title="清理git记录中的大文件">
+      清理git记录中的大文件 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%94%A8%E6%B3%95%E7%A4%BA%E4%BE%8B"><span class="nav-text">一、用法示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81log4rs"><span class="nav-text">二、log4rs</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E3%80%901%E3%80%91appenders"><span class="nav-text">【1】appenders</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E3%80%902%E3%80%91encoders"><span class="nav-text">【2】encoders</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/hexo-blog/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/hexo-blog/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/hexo-blog/categories/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/hexo-blog/tags/">
+          
+        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">215k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:15</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/hexo-blog/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/hexo-blog/js/utils.js"></script>
+
+<script src="/hexo-blog/js/motion.js"></script>
+
+
+<script src="/hexo-blog/js/schemes/muse.js"></script>
+
+
+<script src="/hexo-blog/js/next-boot.js"></script>
+
+<script src="/hexo-blog/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/hexo-blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/hexo-blog/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://cherryyang05.github.io/hexo-blog/faf96547.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
