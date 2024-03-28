@@ -2,15 +2,11 @@
 title: 执行 yum 提示CRITICAL
 mathjax: true
 tags:
-  - yum
-  - 配置
-  - Centos
-  - Linux
+- yum
+- 配置
+- Centos
 categories:
-  - 运维
-  - 配置
-abbrlink: 3b07dfa1
-date: 2023-09-16 22:29:32
+- [运维, 配置]
 ---
 
 # 执行 yum 命令提示 CRITICAL:yum.cli:Config Error: Error accessing file for config file:///etc/yum.conf

@@ -1,13 +1,14 @@
 ---
 title: Rust轻量级IO库
 mathjax: true
-date: 2023-11-28 13:46:25
 tags:
   - Rust
   - mio
 categories:
   - 编程语言
   - Rust
+abbrlink: 631480ec
+date: 2023-11-28 13:46:25
 ---
 
 mio是rust实现的一个轻量级的I/O库。其实现基本上就是对不同操作系统底层相关API的封装，抽象出统一的接口供上层使用。Linux下为[epoll](http://man7.org/linux/man-pages/man7/epoll.7.html)，Windows下为IOCP，OS X下为[kqueue](https://www.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2)。
