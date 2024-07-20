@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/hexo-blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/hexo-blog/css/main.css">
+
+
+<link rel="stylesheet" href="/hexo-blog/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Git 的使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git的使用">
+<meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/3645f6a9.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="Git 的使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-09T14:26:24.000Z">
+<meta property="article:modified_time" content="2023-08-17T08:53:48.514Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="Git">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/3645f6a9.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Git的使用 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/hexo-blog/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/hexo-blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/hexo-blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/hexo-blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/hexo-blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/hexo-blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/hexo-blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/hexo-blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cherryyang05.github.io/hexo-blog/3645f6a9.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/hexo-blog/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Git的使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-09 22:26:24" itemprop="dateCreated datePublished" datetime="2022-03-09T22:26:24+08:00">2022-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-17 16:53:48" itemprop="dateModified" datetime="2023-08-17T16:53:48+08:00">2023-08-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/hexo-blog/categories/%E7%94%9F%E4%BA%A7%E5%8A%9B%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">生产力工具</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/hexo-blog/3645f6a9.html" class="post-meta-item leancloud_visitors" data-flag-title="Git的使用" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/hexo-blog/3645f6a9.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/3645f6a9.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Git-的使用"><a href="#Git-的使用" class="headerlink" title="Git 的使用"></a>Git 的使用</h1><span id="more"></span>
+
+<h2 id="1-分支命令"><a href="#1-分支命令" class="headerlink" title="1. 分支命令"></a>1. 分支命令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git checkout -b &lt;new-branch-name&gt;   //新建分支并切换到该分支</span><br><span class="line">git branch &lt;new branch name&gt;        //新建分支</span><br><span class="line">git branch -D &lt;branch name&gt;         //删除分支</span><br><span class="line">git branch -m oldName newName       //修改分支名称</span><br><span class="line">git branch -vv                      //参数 `vv` 表示显示更多冗余信息</span><br><span class="line"></span><br><span class="line">git rebase</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-git-config-配置"><a href="#2-git-config-配置" class="headerlink" title="2. git config 配置"></a>2. git config 配置</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config [--global] user.name &lt;&quot;Your-Name&quot;&gt;   //设置git的用户名和邮箱密码等</span><br><span class="line">git config --global core.pager &quot;less -FRSX&quot;     //设置不要将结果输出到新窗口，并且进行less分页显示</span><br></pre></td></tr></table></figure>
+<p><code>less</code> 的功能比 <code>more</code> 更多，前者可以上下滚屏，后者不可以。<code>core-pager</code> 默认参数为 <code>less</code>，会在新的窗口中输出信息，按 <code>q</code> 键退出后终端将不显示刚刚的信息，这样有点不太方便。或者是添加参数 <code>--no-pager</code>.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log --all --graph --decorate --oneline</span><br></pre></td></tr></table></figure>
+<p>展示git的树形提交记录，<code>oneline</code> 表示展示的信息在一行中表示</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git diff &lt;commit1&gt; &lt;commit2&gt; &lt;file-name&gt;</span><br></pre></td></tr></table></figure>
+<p>显示指定的两次 commit 中的 file-name 文件的不同，默认 commit 为最新 commit</p>
+<h2 id="3-remote操作"><a href="#3-remote操作" class="headerlink" title="3. remote操作"></a>3. remote操作</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">git init --bare</span><br><span class="line"></span><br><span class="line">git remote add &lt;name&gt; &lt;url&gt;     // url可以是本地地址，也可以是远程仓库地址(例如github)</span><br><span class="line">git remote add origin ../remote</span><br><span class="line"></span><br><span class="line">git push &lt;remote&gt; &lt;local branch&gt;:&lt;remote branch&gt;</span><br><span class="line">git push origin master:master</span><br><span class="line"></span><br><span class="line">git clone &lt;url&gt; &lt;folder name&gt;</span><br><span class="line">git clone ./gitDemo demo2</span><br><span class="line"></span><br><span class="line">//创建本地和远端分支的关联关系</span><br><span class="line">git branch --set-upstream-to &lt;remote&gt;/&lt;remote branch&gt;</span><br><span class="line"></span><br><span class="line">git pull = git fetch; git merge</span><br><span class="line">git pull --all                          // 拉取远程所有分支</span><br><span class="line"></span><br><span class="line">git pull origin &lt;远程分支名&gt;:&lt;本地分支名&gt;   // 将远程指定分支拉取到本地指定分支上</span><br><span class="line">git pull origin &lt;远程分支名&gt;              // 将远程指定分支拉取到本地当前分支上</span><br><span class="line"></span><br><span class="line">git push origin &lt;本地分支名&gt;:&lt;远程分支名&gt;   // 将本地当前分支推送到远程指定分支上（注意：pull 是远程在前本地在后，push 相反）</span><br><span class="line">git push origin &lt;本地分支名&gt;              // 将本地当前分支推送到与本地当前分支同名的远程分支上</span><br><span class="line"></span><br><span class="line">git push -u origin &lt;本地分支名&gt;           // 将本地分支与远程同名分支相关联</span><br></pre></td></tr></table></figure>
+
+<p>注意远程仓库的初始化一定是“裸”的，即 <code>git init --bare</code>，因为远程仓库中不允许进行 git 操作，不包含工作区。</p>
+<p><code>git fetch</code> 是将远程主机的最新内容拉到本地，用户在检查了以后决定是否合并到工作本机分支中，而 <code>git pull</code> 是直接合并。</p>
+<h2 id="4-其他"><a href="#4-其他" class="headerlink" title="4. 其他"></a>4. 其他</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">git add -p &lt;filename&gt;</span><br><span class="line"></span><br><span class="line">git clone --shallow         //浅克隆，不会保留仓库原有的提交记录</span><br><span class="line"></span><br><span class="line">git show &lt;commit id&gt;        //展示某次提交的具体内容(通过diff展示)</span><br><span class="line"></span><br><span class="line">git stash                   //暂时移除工作目录下的修改内容</span><br><span class="line">git stash pop               //移除隐藏</span><br></pre></td></tr></table></figure>
+
+<p>参数 <code>-p</code> 表示交互式暂存，可以自定义某些修改是否要提交</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>git init</td>
+<td>在本地的当前目录里初始化git仓库</td>
+</tr>
+<tr>
+<td>git status</td>
+<td>查看当前仓库的状态</td>
+</tr>
+<tr>
+<td>git add -A</td>
+<td>增加目录中所有的文件到缓存区</td>
+</tr>
+<tr>
+<td>git add file</td>
+<td>增加相应文件到缓存区</td>
+</tr>
+<tr>
+<td>git commit -m “msg”</td>
+<td>将缓存区中更改提交到本地仓库</td>
+</tr>
+<tr>
+<td>git log</td>
+<td>查看当前版本之前的提交记录</td>
+</tr>
+<tr>
+<td>git reflog</td>
+<td>查看HEAD的变更记录，包括回退</td>
+</tr>
+<tr>
+<td>git branch -b branch_name</td>
+<td>建立一个新的分支</td>
+</tr>
+<tr>
+<td>git diff</td>
+<td>查看当前文件与缓存区文件的差异</td>
+</tr>
+<tr>
+<td>git checkout –file</td>
+<td>取消更改，将缓存区的文件提取覆盖当前文件</td>
+</tr>
+<tr>
+<td>git reset –hard ver_num</td>
+<td>回退到相应版本号，同样也可以回退到未来的版本号</td>
+</tr>
+<tr>
+<td>git clean -xf</td>
+<td>删除当前目录中所有未追踪的文件</td>
+</tr>
+<tr>
+<td>git config –global core.quotepath false</td>
+<td>处理中文文件名</td>
+</tr>
+</tbody></table>
+<h2 id="5-git-reset-命令及用-amend-提交合并"><a href="#5-git-reset-命令及用-amend-提交合并" class="headerlink" title="5. git reset 命令及用 amend 提交合并"></a>5. git reset 命令及用 amend 提交合并</h2><p>当我们提交一版代码后，发现有一个小问题需要重新修改一下，但是又不想重新再提交一次，因为这样会多一次无用的提交记录，不方便整体的管理和日志的查看。我们首先使用 <code>git reset</code> 进行回退。</p>
+<p><code>git reset</code> 命令有几个参数</p>
+<ul>
+<li><code>--soft</code> 参数表示撤销到某次提交，保留<strong>暂存区</strong>（<code>add</code> 操作之后保存到的地方）里的内容，如果要再提交只要再执行 <code>commit</code> 即可</li>
+<li><code>--mixed</code> 会撤销某次提交，但是工作目录下修改的内容不会被存到暂存区中，需要重新执行 <code>add</code> 命令才能存入暂存区</li>
+<li><code>--hard</code> 会直接回退到某一提交，任何修改都不会被保存，这个参数要谨慎使用，很可能会造成本地文件丢失。</li>
+</ul>
+<p>若是不小心使用 <code>git reset --hard</code> 误操作了可以先使用 <code>git reflog</code> 查看所有操作记录，找到要回退的版本号（ <code>HEAD</code> 指针或 <code>commitId</code>），然后指定具体的版本号进行回退即可。</p>
+<p>另一种避免重复提交的方法就是 <code>git --amend</code> 命令，在第二次提交时，若我们想合并上一次提交，可以使用 <code>git commit --amend -m &quot;xxx&quot;</code>，这样新一次的提交会覆盖上一次的提交。</p>
+<p>但是在使用 <code>--amend</code> 时候不能进行 <code>push</code> 提交，否则会提</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">提示：更新被拒绝，因为您当前分支的最新提交落后于其对应的远程分支。</span><br><span class="line">提示：再次推送前，先与远程变更合并（如 &#x27;git pull ...&#x27;）。详见</span><br><span class="line">提示：&#x27;git push --help&#x27; 中的 &#x27;Note about fast-forwards&#x27; 小节`</span><br></pre></td></tr></table></figure>
+
+<p>若 <code>push</code> 了之后应该使用 <code>--force-with-lease</code> 参数。</p>
+<h2 id="6"><a href="#6" class="headerlink" title="6."></a>6.</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git ls-files                // 查看暂存区中的文件</span><br><span class="line">git restore --staged        // 撤销在暂存区提交的文件</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/hexo-blog/tags/Git/" rel="tag"># Git</a>
+              <a href="/hexo-blog/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/hexo-blog/767f71ea.html" rel="prev" title="计算机体系结构课程笔记（四）">
+      <i class="fa fa-chevron-left"></i> 计算机体系结构课程笔记（四）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/hexo-blog/574c20f6.html" rel="next" title="Linux中sed、awk、grep命令详解">
+      Linux中sed、awk、grep命令详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Git-%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-text">Git 的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%88%86%E6%94%AF%E5%91%BD%E4%BB%A4"><span class="nav-text">1. 分支命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-git-config-%E9%85%8D%E7%BD%AE"><span class="nav-text">2. git config 配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-remote%E6%93%8D%E4%BD%9C"><span class="nav-text">3. remote操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%85%B6%E4%BB%96"><span class="nav-text">4. 其他</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-git-reset-%E5%91%BD%E4%BB%A4%E5%8F%8A%E7%94%A8-amend-%E6%8F%90%E4%BA%A4%E5%90%88%E5%B9%B6"><span class="nav-text">5. git reset 命令及用 amend 提交合并</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6"><span class="nav-text">6.</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/hexo-blog/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/hexo-blog/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/hexo-blog/categories/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/hexo-blog/tags/">
+          
+        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">215k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:15</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/hexo-blog/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/hexo-blog/js/utils.js"></script>
+
+<script src="/hexo-blog/js/motion.js"></script>
+
+
+<script src="/hexo-blog/js/schemes/muse.js"></script>
+
+
+<script src="/hexo-blog/js/next-boot.js"></script>
+
+<script src="/hexo-blog/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/hexo-blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/hexo-blog/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://cherryyang05.github.io/hexo-blog/3645f6a9.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

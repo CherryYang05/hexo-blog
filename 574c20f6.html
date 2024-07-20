@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/hexo-blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/hexo-blog/css/main.css">
+
+
+<link rel="stylesheet" href="/hexo-blog/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Linux中sed、awk、grep命令详解在开始介绍 sed、awk、grep 命令之前，先简单介绍一下 bash. 一、bash 及一些特性1. 命令行展开12345678➜  ~ echo change1 change2 change3 change4 change5change1 change2 change3 change4 change5➜  ~ echo change&amp;#123;1.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux中sed、awk、grep命令详解">
+<meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/574c20f6.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="Linux中sed、awk、grep命令详解在开始介绍 sed、awk、grep 命令之前，先简单介绍一下 bash. 一、bash 及一些特性1. 命令行展开12345678➜  ~ echo change1 change2 change3 change4 change5change1 change2 change3 change4 change5➜  ~ echo change&amp;#123;1.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-01T11:40:35.000Z">
+<meta property="article:modified_time" content="2023-08-17T08:53:48.518Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="sed">
+<meta property="article:tag" content="awk">
+<meta property="article:tag" content="grep">
+<meta property="article:tag" content="Linux命令">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/574c20f6.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux中sed、awk、grep命令详解 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/hexo-blog/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/hexo-blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/hexo-blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/hexo-blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">29</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/hexo-blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">61</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/hexo-blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">56</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/hexo-blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/hexo-blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cherryyang05.github.io/hexo-blog/574c20f6.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/hexo-blog/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux中sed、awk、grep命令详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-01 19:40:35" itemprop="dateCreated datePublished" datetime="2022-04-01T19:40:35+08:00">2022-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-08-17 16:53:48" itemprop="dateModified" datetime="2023-08-17T16:53:48+08:00">2023-08-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/hexo-blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/hexo-blog/574c20f6.html" class="post-meta-item leancloud_visitors" data-flag-title="Linux中sed、awk、grep命令详解" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/hexo-blog/574c20f6.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/574c20f6.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Linux中sed、awk、grep命令详解"><a href="#Linux中sed、awk、grep命令详解" class="headerlink" title="Linux中sed、awk、grep命令详解"></a>Linux中sed、awk、grep命令详解</h1><p>在开始介绍 <code>sed</code>、<code>awk</code>、<code>grep</code> 命令之前，先简单介绍一下 <code>bash</code>.</p>
+<h2 id="一、bash-及一些特性"><a href="#一、bash-及一些特性" class="headerlink" title="一、bash 及一些特性"></a>一、bash 及一些特性</h2><h3 id="1-命令行展开"><a href="#1-命令行展开" class="headerlink" title="1. 命令行展开"></a>1. 命令行展开</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ <span class="built_in">echo</span> change1 change2 change3 change4 change5</span><br><span class="line">change1 change2 change3 change4 change5</span><br><span class="line">➜  ~ <span class="built_in">echo</span> change&#123;1..5&#125;</span><br><span class="line">change1 change2 change3 change4 change5</span><br><span class="line">➜  ~ <span class="built_in">echo</span> change&#123;1..10..2&#125;</span><br><span class="line">change1 change3 change5 change7 change9</span><br><span class="line">➜  ~ <span class="built_in">echo</span> change&#123;01..10..2&#125;</span><br><span class="line">change01 change03 change05 change07 change09</span><br></pre></td></tr></table></figure>
+
+<p><code>echo</code> 命令后面加上 <code>&#123;&#125;</code> 表示命令行展开，例如上例中 <code>&#123;1..5&#125;</code> 表示从 <code>1</code> 展开到 <code>5</code>，如果后面再加上一个参数，则表示步长，<code>&#123;1..10..2&#125;</code> 表示输出 1 到 10 的奇数，若在参数前面加上 0，则表示用 0 补全。</p>
+<h3 id="2-alias"><a href="#2-alias" class="headerlink" title="2. alias"></a>2. alias</h3><p>输出命令 <code>alias</code> 表示查看当前的命令别名，输入 <code>unalias</code> 可以取消已经设定的命令别名。例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">alias</span> <span class="built_in">rm</span>=<span class="string">&quot;rm -i&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-历史命令"><a href="#3-历史命令" class="headerlink" title="3. 历史命令"></a>3. 历史命令</h3><p><code>history</code> 可以查看所有时间内该机器输入过的命令，可以通过 <code>!行号</code> 快捷输入曾经输过的命令，<code>!!</code> 表示上一次输入的命令。</p>
+<h3 id="4-快捷键"><a href="#4-快捷键" class="headerlink" title="4. 快捷键"></a>4. 快捷键</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ctrl + a 光标移动到行首</span><br><span class="line">ctrl + e 光标移动到行尾</span><br><span class="line">ctrl + u 删除光标之前的字符</span><br><span class="line">ctrl + k 删除光标之后的字符</span><br><span class="line">ctrl + l 清屏，相当于 clear</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、Linux-正则表达式"><a href="#二、Linux-正则表达式" class="headerlink" title="二、Linux 正则表达式"></a>二、Linux 正则表达式</h2><p>正则表达式 <code>REGEXP</code> 分为两类</p>
+<ul>
+<li>基本正则表达式 <code>BRE</code></li>
+<li>扩展正则表达式 <code>ERE</code></li>
+</ul>
+<p>Linux 下只有 <code>sed</code>、<code>grep</code>、<code>awk</code> 三个命令可以使用正则表达式，其他命令都无法使用</p>
+<p><strong>Linux 三剑客</strong></p>
+<ul>
+<li><code>grep</code>：文本过滤工具，模式工具</li>
+<li><code>sed</code>：stream editor，流编辑器，文本编辑工具</li>
+<li><code>awk</code>：Linux 的文本报告生成器（格式化文本），实际上是链接到 <code>gawk</code> 上</li>
+</ul>
+<h3 id="正则表达式的分类"><a href="#正则表达式的分类" class="headerlink" title="正则表达式的分类"></a>正则表达式的分类</h3><ul>
+<li>基本正则表达式对应元字符有：<code>^$.[]*</code></li>
+<li>扩展正则表达式在基本正则表达式基础上增加了 <code>()&#123;&#125;?+|</code> 等字符</li>
+</ul>
+<p>基本功能：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>^</td>
+<td>用于模式最左侧，如 <code>^abc</code> 表示以 <code>abc</code> 开头的行</td>
+</tr>
+<tr>
+<td>$</td>
+<td>用于模式最右侧，如 <code>abc$</code> 表示以 <code>abc</code> 结尾的行</td>
+</tr>
+<tr>
+<td>^$</td>
+<td>组合符，表示空行</td>
+</tr>
+<tr>
+<td>.</td>
+<td>匹配任意单个字符，不包括空行</td>
+</tr>
+<tr>
+<td>\</td>
+<td>转义符</td>
+</tr>
+<tr>
+<td>^.*</td>
+<td>匹配任意多个字符开头的行</td>
+</tr>
+<tr>
+<td>.*$</td>
+<td>匹配任意多个字符结尾的行</td>
+</tr>
+<tr>
+<td>[abc]</td>
+<td>匹配集合内任意一个字符</td>
+</tr>
+<tr>
+<td>[^abc]</td>
+<td>匹配除了集合中任意一个字符</td>
+</tr>
+</tbody></table>
+<h3 id="扩展正则表达式-ERE-集合"><a href="#扩展正则表达式-ERE-集合" class="headerlink" title="扩展正则表达式 ERE 集合"></a>扩展正则表达式 ERE 集合</h3><p>扩展正则必须用 <code>grep -E</code> 才能生效</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+</td>
+<td>匹配前一个字符一次或多次</td>
+</tr>
+<tr>
+<td>[a]+</td>
+<td>匹配集合中的符号至少一次或多次</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配前一个字符 0 次或 1 次</td>
+</tr>
+<tr>
+<td>()</td>
+<td>在括号中的符号表示一个整体</td>
+</tr>
+<tr>
+<td>a{n,m}</td>
+<td>匹配前一个字符至少 n 次，至多 m 次</td>
+</tr>
+<tr>
+<td>a{n,}</td>
+<td>匹配前一个字符至少 n 次</td>
+</tr>
+<tr>
+<td>a{n}</td>
+<td>匹配前一个字符正好 n 次</td>
+</tr>
+<tr>
+<td>a{,m}</td>
+<td>匹配前一个字符至多 m 次</td>
+</tr>
+</tbody></table>
+<h3 id="一些正则表达式的例子"><a href="#一些正则表达式的例子" class="headerlink" title="一些正则表达式的例子"></a>一些正则表达式的例子</h3><h2 id="三、grep"><a href="#三、grep" class="headerlink" title="三、grep"></a>三、grep</h2><ul>
+<li><code>grep</code> 英文全称是 <code>Global search REgular expression and Print out the line.</code></li>
+<li>作用：文本搜索工具，根据用户指定的模式过滤条件，对目标文本逐行进行匹配检查，打印匹配到的行</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">语法</span><br><span class="line">grep [options] [pattern] file</span><br><span class="line">命令   参数      匹配模式   文件数据</span><br><span class="line">                -i: ignorecase，忽略字符的大小写</span><br><span class="line">                -o: 仅显示匹配到的字符串本身</span><br><span class="line">                -v, --invert-match: 显示不能被模式匹配到的行</span><br><span class="line">                -E: 支持使用扩展的正则表达式元字符</span><br><span class="line">                -q, --quiet, --silent: 静默模式，即不输出任何信息</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>参数选项</th>
+<th>参数含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-v</td>
+<td>排除匹配结果</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>不区分大小写</td>
+</tr>
+<tr>
+<td>-n</td>
+<td>显示匹配行与行号</td>
+</tr>
+<tr>
+<td>-c</td>
+<td>只统计匹配的行数</td>
+</tr>
+<tr>
+<td>-E</td>
+<td>使用拓展正则</td>
+</tr>
+<tr>
+<td>–color&#x3D;auto</td>
+<td>为过滤结果添加颜色</td>
+</tr>
+<tr>
+<td>-w</td>
+<td>只匹配过滤的单词</td>
+</tr>
+<tr>
+<td>-o</td>
+<td>只输出匹配到的内容</td>
+</tr>
+</tbody></table>
+<p><strong>例子 1：找出文本文件 <code>bre</code> 中的空行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk grep -n -E <span class="string">&#x27;^$&#x27;</span> bre</span><br><span class="line">2:</span><br><span class="line">5:</span><br><span class="line">6:</span><br><span class="line">➜  ~/code/awk grep -n -E <span class="string">&#x27;^$&#x27;</span> bre -c</span><br><span class="line">3</span><br><span class="line">➜  ~/code/awk <span class="built_in">cat</span> -n bre</span><br><span class="line">     1  abc is a simple word.</span><br><span class="line">     2</span><br><span class="line">     3  What is the answer?</span><br><span class="line">     4  I am 23 years old.</span><br><span class="line">     5</span><br><span class="line">     6</span><br><span class="line">     7  I come from JiangSu...</span><br></pre></td></tr></table></figure>
+
+<p><strong>例子 2：在上面的文件中增加以 <code>#</code> 开头的注释行，并筛选出非空行和注释行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk <span class="built_in">cat</span> -n bre</span><br><span class="line">     1  abc is a simple word.</span><br><span class="line">     2</span><br><span class="line">     3  What is the answer?</span><br><span class="line">     4  I am 23 years old.</span><br><span class="line">     5</span><br><span class="line">     6</span><br><span class="line">     7  I come from JiangSu...</span><br><span class="line">     8  <span class="comment">#这是一个注释行</span></span><br><span class="line">➜  ~/code/awk grep <span class="string">&#x27;^$&#x27;</span> bre -v</span><br><span class="line">abc is a simple word.</span><br><span class="line">What is the answer?</span><br><span class="line">I am 23 years old.</span><br><span class="line">I come from JiangSu...</span><br><span class="line">8:<span class="comment">#这是一个注释行</span></span><br><span class="line">➜  ~/code/awk grep <span class="string">&#x27;^$&#x27;</span> bre -v | grep -E <span class="string">&#x27;#&#x27;</span> -v</span><br><span class="line">abc is a simple word.</span><br><span class="line">What is the answer?</span><br><span class="line">I am 23 years old.</span><br><span class="line">I come from JiangSu...</span><br></pre></td></tr></table></figure>
+
+<p>用管道符将两个命令连接起来。</p>
+<p><strong>例子3：匹配以 <code>.</code> 结尾的行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk grep <span class="string">&#x27;\.$&#x27;</span> bre</span><br><span class="line">abc is a simple word.</span><br><span class="line">I am 23 years old.</span><br><span class="line">I come from JiangSu...</span><br></pre></td></tr></table></figure>
+
+<p><code>.</code> 前要用转义符 <code>\</code> 进行转义</p>
+<p><strong>【注】：在 Linux 下，所有文件每一行的结尾最后都有一个 <code>$</code>，可以加上参数 <code>-E</code> 查看，如下所示：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk <span class="built_in">cat</span> -En bre</span><br><span class="line">     1  abc is a simple word.$</span><br><span class="line">     2  $</span><br><span class="line">     3  What is the answer?$</span><br><span class="line">     4  I am 23 years old.$</span><br><span class="line">     5  $</span><br><span class="line">     6  $</span><br><span class="line">     7  I come from JiangSu...$</span><br><span class="line">     8  <span class="comment">#这是一个注释行$</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>例子4：在 <code>bre</code> 文件中找到以 <code>a</code> 或 <code>w</code> 开头的行，忽略大小写</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk grep -E -n -i <span class="string">&#x27;^[a|w]&#x27;</span> bre</span><br><span class="line">1:abc is a simple word.</span><br><span class="line">3:What is the answer?</span><br></pre></td></tr></table></figure>
+
+<p><code>grep</code> 整体比较简单，主要是正则表达式的使用。</p>
+<h2 id="四、sed"><a href="#四、sed" class="headerlink" title="四、sed"></a>四、sed</h2><p><code>sed</code> 是 <code>Stream Editor</code>（字符流编辑器）的缩写，简称流编辑器。</p>
+<p><code>sed</code> 是操作、过滤和转换文本内容的强大工具，常用功能包括结合正则表达式对文件实现快速增删改查，较为重要的两个功能是提取富川和提取整行。</p>
+<h3 id="4-1-sed-语法"><a href="#4-1-sed-语法" class="headerlink" title="4.1 sed 语法"></a>4.1 sed 语法</h3><p><code>sed</code> 语法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed [选项] [sed内置命令字符] [输入文件]</span><br></pre></td></tr></table></figure>
+
+<p><strong>选项</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数选项</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-n</td>
+<td>取消默认 <code>sed</code> 的输出，常与 <code>sed</code> 内置命令 <code>p</code> 一起用</td>
+</tr>
+<tr>
+<td>-i</td>
+<td>直接将修改结果写入文件,不用 <code>-i</code>，<code>sed</code> 修改的是内存数据</td>
+</tr>
+<tr>
+<td>-e</td>
+<td>多次编辑,不需要管道符了</td>
+</tr>
+<tr>
+<td>-r</td>
+<td>支持正则扩展</td>
+</tr>
+</tbody></table>
+<p><strong>内置命令字符</strong></p>
+<table>
+<thead>
+<tr>
+<th>内置命令字符</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>a</td>
+<td>append，对文本追加，在指定行后面添加一行&#x2F;多行文本</td>
+</tr>
+<tr>
+<td>d</td>
+<td>Delete，删除匹配行</td>
+</tr>
+<tr>
+<td>i</td>
+<td>insert，表示插入文本,在指定行前添加一行&#x2F;多行文本</td>
+</tr>
+<tr>
+<td>p</td>
+<td>Print，打印匹配行的内容,通常 p 与 -n 一起用</td>
+</tr>
+<tr>
+<td>s&#x2F;正则&#x2F;替换内容&#x2F;g</td>
+<td>匹配正则内容，然后替换内容(支持正则)，结尾g代表全局匹配</td>
+</tr>
+</tbody></table>
+<p><strong>匹配范围</strong></p>
+<table>
+<thead>
+<tr>
+<th>匹配范围</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>空地址</td>
+<td>全文处理</td>
+</tr>
+<tr>
+<td>单地址</td>
+<td>指定文件某一行</td>
+</tr>
+<tr>
+<td>&#x2F;pattern&#x2F;</td>
+<td>被模式匹配到的每一行</td>
+</tr>
+<tr>
+<td>范围区间</td>
+<td>10, 20 十到二十行，10,+5 第10行向下5行, &#x2F;pattern1&#x2F; ,&#x2F;pattern2&#x2F;</td>
+</tr>
+<tr>
+<td>步长</td>
+<td>1<del>2，表示1、3、5、7、9行，2</del>2两个步长，表示 2、4、6、8、10、偶数行</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-sed-例子"><a href="#4-2-sed-例子" class="headerlink" title="4.2 sed 例子"></a>4.2 sed 例子</h3><p>下列所有例子都将使用如下测试用例。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk <span class="built_in">cat</span> -n bre</span><br><span class="line">     1  abc is a simple word.</span><br><span class="line">     2</span><br><span class="line">     3  What is the answer?</span><br><span class="line">     4  I am 23 years old.</span><br><span class="line">     5</span><br><span class="line">     6  My tel is 12345678999</span><br><span class="line">     7  My favirate food is hamburger.</span><br><span class="line">     8  I come from JiangSu...</span><br><span class="line">     9</span><br><span class="line">    10</span><br><span class="line">    11  <span class="comment">#这是一个注释行</span></span><br><span class="line">    12  xxxx</span><br><span class="line">    13  xxxxxxx</span><br></pre></td></tr></table></figure>
+
+<h4 id="1-输出文件第3、4行"><a href="#1-输出文件第3、4行" class="headerlink" title="1. 输出文件第3、4行"></a>1. 输出文件第3、4行</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&quot;3,4p&quot;</span> -n  bre</span><br><span class="line">What is the answer?</span><br><span class="line">I am 23 years old.</span><br></pre></td></tr></table></figure>
+
+<p><code>sed</code> 默认输出是所有的，因此要加上 <code>-n</code> 参数，<code>p</code> 表示打印。</p>
+<h4 id="2-过滤含有-My-的字符串行"><a href="#2-过滤含有-My-的字符串行" class="headerlink" title="2. 过滤含有 My 的字符串行"></a>2. 过滤含有 My 的字符串行</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&quot;/My/p&quot;</span> -n  bre</span><br><span class="line">My tel is 12345678999</span><br><span class="line">My favirate food is hamburger.</span><br></pre></td></tr></table></figure>
+
+<p>这里要匹配字符串 <code>My</code>，因此要用 <code>/My/</code> 进行模式匹配，同样要用 <code>-n</code> 参数。</p>
+<h4 id="3-删除有-is-的行"><a href="#3-删除有-is-的行" class="headerlink" title="3. 删除有 is 的行"></a>3. 删除有 is 的行</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&quot;/is/d&quot;</span> bre</span><br><span class="line"></span><br><span class="line">I am 23 years old.</span><br><span class="line"></span><br><span class="line">I come from JiangSu...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#这是一个注释行</span></span><br><span class="line">xxxx</span><br><span class="line">xxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>我们这里用参数 <code>d</code>，表示删除匹配到的行，然后不用加 <code>-n</code> 参数，但是 <code>bre</code> 文件中的内容并不会被改变，因为 <code>sed</code> 是将文件内容读到内存中进行操作的。如果要对源文件进行修改，则要加上 <code>-i</code> 参数。</p>
+<h4 id="4-删除第-5-行之后的行"><a href="#4-删除第-5-行之后的行" class="headerlink" title="4. 删除第 5 行之后的行"></a>4. 删除第 5 行之后的行</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&#x27;5,$d&#x27;</span> bre</span><br><span class="line">abc is a simple word.</span><br><span class="line"></span><br><span class="line">What is the answer?</span><br><span class="line">I am 23 years old.</span><br></pre></td></tr></table></figure>
+
+<p>这里模式是 <code>5,$d</code>，<code>$</code> 表示文件末尾。</p>
+<h4 id="5-将文件中的-is-全部替换成-IS，并打印前-5-行"><a href="#5-将文件中的-is-全部替换成-IS，并打印前-5-行" class="headerlink" title="5. 将文件中的 is 全部替换成 IS，并打印前 5 行"></a>5. 将文件中的 is 全部替换成 IS，并打印前 5 行</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&#x27;s/is/IS/g&#x27;</span> bre | sed <span class="string">&#x27;1,5p&#x27;</span> -n    </span><br><span class="line">abc IS a simple word.</span><br><span class="line"></span><br><span class="line">What IS the answer?</span><br><span class="line">I am 23 years old.</span><br></pre></td></tr></table></figure>
+
+<p>替换模式为 <code>s/is/IS/g</code>，这里 <code>/</code> 也可以换成 <code>#</code> 或 <code>@</code>。两个命令用管道连接，后面的 <code>sed</code> 无需指定文件名。</p>
+<h4 id="6-将文件中的-is-全替换成-IS，同时将-23-替换成-35"><a href="#6-将文件中的-is-全替换成-IS，同时将-23-替换成-35" class="headerlink" title="6. 将文件中的 is 全替换成 IS，同时将 23 替换成 35"></a>6. 将文件中的 is 全替换成 IS，同时将 23 替换成 35</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed -e <span class="string">&#x27;s/is/IS/g&#x27;</span> -e <span class="string">&#x27;s#23#35#g&#x27;</span> bre</span><br><span class="line">abc IS a simple word.</span><br><span class="line"></span><br><span class="line">What IS the answer?</span><br><span class="line">I am 35 years old.</span><br><span class="line"></span><br><span class="line">My tel IS 13545678999</span><br><span class="line">My favirate food IS hamburger.</span><br><span class="line">I come from JiangSu...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#这是一个注释行</span></span><br><span class="line">xxxx</span><br><span class="line">xxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>5 中的例子中有两个操作，是用管道符进行操作的，但是 <code>sed</code> 参数中提供了 <code>-e</code> 进行多次编辑，因此就不需要使用管道了。5 也可以这样写：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed -e <span class="string">&#x27;s/is/IS/g&#x27;</span> -e <span class="string">&#x27;1,5p&#x27;</span> -n bre  </span><br><span class="line">abc IS a simple word.</span><br><span class="line"></span><br><span class="line">What IS the answer?</span><br><span class="line">I am 23 years old.</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-在文件第-4-行后追加一行-Linux-is-funny"><a href="#7-在文件第-4-行后追加一行-Linux-is-funny" class="headerlink" title="7. 在文件第 4 行后追加一行 Linux is funny.."></a>7. 在文件第 4 行后追加一行 Linux is funny..</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&#x27;4a ##Today is Wednesday##&#x27;</span> bre   </span><br><span class="line">abc is a simple word.</span><br><span class="line"></span><br><span class="line">What is the answer?</span><br><span class="line">I am 23 years old.</span><br><span class="line">Linux is funny.. </span><br><span class="line"></span><br><span class="line">My tel is 12345678999</span><br><span class="line">My favirate food is hamburger.</span><br><span class="line">I come from JiangSu...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#这是一个注释行</span></span><br><span class="line">xxxx</span><br><span class="line">xxxxxxx</span><br></pre></td></tr></table></figure>
+
+<h4 id="8-在文件第-1-行后追加一行-Today-is-Wednesday"><a href="#8-在文件第-1-行后追加一行-Today-is-Wednesday" class="headerlink" title="8. 在文件第 1 行后追加一行 ##Today is Wednesday##"></a>8. 在文件第 1 行后追加一行 ##Today is Wednesday##</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&#x27;1i ##Today is Wednesday##&#x27;</span> bre</span><br><span class="line"><span class="comment">##Today is Wednesday##</span></span><br><span class="line">abc is a simple word.</span><br><span class="line"></span><br><span class="line">What is the answer?</span><br><span class="line">I am 23 years old.</span><br><span class="line"></span><br><span class="line">My tel is 12345678999</span><br><span class="line">My favirate food is hamburger.</span><br><span class="line">I come from JiangSu...</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#这是一个注释行</span></span><br><span class="line">xxxx</span><br><span class="line">xxxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>加上 <code>-i</code> 参数将会直接修改文件，且不会输出。</p>
+<p>若是不加地址，则表示全文范围，如要在每一行后面加上 <code>------------</code>，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk sed <span class="string">&#x27;a ---------------&#x27;</span> bre</span><br><span class="line">abc is a simple word.</span><br><span class="line">---------------</span><br><span class="line"></span><br><span class="line">---------------</span><br><span class="line">What is the answer?</span><br><span class="line">---------------</span><br><span class="line">I am 23 years old.</span><br><span class="line">---------------</span><br><span class="line"></span><br><span class="line">---------------</span><br><span class="line">My tel is 12345678999</span><br><span class="line">---------------</span><br><span class="line">My favirate food is hamburger.</span><br><span class="line">---------------</span><br><span class="line">I come from JiangSu...</span><br><span class="line">---------------</span><br><span class="line"></span><br><span class="line">---------------</span><br><span class="line"></span><br><span class="line">---------------</span><br><span class="line"><span class="comment">#这是一个注释行</span></span><br><span class="line">---------------</span><br><span class="line">xxxx</span><br><span class="line">---------------</span><br><span class="line">xxxxxxx</span><br><span class="line">---------------</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-sed-进阶例子：取出-Linux-的-IP-地址"><a href="#4-3-sed-进阶例子：取出-Linux-的-IP-地址" class="headerlink" title="4.3 sed 进阶例子：取出 Linux 的 IP 地址"></a>4.3 sed 进阶例子：取出 Linux 的 IP 地址</h3><p>以下例子将用 <code>sed</code> 配合正则表达式进行处理文本。</p>
+<p>首先输入 <code>ifconfig</code> 命令打印出网络信息，我们要提取出 <code>eth0</code> 网卡中的 <code>inet</code> 后的 IP 地址信息，然后保存到文件 <code>IP_eth0</code> 中。</p>
+<p>我们首先打印 <code>eth0</code> 网卡信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk ifconfig eth0              </span><br><span class="line">eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.19.194.137  netmask 255.255.240.0  broadcast 172.19.207.255</span><br><span class="line">        inet6 fe80::215:5dff:feeb:1353  prefixlen 64  scopeid 0x20&lt;<span class="built_in">link</span>&gt;</span><br><span class="line">        ether 00:15:5d:eb:13:53  txqueuelen 1000  (Ethernet)</span><br><span class="line">        RX packets 127  bytes 60337 (60.3 KB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 109  bytes 13475 (13.4 KB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br></pre></td></tr></table></figure>
+
+<p>然后打印出第二行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk ifconfig eth0 | sed <span class="string">&#x27;2p&#x27;</span> -n </span><br><span class="line">        inet 172.19.194.137  netmask 255.255.240.0  broadcast 172.19.207.255</span><br></pre></td></tr></table></figure>
+
+<p>然后用正则匹配将 IP 地址前后内容替换为空：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk ifconfig eth0 | sed <span class="string">&#x27;2p&#x27;</span> -n | sed <span class="string">&#x27;s/^.*inet //&#x27;</span> | sed <span class="string">&#x27;s/ netmask.*$//&#x27;</span></span><br><span class="line">172.19.194.137</span><br></pre></td></tr></table></figure>
+
+<p>这样便提取出了 IP 地址，然后再写入文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk ifconfig eth0 | sed <span class="string">&#x27;2p&#x27;</span> -n | sed <span class="string">&#x27;s/^.*inet //&#x27;</span> | sed <span class="string">&#x27;s/ netmask.*$//&#x27;</span> | <span class="built_in">tee</span> IP_eth0</span><br><span class="line">172.19.194.137</span><br></pre></td></tr></table></figure>
+
+<p>当然也可以用 <code>-e</code> 参数进行多次编辑：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk ifconfig eth0 | sed -e <span class="string">&#x27;2s/^.*inet //&#x27;</span> -e  <span class="string">&#x27;2s/ netmask.*$//p&#x27;</span> -n | <span class="built_in">tee</span> IP_eth0 </span><br><span class="line">172.19.194.137</span><br></pre></td></tr></table></figure>
+
+<p>注意哪些地方有 <code>p</code> 参数，哪些地方没有，如果两次匹配加了 <code>p</code>，那么就会打印两次信息，一次是删掉前面之后的剩余部分，一次是删掉前后剩下的部分。</p>
+<h2 id="五、awk"><a href="#五、awk" class="headerlink" title="五、awk"></a>五、awk</h2><p>awk 有强大的文本格式化功能，它更像是一门编程语言，支持条件判断、数组、循环等功能。</p>
+<p>awk 语法如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">awk [option] <span class="string">&#x27;pattern[action]&#x27;</span> file</span><br><span class="line">     可选参数  模式     动作      文件/数据</span><br></pre></td></tr></table></figure>
+
+<p>action 指的是动作，awk 擅长文本格式化，且输出格式化之后的结果，因此最常见的动作就是 <code>pirnt</code> 和 <code>printf</code>。</p>
+<p>若我们执行的命令是 <code>awk &#39;&#123;print $2&#125;&#39;</code>，没有使用参数和模式，<code>$2</code> 表示输出文本的第二列信息。<code>awk</code> 默认以空格为分隔符，且多个空格也识别为一个空格，作为分隔符。</p>
+<p><code>awk</code> 是按行处理文件，一行处理完毕，处理下一行，根据用户指定的分割符去工作，没有指定则默认空格。</p>
+<p><code>$0</code> 表示整行信息，<code>$1</code> 表示文本第一列信息，<code>$NF</code> 表示当前分割后的最后一列，倒数第二列可以写成 <code>$(NF-1)</code>。</p>
+<h3 id="1-awk-变量"><a href="#1-awk-变量" class="headerlink" title="1. awk 变量"></a>1. awk 变量</h3><p><code>awk</code> 分为内置变量和自定义变量。</p>
+<h4 id="1-1-内置变量"><a href="#1-1-内置变量" class="headerlink" title="1.1 内置变量"></a>1.1 内置变量</h4><p>一些常用的内置变量如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th>内置变量</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$n</td>
+<td>指定分隔符后，当前记录的第n个字段</td>
+</tr>
+<tr>
+<td>$0</td>
+<td>完整的输入记录</td>
+</tr>
+<tr>
+<td>FS</td>
+<td>输入字段分隔符，默认是空格</td>
+</tr>
+<tr>
+<td>OFS</td>
+<td>输出字段分隔符，默认是空格</td>
+</tr>
+<tr>
+<td>RS</td>
+<td>输入记录分隔符（输入换行符），指定输入时的换行符</td>
+</tr>
+<tr>
+<td>ORS</td>
+<td>输出记录分隔符（输入换行符），指定输入时的换行符</td>
+</tr>
+<tr>
+<td>NF(Number of fields)</td>
+<td>分割后，当前行一共有多少个字段</td>
+</tr>
+<tr>
+<td>NR(Number of records)</td>
+<td>当前记录数，行数</td>
+</tr>
+<tr>
+<td>FNR</td>
+<td>各文件分别计数的行号</td>
+</tr>
+<tr>
+<td>FILENAME</td>
+<td>当前文件名</td>
+</tr>
+<tr>
+<td>ARGC</td>
+<td>命令行参数的个数</td>
+</tr>
+<tr>
+<td>ARGV</td>
+<td>数组，存储命令行所给定的各个参数</td>
+</tr>
+<tr>
+<td>更多内置变量可以man手册查看</td>
+<td>man awk</td>
+</tr>
+</tbody></table>
+<p>例子，一次性输出多列信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print $1,$2&#125;&#x27;</span> file.txt</span><br></pre></td></tr></table></figure>
+
+<p>其中参数之间的逗号表示默认分隔符，在输出时每列之间会有一个空格。</p>
+<p>再如，自定义输出内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print &quot;第一列&quot;,$1,&quot;第二列&quot;,$2&#125;&#x27;</span> file.txt</span><br></pre></td></tr></table></figure>
+
+<p>【注】：awk 必须外层单引号，内层双引号，并且内置变量 <code>$n</code> 不可以加引号，否则会被识别为字符串。</p>
+<p>awk 的内置变量 <code>NR</code>、<code>NF</code> 是不用加 <code>$</code> 的，但是例如 <code>$0</code>、<code>$1</code> 等是需要加 <code>$</code> 的。</p>
+<h5 id="NR-和-NF"><a href="#NR-和-NF" class="headerlink" title="NR 和 NF"></a>NR 和 NF</h5><p>有如下测试文件 <code>awk1</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Cherry 25 19990101</span><br><span class="line">James 35 19850422</span><br><span class="line">Anna 22 20000322</span><br><span class="line">ChrisTim 48 19731225</span><br><span class="line">Qiang 23 19990103</span><br><span class="line">Sue 6 20160505</span><br><span class="line">Paul 37 19850428</span><br><span class="line">Steve 0 00000000</span><br></pre></td></tr></table></figure>
+
+<p>现在要输出第二行内容，命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;NR==2&#x27;</span> awk1 </span><br><span class="line">James 35 19850422</span><br></pre></td></tr></table></figure>
+
+<p>注意这里是 <code>==</code>。如果要输出第二到第五行，则命令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;NR==2,NR==5&#x27;</span> awk1</span><br><span class="line">James 35 19850422</span><br><span class="line">Anna 22 20000322</span><br><span class="line">ChrisTim 48 19731225</span><br><span class="line">Qiang 23 19990103</span><br></pre></td></tr></table></figure>
+
+<p>给每一行内容添加行号：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;&#123;print NR,$0&#125;&#x27;</span> awk1</span><br><span class="line">1 Cherry 25 19990101</span><br><span class="line">2 James 35 19850422</span><br><span class="line">3 Anna 22 20000322</span><br><span class="line">4 ChrisTim 48 19731225</span><br><span class="line">5 Qiang 23 19990103</span><br><span class="line">6 Sue 6 20160505</span><br><span class="line">7 Paul 37 19850428</span><br><span class="line">8 Steve 0 00000000</span><br></pre></td></tr></table></figure>
+
+<p>输出第一列和最后一列：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;&#123;print $1,$(NF)&#125;&#x27;</span> awk1</span><br><span class="line">Cherry 19990101</span><br><span class="line">James 19850422</span><br><span class="line">Anna 20000322</span><br><span class="line">ChrisTim 19731225</span><br><span class="line">Qiang 19990103</span><br><span class="line">Sue 20160505</span><br><span class="line">Paul 19850428</span><br><span class="line">Steve 00000000</span><br></pre></td></tr></table></figure>
+
+<h5 id="处理多个文件显示行号"><a href="#处理多个文件显示行号" class="headerlink" title="处理多个文件显示行号"></a>处理多个文件显示行号</h5><p>若我们想对多个文件使用 <code>awk</code> 进行处理并输出每一行的行号，<code>awk</code> 会将所有文件放在一起显示行号，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -v FS=<span class="string">&#x27;:&#x27;</span> <span class="string">&#x27;&#123;print NR,$1&#125;&#x27;</span> passwd awk1 </span><br><span class="line">1 root</span><br><span class="line">2 daemon</span><br><span class="line">3 bin</span><br><span class="line">4 sys</span><br><span class="line">5 <span class="built_in">sync</span></span><br><span class="line">6 games</span><br><span class="line">7 root</span><br><span class="line">8 lp</span><br><span class="line">9 root</span><br><span class="line">10 news</span><br><span class="line">11 Cherry 25 19990101</span><br><span class="line">12 James 35 19850422</span><br><span class="line">13 Anna 22 20000322</span><br><span class="line">14 ChrisTim 48 19731225</span><br><span class="line">15 Qiang 23 19990103</span><br><span class="line">16 Sue 6 20160505</span><br><span class="line">17 Paul 37 19850428</span><br><span class="line">18 Steve 0 00000000</span><br></pre></td></tr></table></figure>
+
+<p>但是我们希望对每个文件分别打印行号，则可以将变量 <code>NR</code> 改为 <code>FNR</code>，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -v FS=<span class="string">&#x27;:&#x27;</span> <span class="string">&#x27;&#123;print FNR,$1&#125;&#x27;</span> passwd awk1</span><br><span class="line">1 root</span><br><span class="line">2 daemon</span><br><span class="line">3 bin</span><br><span class="line">4 sys</span><br><span class="line">5 <span class="built_in">sync</span></span><br><span class="line">6 games</span><br><span class="line">7 root</span><br><span class="line">8 lp</span><br><span class="line">9 root</span><br><span class="line">10 news</span><br><span class="line">1 Cherry 25 19990101</span><br><span class="line">2 James 35 19850422</span><br><span class="line">3 Anna 22 20000322</span><br><span class="line">4 ChrisTim 48 19731225</span><br><span class="line">5 Qiang 23 19990103</span><br><span class="line">6 Sue 6 20160505</span><br><span class="line">7 Paul 37 19850428</span><br><span class="line">8 Steve 0 00000000</span><br></pre></td></tr></table></figure>
+
+<h5 id="RS-和-ORS"><a href="#RS-和-ORS" class="headerlink" title="RS 和 ORS"></a>RS 和 ORS</h5><p>我们看这个文件内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;&#123;print NR,$1&#125;&#x27;</span> awk1 </span><br><span class="line">1 Cherry</span><br><span class="line">2 James</span><br><span class="line">3 Anna</span><br><span class="line">4 ChrisTim</span><br><span class="line">5 Qiang</span><br><span class="line">6 Sue</span><br><span class="line">7 Paul</span><br><span class="line">8 Steve</span><br></pre></td></tr></table></figure>
+
+<p>这个文件一共有 8 行，默认是以换行符为每一行的分隔，若我们要修改其默认的输入换行符，则可以修改参数 <code>RS</code>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -v RS=<span class="string">&#x27; &#x27;</span> <span class="string">&#x27;&#123;print NR,$0&#125;&#x27;</span> awk1</span><br><span class="line">1 Cherry</span><br><span class="line">2 25</span><br><span class="line">3 19990101</span><br><span class="line">James</span><br><span class="line">4 35</span><br><span class="line">5 19850422</span><br><span class="line">Anna</span><br><span class="line">6 22</span><br><span class="line">7 20000322</span><br><span class="line">ChrisTim</span><br><span class="line">8 48</span><br><span class="line">9 19731225</span><br><span class="line">Qiang</span><br><span class="line">10 23</span><br><span class="line">11 19990103</span><br><span class="line">Sue</span><br><span class="line">12 6</span><br><span class="line">13 20160505</span><br><span class="line">Paul</span><br><span class="line">14 37</span><br><span class="line">15 19850428</span><br><span class="line">Steve</span><br><span class="line">16 0</span><br><span class="line">17 00000000</span><br></pre></td></tr></table></figure>
+
+<p>我们看到最终将以空格进行每一行的分隔，而不是换行符。我们还可以修改 <code>ORS</code> 修改默认的输出分隔符。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -v ORS=<span class="string">&#x27; &#x27;</span> <span class="string">&#x27;&#123;print NR,$1&#125;&#x27;</span> awk1</span><br><span class="line">1 Cherry 2 James 3 Anna 4 ChrisTim 5 Qiang 6 Sue 7 Paul 8 Steve</span><br></pre></td></tr></table></figure>
+
+<h5 id="FILENAME"><a href="#FILENAME" class="headerlink" title="FILENAME"></a>FILENAME</h5><p>该变量显示正在处理文件的名字</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;&#123;print FILENAME,$1&#125;&#x27;</span> awk1</span><br><span class="line">awk1 Cherry</span><br><span class="line">awk1 James</span><br><span class="line">awk1 Anna</span><br><span class="line">awk1 ChrisTim</span><br><span class="line">awk1 Qiang</span><br><span class="line">awk1 Sue</span><br><span class="line">awk1 Paul</span><br><span class="line">awk1 Steve</span><br></pre></td></tr></table></figure>
+
+<h5 id="变量-ARGV、ARGC"><a href="#变量-ARGV、ARGC" class="headerlink" title="变量 ARGV、ARGC"></a>变量 ARGV、ARGC</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk <span class="string">&#x27;BEGIN&#123;print &quot;AWK Start!&quot;&#125; &#123;print &quot;一共有&quot;,ARGC,&quot;个参数&quot;&#125;&#x27;</span> awk1</span><br><span class="line">AWK Start!</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line">一共有 2 个参数</span><br><span class="line"></span><br><span class="line">➜  ~/code/awk awk <span class="string">&#x27;BEGIN&#123;print &quot;AWK Start!&quot;&#125; &#123;print &quot;第一个awk参数为:&quot;,ARGV[0]&#125;&#x27;</span> awk1</span><br><span class="line">AWK Start!</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line">第一个awk参数为: awk</span><br><span class="line"></span><br><span class="line">➜  ~/code/awk awk <span class="string">&#x27;BEGIN&#123;print &quot;AWK Start!&quot;&#125; &#123;print &quot;第一个awk参数为:&quot;,ARGV[1]&#125;&#x27;</span> awk1</span><br><span class="line">AWK Start!</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br><span class="line">第一个awk参数为: awk1</span><br></pre></td></tr></table></figure>
+
+<p>我们发现该命令一共有 2 个参数，分别输出为 <code>awk</code> 和 <code>awk1</code>。</p>
+<h4 id="1-2-自定义变量"><a href="#1-2-自定义变量" class="headerlink" title="1.2 自定义变量"></a>1.2 自定义变量</h4><h3 id="2-awk-参数"><a href="#2-awk-参数" class="headerlink" title="2. awk 参数"></a>2. awk 参数</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-F</td>
+<td>指定分割字段符</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>定义或修改一个awk内部的变量</td>
+</tr>
+<tr>
+<td>-f</td>
+<td>从脚本文件中读取awk命令</td>
+</tr>
+</tbody></table>
+<p>更改分隔符见下一节内容。</p>
+<h3 id="3-awk-分隔符"><a href="#3-awk-分隔符" class="headerlink" title="3. awk 分隔符"></a>3. awk 分隔符</h3><p>在 <code>awk</code> 中，默认是以空格进行分隔的，在 <code>sed</code> 命令中，我们要获取网卡 <code>eth0</code> 的 IP 地址信息，采用正则表达式将前后部分删掉来实现。但是我们发现 <code>ifconfig</code> 信息都是用空格进行分隔的，因此在 <code>awk</code> 中，可以利用其特点，直接取出对应行的对应列，从而直接取出 IP 地址。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk ifconfig eth0 | awk <span class="string">&#x27;NR==2&#123;print $2&#125;&#x27;</span></span><br><span class="line">192.168.202.82</span><br></pre></td></tr></table></figure>
+
+<p><code>awk</code> 的分隔符有两种</p>
+<ul>
+<li>一种是输入分隔符，默认是空格，叫 <code>field separator</code>，变量名为 <code>FS</code></li>
+<li>一种是输出分隔符，<code>output field separator</code>，简称 <code>OFS</code></li>
+</ul>
+<h4 id="3-1-FS-输入分隔符"><a href="#3-1-FS-输入分隔符" class="headerlink" title="3.1 FS 输入分隔符"></a>3.1 FS 输入分隔符</h4><p><code>awk</code> 逐行处理文本的时候，以输入分割符为准，把文本切成多个片段，默认符号是空格。</p>
+<p>例如下面的 <code>passwd</code> 文件，输出其第一列和最后一列：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin</span><br><span class="line">bin:x:2:2:bin:/bin:/usr/sbin/nologin</span><br><span class="line">sys:x:3:3:sys:/dev:/usr/sbin/nologin</span><br><span class="line"><span class="built_in">sync</span>:x:4:65534:<span class="built_in">sync</span>:/bin:/bin/sync</span><br><span class="line">games:x:5:60:games:/usr/games:/usr/sbin/nologin</span><br><span class="line">root:x:6:12:man:/var/cache/man:/usr/sbin/nologin</span><br><span class="line">lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin</span><br><span class="line">root:x:8:8:mail:/var/mail:/usr/sbin/nologin</span><br><span class="line">news:x:9:9:news:/var/spool/news:/usr/sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -F <span class="string">&#x27;:&#x27;</span> <span class="string">&#x27;&#123;print $1,$NF&#125;&#x27;</span> passwd </span><br><span class="line">root /bin/bash</span><br><span class="line">daemon /usr/sbin/nologin</span><br><span class="line">bin /usr/sbin/nologin</span><br><span class="line">sys /usr/sbin/nologin</span><br><span class="line"><span class="built_in">sync</span> /bin/sync</span><br><span class="line">games /usr/sbin/nologin</span><br><span class="line">root /usr/sbin/nologin</span><br><span class="line">lp /usr/sbin/nologin</span><br><span class="line">root /usr/sbin/nologin</span><br><span class="line">news /usr/sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<p>这里使用了 <code>-F</code> 变量修改了默认分隔符，除了使用这种方法之外，还可以使用变量的形式，指定分隔符，使用 <code>-v</code> 选项搭配，修改 <code>FS</code> 变量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -v FS=<span class="string">&#x27;:&#x27;</span> <span class="string">&#x27;&#123;print $1,$NF&#125;&#x27;</span> passwd  </span><br><span class="line">root /bin/bash</span><br><span class="line">daemon /usr/sbin/nologin</span><br><span class="line">bin /usr/sbin/nologin</span><br><span class="line">sys /usr/sbin/nologin</span><br><span class="line"><span class="built_in">sync</span> /bin/sync</span><br><span class="line">games /usr/sbin/nologin</span><br><span class="line">root /usr/sbin/nologin</span><br><span class="line">lp /usr/sbin/nologin</span><br><span class="line">root /usr/sbin/nologin</span><br><span class="line">news /usr/sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-输出分隔符"><a href="#3-2-输出分隔符" class="headerlink" title="3.2 输出分隔符"></a>3.2 输出分隔符</h4><p>上面的例子我们发现，第一列和最后一列之间默认输出是用空格分隔，若我们想自定义该输出分隔符，可以更改 <code>OFS</code> 变量修改默认输出分隔符，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  ~/code/awk awk -v FS=<span class="string">&#x27;:&#x27;</span> -v OFS=<span class="string">&#x27;==&gt;&#x27;</span> <span class="string">&#x27;&#123;print $1,$NF&#125;&#x27;</span> passwd </span><br><span class="line">root==&gt;/bin/bash</span><br><span class="line">daemon==&gt;/usr/sbin/nologin</span><br><span class="line">bin==&gt;/usr/sbin/nologin</span><br><span class="line">sys==&gt;/usr/sbin/nologin</span><br><span class="line"><span class="built_in">sync</span>==&gt;/bin/sync</span><br><span class="line">games==&gt;/usr/sbin/nologin</span><br><span class="line">root==&gt;/usr/sbin/nologin</span><br><span class="line">lp==&gt;/usr/sbin/nologin</span><br><span class="line">root==&gt;/usr/sbin/nologin</span><br><span class="line">news==&gt;/usr/sbin/nologin</span><br></pre></td></tr></table></figure>
+
+<p>这样就修改了默认的输出分隔符。</p>
+<h3 id><a href="#" class="headerlink" title></a></h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/hexo-blog/tags/sed/" rel="tag"># sed</a>
+              <a href="/hexo-blog/tags/awk/" rel="tag"># awk</a>
+              <a href="/hexo-blog/tags/grep/" rel="tag"># grep</a>
+              <a href="/hexo-blog/tags/Linux%E5%91%BD%E4%BB%A4/" rel="tag"># Linux命令</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/hexo-blog/3645f6a9.html" rel="prev" title="Git的使用">
+      <i class="fa fa-chevron-left"></i> Git的使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/hexo-blog/1d66df69.html" rel="next" title="C语言进阶学习">
+      C语言进阶学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E4%B8%ADsed%E3%80%81awk%E3%80%81grep%E5%91%BD%E4%BB%A4%E8%AF%A6%E8%A7%A3"><span class="nav-text">Linux中sed、awk、grep命令详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81bash-%E5%8F%8A%E4%B8%80%E4%BA%9B%E7%89%B9%E6%80%A7"><span class="nav-text">一、bash 及一些特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B1%95%E5%BC%80"><span class="nav-text">1. 命令行展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-alias"><span class="nav-text">2. alias</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8E%86%E5%8F%B2%E5%91%BD%E4%BB%A4"><span class="nav-text">3. 历史命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%BF%AB%E6%8D%B7%E9%94%AE"><span class="nav-text">4. 快捷键</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Linux-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-text">二、Linux 正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">正则表达式的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F-ERE-%E9%9B%86%E5%90%88"><span class="nav-text">扩展正则表达式 ERE 集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-text">一些正则表达式的例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81grep"><span class="nav-text">三、grep</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81sed"><span class="nav-text">四、sed</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-sed-%E8%AF%AD%E6%B3%95"><span class="nav-text">4.1 sed 语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-sed-%E4%BE%8B%E5%AD%90"><span class="nav-text">4.2 sed 例子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E8%BE%93%E5%87%BA%E6%96%87%E4%BB%B6%E7%AC%AC3%E3%80%814%E8%A1%8C"><span class="nav-text">1. 输出文件第3、4行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%BF%87%E6%BB%A4%E5%90%AB%E6%9C%89-My-%E7%9A%84%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%A1%8C"><span class="nav-text">2. 过滤含有 My 的字符串行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%88%A0%E9%99%A4%E6%9C%89-is-%E7%9A%84%E8%A1%8C"><span class="nav-text">3. 删除有 is 的行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%88%A0%E9%99%A4%E7%AC%AC-5-%E8%A1%8C%E4%B9%8B%E5%90%8E%E7%9A%84%E8%A1%8C"><span class="nav-text">4. 删除第 5 行之后的行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%B0%86%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84-is-%E5%85%A8%E9%83%A8%E6%9B%BF%E6%8D%A2%E6%88%90-IS%EF%BC%8C%E5%B9%B6%E6%89%93%E5%8D%B0%E5%89%8D-5-%E8%A1%8C"><span class="nav-text">5. 将文件中的 is 全部替换成 IS，并打印前 5 行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-%E5%B0%86%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84-is-%E5%85%A8%E6%9B%BF%E6%8D%A2%E6%88%90-IS%EF%BC%8C%E5%90%8C%E6%97%B6%E5%B0%86-23-%E6%9B%BF%E6%8D%A2%E6%88%90-35"><span class="nav-text">6. 将文件中的 is 全替换成 IS，同时将 23 替换成 35</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E5%9C%A8%E6%96%87%E4%BB%B6%E7%AC%AC-4-%E8%A1%8C%E5%90%8E%E8%BF%BD%E5%8A%A0%E4%B8%80%E8%A1%8C-Linux-is-funny"><span class="nav-text">7. 在文件第 4 行后追加一行 Linux is funny..</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-%E5%9C%A8%E6%96%87%E4%BB%B6%E7%AC%AC-1-%E8%A1%8C%E5%90%8E%E8%BF%BD%E5%8A%A0%E4%B8%80%E8%A1%8C-Today-is-Wednesday"><span class="nav-text">8. 在文件第 1 行后追加一行 ##Today is Wednesday##</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-sed-%E8%BF%9B%E9%98%B6%E4%BE%8B%E5%AD%90%EF%BC%9A%E5%8F%96%E5%87%BA-Linux-%E7%9A%84-IP-%E5%9C%B0%E5%9D%80"><span class="nav-text">4.3 sed 进阶例子：取出 Linux 的 IP 地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81awk"><span class="nav-text">五、awk</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-awk-%E5%8F%98%E9%87%8F"><span class="nav-text">1. awk 变量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-%E5%86%85%E7%BD%AE%E5%8F%98%E9%87%8F"><span class="nav-text">1.1 内置变量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#NR-%E5%92%8C-NF"><span class="nav-text">NR 和 NF</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E5%A4%9A%E4%B8%AA%E6%96%87%E4%BB%B6%E6%98%BE%E7%A4%BA%E8%A1%8C%E5%8F%B7"><span class="nav-text">处理多个文件显示行号</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#RS-%E5%92%8C-ORS"><span class="nav-text">RS 和 ORS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FILENAME"><span class="nav-text">FILENAME</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%98%E9%87%8F-ARGV%E3%80%81ARGC"><span class="nav-text">变量 ARGV、ARGC</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%8F%98%E9%87%8F"><span class="nav-text">1.2 自定义变量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-awk-%E5%8F%82%E6%95%B0"><span class="nav-text">2. awk 参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-awk-%E5%88%86%E9%9A%94%E7%AC%A6"><span class="nav-text">3. awk 分隔符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-FS-%E8%BE%93%E5%85%A5%E5%88%86%E9%9A%94%E7%AC%A6"><span class="nav-text">3.1 FS 输入分隔符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E8%BE%93%E5%87%BA%E5%88%86%E9%9A%94%E7%AC%A6"><span class="nav-text">3.2 输出分隔符</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text"></span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/hexo-blog/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/hexo-blog/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/hexo-blog/categories/">
+          
+        <span class="site-state-item-count">29</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/hexo-blog/tags/">
+          
+        <span class="site-state-item-count">56</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">215k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:15</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/hexo-blog/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/hexo-blog/js/utils.js"></script>
+
+<script src="/hexo-blog/js/motion.js"></script>
+
+
+<script src="/hexo-blog/js/schemes/muse.js"></script>
+
+
+<script src="/hexo-blog/js/next-boot.js"></script>
+
+<script src="/hexo-blog/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/hexo-blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/hexo-blog/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://cherryyang05.github.io/hexo-blog/574c20f6.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
