@@ -30,7 +30,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220515204014.png">
 <meta property="article:published_time" content="2022-05-15T09:27:45.000Z">
-<meta property="article:modified_time" content="2024-09-08T10:49:00.704Z">
+<meta property="article:modified_time" content="2024-09-08T10:51:09.907Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="SSD">
 <meta name="twitter:card" content="summary">
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 10:49:00" itemprop="dateModified" datetime="2024-09-08T10:49:00+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-08 10:51:09" itemprop="dateModified" datetime="2024-09-08T10:51:09+00:00">2024-09-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -309,11 +309,12 @@
 <p>本文介绍 SSD 的核心技术 FTL（闪存转换层）</p>
 </blockquote>
 <span id="more"></span>
+
 <h2 id="一、FTL-综述"><a href="#一、FTL-综述" class="headerlink" title="一、FTL 综述"></a>一、FTL 综述</h2><p>FTL（Flash Translation Layer，闪存转换层），是 SSD 固件的核心组成，完成主机（Host）逻辑地址空间到闪存（Flash）物理地址空间的翻译（Translation），或映射（Mapping）。SSD 使用的存储介质一般是 NAND Flash</p>
 <p>闪存块的有以下重要特性：</p>
 <ol>
 <li>闪存块需要先擦除才能写入，不能覆盖写，当写入新数据时，不能在老地方更改，因为闪存不允许在一个闪存页上重复写入，一次擦除只能写一次。因此 Firmware 固件需要维护一张逻辑地址到物理地址的映射表。当闪存空间不够时，FTL 就需要做垃圾回收，将若干个闪存块中的有效数据搬出，写到某个新的闪存块上，然后把之前的闪存块删除，得到新的闪存块。</li>
-<li>闪存块都是有一定寿命的，可以用 PE（Program/EraseCount）数衡量，通过 Wear Leveling 让数据均摊到每个闪存块上，保证 SSD 的最大数据写入量。</li>
+<li>闪存块都是有一定寿命的，可以用 PE（Program&#x2F;EraseCount）数衡量，通过 Wear Leveling 让数据均摊到每个闪存块上，保证 SSD 的最大数据写入量。</li>
 <li>每个闪存块读的数量是有限的，读的太多会造成读干扰（Read Disturb）问题，FTL 需要处理读干扰问题，当某个闪存块读次数快到一定阈值的时候，FTL 需要将其从闪存块中移走，避免数据出错。</li>
 <li>闪存的数据保持问题（Data Retention）问题。（电荷流失）</li>
 <li>闪存的坏块。</li>
@@ -353,8 +354,9 @@
 <li>增量更新</li>
 </ul>
 <h2 id="三、垃圾回收"><a href="#三、垃圾回收" class="headerlink" title="三、垃圾回收"></a>三、垃圾回收</h2><h3 id="1-垃圾回收原理"><a href="#1-垃圾回收原理" class="headerlink" title="1. 垃圾回收原理"></a>1. 垃圾回收原理</h3><h3 id="2-写放大"><a href="#2-写放大" class="headerlink" title="2. 写放大"></a>2. 写放大</h3><p>由于 GC 的存在，就有一个问题，用户要写入一定的数据，SSD 为了腾出空间写这些数据，需要额外的做一些数据的搬移，也就是额外的写，最后往往导致 SSD 往闪存中写人的数据量比实际用户写入 SSD 的数据量多。因此，SSD 中有个重要参数，就是 <strong>写放大(WA, Write Amplification):</strong></p>
-<script type="math/tex; mode=display">写放大=\cfrac{写入闪存的数据量}{用户写的数据量}</script><p>空盘的写放大一般为 1，写放大越大，意味着额外写入闪存的数据越多，一方面磨损闪存，减少 SSD 寿命，另一方面，写人这些额外数据会占用底层闪存带宽，影响 SSD 性能。因此，SSD 设计的一个目标是让 WA 尽量小。减小写放大，可以使用前面提到的压缩办法（主控决定），顺序写也可以减小写放大（垃圾集中，但顺序写可遇不可求，取决于用户 Workload），还有就是增大OP（这个可控）。</p>
-<p>OP 定义：$OP比例=(闪存空间-用户空间)/用户空间$，增大 OP 能够减小写放大。</p>
+<p>$$写放大&#x3D;\cfrac{写入闪存的数据量}{用户写的数据量}$$</p>
+<p>空盘的写放大一般为 1，写放大越大，意味着额外写入闪存的数据越多，一方面磨损闪存，减少 SSD 寿命，另一方面，写人这些额外数据会占用底层闪存带宽，影响 SSD 性能。因此，SSD 设计的一个目标是让 WA 尽量小。减小写放大，可以使用前面提到的压缩办法（主控决定），顺序写也可以减小写放大（垃圾集中，但顺序写可遇不可求，取决于用户 Workload），还有就是增大OP（这个可控）。</p>
+<p>OP 定义：$OP比例&#x3D;(闪存空间-用户空间)&#x2F;用户空间$，增大 OP 能够减小写放大。</p>
 <p>总结一下: WA 越小越好，因为越小意味着对闪存的损耗越小，可以延长闪存使用寿命，从而支持更多的用户数据写入量；OP 越大越好，OP 越大，意味着写放大越小，也意味着 SSD 写性能越好。</p>
 <p>影响写放大的因素：</p>
 <ul>
@@ -377,7 +379,7 @@
 <li>挑选有效数据最小的块</li>
 <li>固件需要记录和维护每个闪存块的有效数据量</li>
 <li>这种 BPA 算法叫做 Greedy 算法，是大多数 SSD 使用的算法</li>
-<li>有的 BPA 还需要考虑到擦写次数 </li>
+<li>有的 BPA 还需要考虑到擦写次数</li>
 </ul>
 <p><strong>2. 从源闪存块中找到有效数据</strong></p>
 <p>最好的策略当然是只读出块中的有效数据</p>
@@ -671,13 +673,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">214k</span>
+    <span title="站点总字数">216k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:15</span>
+    <span title="站点阅读时长">3:17</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>

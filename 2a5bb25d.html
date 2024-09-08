@@ -28,22 +28,22 @@
 <meta property="og:site_name" content="北极熊不吃企鹅宝宝">
 <meta property="og:description" content="一、DHCP介绍1. 简要介绍DHCP 协议在我们日常生活中应该是最常见而又经常被忽略的一种协议了。当你走进一间屋子，手机自动连上了 WiFi，当你离开了屋子，又自动断开了 WiFi…… 这一系列的幕后都是DHCP协议在默默工作。 DHCP 协议(Dynamic Host Configuration Protocol)是一个基于UDP协议的局域网的网络协议。指的是由服务器控制一段 IP 地址范围，">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP租借.png">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP握手.jpg">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP数据包介绍.png">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/具体格式.png">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP具体内容.png">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/状态机.png">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP具体格式.png">
-<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/option组成.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP%E7%A7%9F%E5%80%9F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP%E6%8F%A1%E6%89%8B.jpg">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP%E6%95%B0%E6%8D%AE%E5%8C%85%E4%BB%8B%E7%BB%8D.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E5%86%85%E5%AE%B9.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/%E7%8A%B6%E6%80%81%E6%9C%BA.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png">
+<meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/option%E7%BB%84%E6%88%90.png">
 <meta property="article:published_time" content="2020-05-15T18:20:18.000Z">
-<meta property="article:modified_time" content="2024-09-08T10:49:00.672Z">
+<meta property="article:modified_time" content="2024-09-08T10:51:09.875Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="计算机网络">
 <meta property="article:tag" content="TCP&#x2F;IP协议">
 <meta property="article:tag" content="DHCP">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP租借.png">
+<meta name="twitter:image" content="https://cherryyang05.github.io/hexo-blog/2a5bb25d/DHCP%E7%A7%9F%E5%80%9F.png">
 
 <link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/2a5bb25d.html">
 
@@ -245,7 +245,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 10:49:00" itemprop="dateModified" datetime="2024-09-08T10:49:00+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-08 10:51:09" itemprop="dateModified" datetime="2024-09-08T10:51:09+00:00">2024-09-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -318,7 +318,9 @@
 <p>DHCP 协议(Dynamic Host Configuration Protocol)是一个基于UDP协议的局域网的网络协议。指的是由服务器控制一段 IP 地址范围，客户机登录服务器时就可以自动获得服务器分配的 IP 地址和子网掩码。</p>
 <p>该协议的最大作用是动态的为加入网络的设备分配 IP 地址，在该协议出现前，IP 地址的分配基于静态模式，你把设备的 mac 地址手动在路由器设置，然后路由器自动生成一个 IP 与你的 mac 地址绑定起来。这种应用在有线网络时代可以适用，但在无线时代，每时每刻可能有不同的设备加入或离开网络，因此原有静态匹配 IP 的做法不再适合。</p>
 <p>DHCP 协议的诞生就是为了迎合在无线情况下，网络内部连接设备不断变化的情况。它包含两部分，一是分配 IP 地址，二是支持客户端请求，服务器应答，使得两者之间有效交换配置信息。</p>
-<p>DHCP 最重要功能显然是动态分配 IP 地址，当我们的设备连接上网络之后里面获得一个可用的 IP 地址，就得感谢该协议的执行，现在我们大多数设备都依靠 DHCP 来从路由器动态获得 IP<br><span id="more"></span></p>
+<p>DHCP 最重要功能显然是动态分配 IP 地址，当我们的设备连接上网络之后里面获得一个可用的 IP 地址，就得感谢该协议的执行，现在我们大多数设备都依靠 DHCP 来从路由器动态获得 IP</p>
+<span id="more"></span>
+
 <h3 id="2-DHCP-的-IP-租借"><a href="#2-DHCP-的-IP-租借" class="headerlink" title="2. DHCP 的 IP 租借"></a>2. DHCP 的 IP 租借</h3><p>DHCP 协议能够维护一个动态的 IP 池，根据设备加入和离开网络回收或分发可用 IP，它甚至能实现多个设备共享相同 IP。DHCP 协议的实现基于 UDP，需要 IP 的设备和具备分配 IP 能力的设备根据 DHCP 协议的方式封装数据包，然后通过 UDP 协议发送给对方。有了该协议后，我们上网时不再麻烦的去配置各种信息，设备和路由器之间相互通信后，自动配置好相应信息，我们只要等着配置完毕然后上网就行。</p>
 <p>DHCP 支持三种地址分配方式，一种是手动分配，由管理员手动将指定 IP 地址分发给特定设备；第二种是自动分配，它从当前可用的 IP 地址池中选出一个，永久的分发给某一台特定设备；第三种是动态分配，它从 IP 地址池中选出一个分发给某台设备一段时间，时间到了后收回，或者设备离开网络后通知路由器主动收回，由此可见，第二种和第三种区别不大</p>
 <p>使用动态分配方式时，管理员指定一系列可以分配的 IP，然后 DHCP 服务器会自动维护哪些 IP 已经分配，哪些 IP 可以使用。同时服务器指定分配的 IP 使用时长，一旦超时后，客户必须主动向服务器请求续租，例如上图就有对应按钮，或者请求重新从服务器获得一个新的 IP 地址，这个请求应答过程将是我们研究和实现的重点。</p>
@@ -326,19 +328,19 @@
 <p>在 DHCP 协议管理下，所有设备只能“租借” IP 而不能“拥有” IP。有租借就必须有管理，DHCP 协议的主要内容就在这里。租借时常根据设备的使用情况而定，作为服务器的设备租借时间必须很长，而对于手持设备而言，租借时间可以很短。在很多情况下，管理员为了防止 IP 被长时间无效占用，例如某台设备计划租借一个月，但它运行一天就关机了，那么这个 IP 就会在余下 29 天浪费掉，因此管理员会强制设备租借短时期，时期到了后再跟服务器请求延长租借期。</p>
 <p>管理员一般把 IP 池划分为若干类别，不同类别对应不同租期，然后根据接入设备的类型赋予不同类别的IP。一旦租期抵达一半时，设备就开始于服务器协商以便延长租期。</p>
 <p>下面是IP租借的流程图：</p>
-<p><img data-src="2a5bb25d/DHCP租借.png" alt="IP租借"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/DHCP%E7%A7%9F%E5%80%9F.png" alt="IP租借"></p>
 <p>上图描述了设备向 DHCP 服务器租借 IP 8 天流程，其中在第 4 天要与服务器协商续租。租借 IP 的设备需要保持两个时钟，时钟 T1 在租借期过了一半时触发，此时设备向服务器请求续租；如果续租不成功，第二个时钟在租期 87.5% 时触发，设备向另一个 DHCP 服务器发起租借 IP 的请求。我们后面用代码实现协议时，主要通过构造数据包完成上面所述流程。</p>
 <p>DHCP 协议时典型的服务器客户端应用模式。需要 IP 的设备是客户端，分发 IP 的设备是服务器，两者通过互发消息完成一项任务。他们之间的交互可以由下图表达：</p>
-<p><img data-src="2a5bb25d/DHCP握手.jpg" alt="DHCP握手"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/DHCP%E6%8F%A1%E6%89%8B.jpg" alt="DHCP握手"></p>
 <p>类似于 <code>TCP</code> 的握手，但是又比 TCP 简单不少。</p>
 <h2 id="二、DHCP主机动态配置协议解析和数据包格式说明"><a href="#二、DHCP主机动态配置协议解析和数据包格式说明" class="headerlink" title="二、DHCP主机动态配置协议解析和数据包格式说明"></a>二、DHCP主机动态配置协议解析和数据包格式说明</h2><h3 id="1-查看DHCP数据包"><a href="#1-查看DHCP数据包" class="headerlink" title="1. 查看DHCP数据包"></a>1. 查看DHCP数据包</h3><p>打开网络封包分析软件 WireShack，输入过滤条件 <code>bootp.option.type == 53</code> (或者 <code>dhcp.option.type == 53</code> 也可)，在命令行中输入 <code>ipconfig/renew</code>，表示续租 DHCP 服务器，我们获取这样的数据包：</p>
-<p><img data-src="2a5bb25d/DHCP数据包介绍.png" alt="DHCP数据包介绍"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/DHCP%E6%95%B0%E6%8D%AE%E5%8C%85%E4%BB%8B%E7%BB%8D.png" alt="DHCP数据包介绍"></p>
 <p>点开一个数据包，看到：</p>
-<p><img data-src="2a5bb25d/具体格式.png" alt="具体格式"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png" alt="具体格式"></p>
 <p>我们看到 DHCP 协议数据包的组成格式为 <code>IP数据包-&gt;UDP数据包-&gt;Boostrap Protocoal数据包(也就是DHCP数据包)</code></p>
 <p><strong>【注】Boostrap 是DHCP协议的前身，它叫主机静态配置协议。DHCP其实是它的扩展，将原来静态配置的过程动态化，于是配置起来更加灵活方便，只不过DHCP数据包的依然以Boostrap协议数据包为基础。</strong></p>
 <p>我们点开 DHCP 看看具体内容：</p>
-<p><img data-src="2a5bb25d/DHCP具体内容.png" alt="DHCP具体内容"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E5%86%85%E5%AE%B9.png" alt="DHCP具体内容"></p>
 <p>通过观察，我们大概可以知道 DHCP 数据包大概有哪些字段，要了解这些字段的作用，我们还得充分了解协议的具体交互流程。DHCP 协议以客户端&lt;-&gt;服务器的方式进行交互，整个过程由客户端主导，服务器被动回应，因此掌握客户端的运行状态，我们就可以掌握 DHCP 的协议交互流程。</p>
 <h3 id="2-DHCP流程"><a href="#2-DHCP流程" class="headerlink" title="2. DHCP流程"></a>2. DHCP流程</h3><p>DHCP 在执行时维护了一个状态机，该状态机由八个状态组成。</p>
 <p>客户端在运行时维护一个内部状态机，其运行过程如下：</p>
@@ -353,9 +355,9 @@
 <li><code>REBIDING</code> 状态。此时客户端无法继续续租原有 IP，于是它持续向局域网广播 DHCPREQUEST 消息，直到有服务器响应它为止。此时客户端又面临三种情况。一是有服务器向客户端返回 DHCPACK 消息，于是客户端可以使用新分配的 IP；二是服务器返回 DHCPNAK 消息，这表明服务器希望客户端重新启动租借流程，于是客户端进入 INIT 状态；第三是，在收到回应前，客户端当前租用的 IP 到期，它重新进入 INIT 状态。</li>
 </ol>
 <p>为了简单起见，我们将以客户端的方式编写代码，上面的流程状态可以使用下图统一描述：</p>
-<p><img data-src="2a5bb25d/状态机.png" alt="状态机"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/%E7%8A%B6%E6%80%81%E6%9C%BA.png" alt="状态机"></p>
 <h3 id="3-字段详解"><a href="#3-字段详解" class="headerlink" title="3. 字段详解"></a>3. 字段详解</h3><p>首先完成第一步，客户端向局域网广播消息，然后收到服务器应答。下面是 DHCP 消息的具体格式：</p>
-<p><img data-src="2a5bb25d/DHCP具体格式.png" alt="DHCP具体格式"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/DHCP%E5%85%B7%E4%BD%93%E6%A0%BC%E5%BC%8F.png" alt="DHCP具体格式"></p>
 <p>上面的是前面抓包时对应的 DHCP 部分，依次解析各个字段：</p>
 <ul>
 <li><code>op</code> 字段 1 字节，它表明消息类型，请求消息使用数值1，回应消息使用数值2</li>
@@ -375,7 +377,7 @@
 <li><code>Options</code> 字段，可变长。该字段用于设备和服务器间交换多种配置信息</li>
 </ul>
 <p>接下来我们看看 <code>Options</code> 字段，由于所有信息的交互都存储在该字段，因此我们需搞清楚它的结构。在该字段开始前是4个字节的 <code>魔术字</code>，固定为 <code>99.130.83.99</code>(十六进制：63 82 53 63)，然后才是一系列 Option 数据结构，Option 数据结构组成如下。</p>
-<p><img data-src="2a5bb25d/option组成.png" alt="option组成"></p>
+<p><img data-src="/hexo-blog/2a5bb25d/option%E7%BB%84%E6%88%90.png" alt="option组成"></p>
 <p>每个 <code>Option</code> 由三字段组成，第一字段是 <code>Code</code>,用来表明当前 <code>Option</code> 类型，它有两个特殊值，一个是 <code>0</code>，它表示当前 <code>Option</code> 只有这一个字节，另一个特殊值是 <code>255</code>，它表示后续不再含有 <code>Option</code>结构体；第二字段是 <code>len</code>，用来标志数据段的长度；第三字段是 <code>Data</code>，用来存储数据。</p>
 <p>由于 Option 结构体用于客户端与服务器进行数据交换，因此它的种类相当繁杂。</p>
 
@@ -538,13 +540,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">214k</span>
+    <span title="站点总字数">216k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:15</span>
+    <span title="站点阅读时长">3:17</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
