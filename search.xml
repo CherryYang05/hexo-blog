@@ -1113,28 +1113,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Rust中Clap库的使用</title>
-    <url>/hexo-blog/8ce3ab1f.html</url>
-    <content><![CDATA[<h1 id="Clap-库的使用"><a href="#Clap-库的使用" class="headerlink" title="Clap 库的使用"></a>Clap 库的使用</h1><blockquote>
-<p>Clap 是一个用来解析 rust 命令行参数的库。稍微有编程语言基础的人应该会觉得这个解释非常清晰明了，一些类似于“clap 库易于使用、高效且功能齐全”等场面话不会再次出现，下面我们直接进入正题。</p>
-</blockquote>
-<span id="more"></span>
-
-<h2 id="一、版权及说明"><a href="#一、版权及说明" class="headerlink" title="一、版权及说明"></a>一、版权及说明</h2><p>该文参考了 Rust 语言中文社区的 <a href="https://rustcc.cn/article?id=921ad2c0-09af-4271-ae62-4b21ce281a2b">每周一库</a>，同时参考了官方 <a href="https://crates.io/crates/clap">crate</a> 以及 <a href="https://docs.rs/clap/latest/clap/">clap 官方文档</a> 的用例及介绍</p>
-<p>对于命令行解析使用最多的库，可以在 <a href="https://crates.io/">crates.io</a> 首页搜索关键词 Command Line，下载量最多的库便是 clap</p>
-<h2 id="二、关于命令行解析"><a href="#二、关于命令行解析" class="headerlink" title="二、关于命令行解析"></a>二、关于命令行解析</h2><h2 id="三、"><a href="#三、" class="headerlink" title="三、"></a>三、</h2><p>clap 用于解析并验证用户在运行命令行程序时提供的命令行参数字符串。 你所需要做的只是提供有效参数的列表，clap 会自动处理其余的繁杂工作。 这样工程师可以把时间和精力放在实现程序功能上，而不是参数的解析和验证上。</p>
-<p>当 clap 解析了用户提供的参数字符串，它就会返回匹配项以及任何适用的值。 如果用户输入了错误或错字，clap 会通知他们错误并退出（或返回 Result 类型，并允许您在退出前执行任何清理操作）。这样，工程师可以在代码中对参数的有效性做出合理的假设。</p>
-]]></content>
-      <categories>
-        <category>编程语言</category>
-        <category>Rust</category>
-      </categories>
-      <tags>
-        <tag>Rust</tag>
-        <tag>lib</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Makefile的简单使用</title>
     <url>/hexo-blog/31dce7e5.html</url>
     <content><![CDATA[<h2 id="Makefile-的简单使用"><a href="#Makefile-的简单使用" class="headerlink" title="Makefile 的简单使用"></a>Makefile 的简单使用</h2><blockquote>
@@ -1208,6 +1186,28 @@
       <tags>
         <tag>脚本</tag>
         <tag>Makefile</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Rust中Clap库的使用</title>
+    <url>/hexo-blog/8ce3ab1f.html</url>
+    <content><![CDATA[<h1 id="Clap-库的使用"><a href="#Clap-库的使用" class="headerlink" title="Clap 库的使用"></a>Clap 库的使用</h1><blockquote>
+<p>Clap 是一个用来解析 rust 命令行参数的库。稍微有编程语言基础的人应该会觉得这个解释非常清晰明了，一些类似于“clap 库易于使用、高效且功能齐全”等场面话不会再次出现，下面我们直接进入正题。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、版权及说明"><a href="#一、版权及说明" class="headerlink" title="一、版权及说明"></a>一、版权及说明</h2><p>该文参考了 Rust 语言中文社区的 <a href="https://rustcc.cn/article?id=921ad2c0-09af-4271-ae62-4b21ce281a2b">每周一库</a>，同时参考了官方 <a href="https://crates.io/crates/clap">crate</a> 以及 <a href="https://docs.rs/clap/latest/clap/">clap 官方文档</a> 的用例及介绍</p>
+<p>对于命令行解析使用最多的库，可以在 <a href="https://crates.io/">crates.io</a> 首页搜索关键词 Command Line，下载量最多的库便是 clap</p>
+<h2 id="二、关于命令行解析"><a href="#二、关于命令行解析" class="headerlink" title="二、关于命令行解析"></a>二、关于命令行解析</h2><h2 id="三、"><a href="#三、" class="headerlink" title="三、"></a>三、</h2><p>clap 用于解析并验证用户在运行命令行程序时提供的命令行参数字符串。 你所需要做的只是提供有效参数的列表，clap 会自动处理其余的繁杂工作。 这样工程师可以把时间和精力放在实现程序功能上，而不是参数的解析和验证上。</p>
+<p>当 clap 解析了用户提供的参数字符串，它就会返回匹配项以及任何适用的值。 如果用户输入了错误或错字，clap 会通知他们错误并退出（或返回 Result 类型，并允许您在退出前执行任何清理操作）。这样，工程师可以在代码中对参数的有效性做出合理的假设。</p>
+]]></content>
+      <categories>
+        <category>编程语言</category>
+        <category>Rust</category>
+      </categories>
+      <tags>
+        <tag>Rust</tag>
+        <tag>lib</tag>
       </tags>
   </entry>
   <entry>
@@ -2614,92 +2614,6 @@
       </tags>
   </entry>
   <entry>
-    <title>log4rs日志库解析</title>
-    <url>/hexo-blog/faf96547.html</url>
-    <content><![CDATA[<p><a href="https://github.com/sfackler/log4rs">log4rs</a> 是rust实现的高度可配置日志库，该库配置的方式比较灵活，功能相对丰富，可以满足绝大部分的项目需要。</p>
-<span id="more"></span>
-
-<h2 id="一、用法示例"><a href="#一、用法示例" class="headerlink" title="一、用法示例"></a>一、用法示例</h2><p>首先先给个简单示例，通过这个示例就可以看出log4rs进行日志配置非常的灵活：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#[macro_use]</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    log4rs::<span class="title function_ invoke__">init_file</span>(<span class="string">&quot;log.yaml&quot;</span>,<span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>()).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    info!(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>日志配置文件如下：（文件格式不唯一，可以是yaml,json,toml等格式，下面是yaml格式的配置文件）</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Scan this file for changes every 30 seconds</span></span><br><span class="line"><span class="attr">refresh_rate:</span> <span class="number">30</span> <span class="string">seconds</span></span><br><span class="line"></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="comment"># An appender named &quot;stdout&quot; that writes to stdout</span></span><br><span class="line">  <span class="attr">stdout:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># An appender named &quot;requests&quot; that writes to a file with a custom pattern encoder</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;log/requests.log&quot;</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; - &#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set the default logging level to &quot;info&quot; and attach the &quot;stdout&quot; appender to the root</span></span><br><span class="line"><span class="attr">root:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">stdout</span></span><br><span class="line"></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line">  <span class="comment"># Raise the maximum log level for events sent to the &quot;app::backend::db&quot; logger to &quot;info&quot;</span></span><br><span class="line">  <span class="attr">app::backend::db:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Route log events sent to the &quot;app::requests&quot; logger to the &quot;requests&quot; appender,</span></span><br><span class="line">  <span class="comment"># and *not* the normal appenders installed at the root</span></span><br><span class="line">  <span class="attr">app::requests:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">requests</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<p>运行结果：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sl@Li:~/Works/study/helloworld$ cargo run</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.09s</span><br><span class="line">     Running `target/debug/helloworld`</span><br><span class="line">2018-12-10T10:11:45.240346970+08:00 INFO helloworld - Hello, world!</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这里因为appenders配置的是stdout对应的输出到控制台，所以日志信息输出在了控制台上，如果选择的是requests，则日志信息就输出在了对应路径文件上。</p>
-<p>当然日志配置的方式除了配置文件，还可以在程序代码中进行配置，代码如下：</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> log::LogLevelFilter;</span><br><span class="line"><span class="keyword">use</span> log4rs::append::console::ConsoleAppender;</span><br><span class="line"><span class="keyword">use</span> log4rs::append::file::FileAppender;</span><br><span class="line"><span class="keyword">use</span> log4rs::encode::pattern::PatternEncoder;</span><br><span class="line"><span class="keyword">use</span> log4rs::config::&#123;Appender, Config, Logger, Root&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">stdout</span> = ConsoleAppender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">requests</span> = FileAppender::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">        .<span class="title function_ invoke__">encoder</span>(<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(PatternEncoder::<span class="title function_ invoke__">new</span>(<span class="string">&quot;&#123;d&#125; - &#123;m&#125;&#123;n&#125;&quot;</span>)))</span><br><span class="line">        .<span class="title function_ invoke__">build</span>(<span class="string">&quot;log/requests.log&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = Config::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">        .<span class="title function_ invoke__">appender</span>(Appender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;stdout&quot;</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(stdout)))</span><br><span class="line">        .<span class="title function_ invoke__">appender</span>(Appender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;requests&quot;</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(requests)))</span><br><span class="line">        .<span class="title function_ invoke__">logger</span>(Logger::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;app::backend::db&quot;</span>, LogLevelFilter::Info))</span><br><span class="line">        .<span class="title function_ invoke__">logger</span>(Logger::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">            .<span class="title function_ invoke__">appender</span>(<span class="string">&quot;requests&quot;</span>)</span><br><span class="line">            .<span class="title function_ invoke__">additive</span>(<span class="literal">false</span>)</span><br><span class="line">            .<span class="title function_ invoke__">build</span>(<span class="string">&quot;app::requests&quot;</span>, LogLevelFilter::Info))</span><br><span class="line">        .<span class="title function_ invoke__">build</span>(Root::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">appender</span>(<span class="string">&quot;stdout&quot;</span>).<span class="title function_ invoke__">build</span>(LogLevelFilter::Warn))</span><br><span class="line">        .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = log4rs::<span class="title function_ invoke__">init_config</span>(config).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="comment">//配置完成，下面输出日志信息即可</span></span><br><span class="line">    <span class="comment">// use handle to change logger configuration at runtime</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//可以看到用代码的方式比较麻烦，所以推荐使用配置文件的方式，程序简洁，修改方便，配置灵活，何乐不为啊。</span></span><br></pre></td></tr></table></figure>
-
-<p>log4rs有上面的两种配置形式，函数如下：</p>
-<ul>
-<li>init_config 	—— Initializes the global logger as a log4rs logger with the provided config.（通过代码配置）</li>
-<li>init_file —— Initializes the global logger as a log4rs logger configured via a file.（通过配置文件配置）</li>
-</ul>
-<p>其实init_file函数实现的内部调用了init_config函数，也就是说是通过读配置文件通过序列化的方式得到config，再调用init_config。（源代码：<a href="https://docs.rs/log4rs/0.7.0/src/log4rs/priv_file.rs.html#23-51%EF%BC%89">https://docs.rs/log4rs/0.7.0/src/log4rs/priv_file.rs.html#23-51）</a></p>
-<p>通过程序配置较好理解，通过配置文件的话，是有一定的格式及定义要求的，yaml,json,toml等要按一定的规则才能生成正确的配置文件，下面以yaml格式为例：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># If set, log4rs will scan the file at the specified rate for changes and</span></span><br><span class="line"><span class="comment"># automatically reconfigure the logger. The input string is parsed by the</span></span><br><span class="line"><span class="comment"># humantime crate.</span></span><br><span class="line"><span class="attr">refresh_rate:</span> <span class="number">30</span> <span class="string">seconds#配置文件的刷新速率，可以理解为每隔30s重新读取一次配置文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The &quot;appenders&quot; map contains the set of appenders, indexed by their names.</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">foo:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># All appenders must specify a &quot;kind&quot;, which will be used to look up the</span></span><br><span class="line">    <span class="comment"># logic to construct the appender in the `Deserializers` passed to the</span></span><br><span class="line">    <span class="comment"># deserialization function.</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Filters attached to an appender are specified inside the &quot;filters&quot;</span></span><br><span class="line">    <span class="comment"># array.</span></span><br><span class="line">    <span class="attr">filters:</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span></span><br><span class="line">        <span class="comment"># Like appenders, filters are identified by their &quot;kind&quot;.</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">threshold</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># The remainder of the configuration is passed along to the</span></span><br><span class="line">        <span class="comment"># filter&#x27;s builder, and will vary based on the kind of filter.</span></span><br><span class="line">        <span class="attr">level:</span> <span class="string">error</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The remainder of the configuration is passed along to the appender&#x27;s</span></span><br><span class="line">    <span class="comment"># builder, and will vary based on the kind of appender.</span></span><br><span class="line">    <span class="comment"># Appenders will commonly be associated with an encoder.</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># Like appenders, encoders are identified by their &quot;kind&quot;.</span></span><br><span class="line">      <span class="comment">#</span></span><br><span class="line">      <span class="comment"># Default: pattern</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># The remainder of the configuration is passed along to the</span></span><br><span class="line">      <span class="comment"># encoder&#x27;s builder, and will vary based on the kind of encoder.</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; [&#123;t&#125;] &#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The root logger is configured by the &quot;root&quot; map.</span></span><br><span class="line"><span class="attr">root:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The maximum log level for the root logger.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># Default: warn</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">warn</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The list of appenders attached to the root logger.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># Default: empty list</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The &quot;loggers&quot; map contains the set of configured loggers, indexed by their</span></span><br><span class="line"><span class="comment"># names.</span></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">foo::bar::baz:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The maximum log level.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Default: parent logger&#x27;s level</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">trace</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The list of appenders attached to the logger.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Default: empty list</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The additivity of the logger. If true, appenders attached to the logger&#x27;s</span></span><br><span class="line">    <span class="comment"># parent will also be attached to this logger.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="attr">Default:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<p>通过上面的示例，基本用法就差不多了，下面继续深入学习一下log4rs。</p>
-<h2 id="二、log4rs"><a href="#二、log4rs" class="headerlink" title="二、log4rs"></a>二、log4rs</h2><p>log4rs由4部分组成：appenders（输出到什么地方去）， encoders（按什么格式输出）， filters（那些可以输出，那些不能输出），loggers（日志实例）。</p>
-<h4 id="【1】appenders"><a href="#【1】appenders" class="headerlink" title="【1】appenders"></a>【1】appenders</h4><blockquote>
-<p>An appender takes a log record and logs it somewhere, for example, to a file, the console, or the syslog.</p>
-</blockquote>
-<p>appenders主要有以下三种：</p>
-<ul>
-<li>console  —— The console appender.（输出到控制台）</li>
-<li>file 	——The file appender.（输出到文件）</li>
-<li>rolling_file ——  A rolling file appender.（实现文件回滚）</li>
-</ul>
-<p>分别实现了输出到控制台，输出到文件，实现文件回滚等功能。其中较为复杂的是rolling_file，这也是我们工程中常用到的，比如实现日志大小的控制（控制日志文件大小为10MB，到达10MB后，自动清空日志，重新开始记录），实现日志文件数量的控制(限制数量的同时限制单个文件大小)等等。下面给一个rolling_file的示例程序，说明一下它的用法。</p>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#[macro_use]</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::default::<span class="built_in">Default</span>;</span><br><span class="line"><span class="keyword">use</span> std::thread;</span><br><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    log4rs::<span class="title function_ invoke__">init_file</span>(<span class="string">&quot;config/log4rs.yaml&quot;</span>,<span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>()).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">2</span>&#123;</span><br><span class="line">        info!(<span class="string">&quot;booting up &#123;&#125;&quot;</span>,i);</span><br><span class="line">        error!(<span class="string">&quot;error test &#123;&#125;&quot;</span>,i);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//无限循环，不断记录日志</span></span><br><span class="line">    <span class="keyword">loop</span>&#123;</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        info!(<span class="string">&quot;booting up &quot;</span>);</span><br><span class="line">        error!(<span class="string">&quot;error test&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>重点是配置文件，通过不同的配置去实现不同功能：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#实现了限制日志文件大小为1024Byte的功能。</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="attr">stdout:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;requests.log&quot;</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; [&#123;t&#125;] &#123;l&#125; &#123;M&#125;:&#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"> <span class="comment">################################################## </span></span><br><span class="line">  <span class="string">roll:#定义rooling_file的appenders</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;roll.log&quot;</span></span><br><span class="line">    <span class="attr">append:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">encoder:</span> </span><br><span class="line">      <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line">      <span class="attr">trigger:</span> </span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">1024</span> <span class="comment">#限制大小为1024Byte</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">delete#回滚方式为直接删除</span></span><br><span class="line">  <span class="comment">##################################################</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">root:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">roll#使用roll</span> <span class="string">appenders</span></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line">  <span class="attr">app::backend::db:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">app::requests:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">requests</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<p>另为附加限制日志文件大小的配置文件及限制日志文件数量的配置参考代码：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#yaml文件</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="string">foo:#限制日志文件大小的配置</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> &#123;<span class="number">0</span>&#125;<span class="string">/foo.log</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">1024</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">delete</span></span><br><span class="line">  <span class="string">bar:#限制日志文件数量的配置</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> &#123;<span class="number">0</span>&#125;<span class="string">/foo.log</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">5</span> <span class="string">mb</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">fixed_window</span></span><br><span class="line">        <span class="attr">pattern:</span> <span class="string">&#x27;&#123;0&#125;/foo.log.<span class="template-variable">&#123;&#123;&#125;&#125;</span>&#x27;</span></span><br><span class="line">        <span class="attr">base:</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">count:</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
-
-<p>对应的配置项的解说：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">///</span> <span class="comment"># Configuration</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="string">```yaml</span></span><br><span class="line"><span class="string">///</span> <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The path of the log file. Required.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">path:</span> <span class="string">log/foo.log</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># Specifies if the appender should append to or truncate the log file if it</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># already exists. Defaults to `true`.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">append:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The encoder to use to format output. Defaults to `kind: pattern`.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">encoder:</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The policy which handles rotation of the log file. Required.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">policy:</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># Identifies which policy is to be used. If no kind is specified, it will</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># default to &quot;compound&quot;.</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># The remainder of the configuration is passed along to the policy&#x27;s</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># deserializer, and will vary based on the kind of policy.</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">trigger:</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">limit:</span> <span class="number">10</span> <span class="string">mb</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">roller:</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">kind:</span> <span class="string">delete</span></span><br><span class="line"><span class="string">///</span> <span class="string">```</span></span><br></pre></td></tr></table></figure>
-
-<p>为什么是这样配置呢，或者说，这些配置项是从哪里来的，就要分析源代码了，以rolling_file为例：<br>rolling_file中含有5个结构体，分别是：</p>
-<ul>
-<li>LogFile 	—— Information about the active log file.</li>
-<li>RollingFileAppender 	—— An appender which archives log files in a configurable strategy.</li>
-<li>RollingFileAppenderBuilder 	—— A builder for the RollingFileAppender.</li>
-<li><strong>RollingFileAppenderConfig 	—— Configuration for the rolling file appender.</strong></li>
-<li>RollingFileAppenderDeserializer 	—— A deserializer for the RollingFileAppender.</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// Configuration for the rolling file appender.</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">RollingFileAppenderConfig</span> &#123;</span><br><span class="line">    path: <span class="type">String</span>,</span><br><span class="line">    append: <span class="type">Option</span>&lt;<span class="type">bool</span>&gt;,</span><br><span class="line">    encoder: <span class="type">Option</span>&lt;EncoderConfig&gt;,</span><br><span class="line">    policy: Policy,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这个就列出了rolling_file appender的需要的配置项，其他的配置也是在***Config中，道理是一样的。</p>
-<h4 id="【2】encoders"><a href="#【2】encoders" class="headerlink" title="【2】encoders"></a>【2】encoders</h4><blockquote>
-<p>An encoder is responsible for taking a log record, transforming it into the appropriate output format, and writing it out.</p>
-</blockquote>
-<p>encoders主要由以下三部分组成：</p>
-<ul>
-<li>json ——	An encoder which writes a JSON object.</li>
-<li>pattern ——	A simple pattern-based encoder.</li>
-<li>writer —— 	Implementations of the encode::Write trait.</li>
-</ul>
-<p>最常用的是pattern，所以着重分析一下pattern。这个有些类似与其他语言的格式化器或者日志属性等概念，链接：<a href="https://docs.rs/log4rs/0.7.0/log4rs/encode/pattern/index.html">https://docs.rs/log4rs/0.7.0/log4rs/encode/pattern/index.html</a></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">d, date - The current time. By default, the ISO 8601 format is used. A custom format may be provided in the syntax accepted by chrono. The timezone defaults to local, but can be specified explicitly by passing a second argument of utc for UTC or local for local time.</span><br><span class="line">&#123;d&#125; - 2016-03-20T14:22:20.644420340-08:00</span><br><span class="line">&#123;d(%Y-%m-%d %H:%M:%S)&#125; - 2016-03-20 14:22:20</span><br><span class="line">&#123;d(%Y-%m-%d %H:%M:%S %Z)(utc)&#125; - 2016-03-20 22:22:20 UTC</span><br><span class="line">f, file - The source file that the log message came from, or ??? if not provided.</span><br><span class="line">h, highlight - Styles its argument according to the log level. The style is intense red for errors, red for warnings, blue for info, and the default style for all other levels.</span><br><span class="line">&#123;h(the level is &#123;l&#125;)&#125; - the level is ERROR</span><br><span class="line">l``, level - The log level.</span><br><span class="line">L, line - The line that the log message came from, or ??? if not provided.</span><br><span class="line">m, message - The log message.</span><br><span class="line">M, module - The module that the log message came from, or ??? if not provided.</span><br><span class="line">n - A platform-specific newline.</span><br><span class="line">t, target - The target of the log message.</span><br><span class="line">T, thread - The name of the current thread.</span><br><span class="line">I, thread_id - The ID of the current thread.</span><br><span class="line">X, mdc - A value from the MDC. The first argument specifies the key, and the second argument specifies the default value if the key is not present in the MDC. The second argument is optional, and defaults to the empty string.</span><br><span class="line">&#123;X(user_id)&#125; - 123e4567-e89b-12d3-a456-426655440000</span><br><span class="line">&#123;X(nonexistent_key)(no mapping)&#125; - no mapping</span><br><span class="line">An &quot;unnamed&quot; formatter simply formats its argument, applying the format specification.</span><br><span class="line">&#123;(&#123;l&#125; &#123;m&#125;)&#125; - INFO hello</span><br></pre></td></tr></table></figure>
-
-
-
-]]></content>
-      <categories>
-        <category>编程语言</category>
-        <category>Rust</category>
-      </categories>
-      <tags>
-        <tag>Rust</tag>
-        <tag>log4rs</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>markdown简明语法</title>
     <url>/hexo-blog/e1ac91e3.html</url>
     <content><![CDATA[<h1 id="Cmd-Markdown-简明语法手册"><a href="#Cmd-Markdown-简明语法手册" class="headerlink" title="Cmd Markdown 简明语法手册"></a>Cmd Markdown 简明语法手册</h1><hr>
@@ -2891,6 +2805,92 @@
       </categories>
       <tags>
         <tag>markdown语法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>log4rs日志库解析</title>
+    <url>/hexo-blog/faf96547.html</url>
+    <content><![CDATA[<p><a href="https://github.com/sfackler/log4rs">log4rs</a> 是rust实现的高度可配置日志库，该库配置的方式比较灵活，功能相对丰富，可以满足绝大部分的项目需要。</p>
+<span id="more"></span>
+
+<h2 id="一、用法示例"><a href="#一、用法示例" class="headerlink" title="一、用法示例"></a>一、用法示例</h2><p>首先先给个简单示例，通过这个示例就可以看出log4rs进行日志配置非常的灵活：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#[macro_use]</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    log4rs::<span class="title function_ invoke__">init_file</span>(<span class="string">&quot;log.yaml&quot;</span>,<span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>()).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    info!(<span class="string">&quot;Hello, world!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>日志配置文件如下：（文件格式不唯一，可以是yaml,json,toml等格式，下面是yaml格式的配置文件）</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Scan this file for changes every 30 seconds</span></span><br><span class="line"><span class="attr">refresh_rate:</span> <span class="number">30</span> <span class="string">seconds</span></span><br><span class="line"></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="comment"># An appender named &quot;stdout&quot; that writes to stdout</span></span><br><span class="line">  <span class="attr">stdout:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># An appender named &quot;requests&quot; that writes to a file with a custom pattern encoder</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;log/requests.log&quot;</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; - &#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Set the default logging level to &quot;info&quot; and attach the &quot;stdout&quot; appender to the root</span></span><br><span class="line"><span class="attr">root:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">stdout</span></span><br><span class="line"></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line">  <span class="comment"># Raise the maximum log level for events sent to the &quot;app::backend::db&quot; logger to &quot;info&quot;</span></span><br><span class="line">  <span class="attr">app::backend::db:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Route log events sent to the &quot;app::requests&quot; logger to the &quot;requests&quot; appender,</span></span><br><span class="line">  <span class="comment"># and *not* the normal appenders installed at the root</span></span><br><span class="line">  <span class="attr">app::requests:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">requests</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sl@Li:~/Works/study/helloworld$ cargo run</span><br><span class="line">    Finished dev [unoptimized + debuginfo] target(s) in 0.09s</span><br><span class="line">     Running `target/debug/helloworld`</span><br><span class="line">2018-12-10T10:11:45.240346970+08:00 INFO helloworld - Hello, world!</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里因为appenders配置的是stdout对应的输出到控制台，所以日志信息输出在了控制台上，如果选择的是requests，则日志信息就输出在了对应路径文件上。</p>
+<p>当然日志配置的方式除了配置文件，还可以在程序代码中进行配置，代码如下：</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> log::LogLevelFilter;</span><br><span class="line"><span class="keyword">use</span> log4rs::append::console::ConsoleAppender;</span><br><span class="line"><span class="keyword">use</span> log4rs::append::file::FileAppender;</span><br><span class="line"><span class="keyword">use</span> log4rs::encode::pattern::PatternEncoder;</span><br><span class="line"><span class="keyword">use</span> log4rs::config::&#123;Appender, Config, Logger, Root&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">stdout</span> = ConsoleAppender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">requests</span> = FileAppender::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">        .<span class="title function_ invoke__">encoder</span>(<span class="type">Box</span>::<span class="title function_ invoke__">new</span>(PatternEncoder::<span class="title function_ invoke__">new</span>(<span class="string">&quot;&#123;d&#125; - &#123;m&#125;&#123;n&#125;&quot;</span>)))</span><br><span class="line">        .<span class="title function_ invoke__">build</span>(<span class="string">&quot;log/requests.log&quot;</span>)</span><br><span class="line">        .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">config</span> = Config::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">        .<span class="title function_ invoke__">appender</span>(Appender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;stdout&quot;</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(stdout)))</span><br><span class="line">        .<span class="title function_ invoke__">appender</span>(Appender::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;requests&quot;</span>, <span class="type">Box</span>::<span class="title function_ invoke__">new</span>(requests)))</span><br><span class="line">        .<span class="title function_ invoke__">logger</span>(Logger::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">build</span>(<span class="string">&quot;app::backend::db&quot;</span>, LogLevelFilter::Info))</span><br><span class="line">        .<span class="title function_ invoke__">logger</span>(Logger::<span class="title function_ invoke__">builder</span>()</span><br><span class="line">            .<span class="title function_ invoke__">appender</span>(<span class="string">&quot;requests&quot;</span>)</span><br><span class="line">            .<span class="title function_ invoke__">additive</span>(<span class="literal">false</span>)</span><br><span class="line">            .<span class="title function_ invoke__">build</span>(<span class="string">&quot;app::requests&quot;</span>, LogLevelFilter::Info))</span><br><span class="line">        .<span class="title function_ invoke__">build</span>(Root::<span class="title function_ invoke__">builder</span>().<span class="title function_ invoke__">appender</span>(<span class="string">&quot;stdout&quot;</span>).<span class="title function_ invoke__">build</span>(LogLevelFilter::Warn))</span><br><span class="line">        .<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="variable">handle</span> = log4rs::<span class="title function_ invoke__">init_config</span>(config).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="comment">//配置完成，下面输出日志信息即可</span></span><br><span class="line">    <span class="comment">// use handle to change logger configuration at runtime</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//可以看到用代码的方式比较麻烦，所以推荐使用配置文件的方式，程序简洁，修改方便，配置灵活，何乐不为啊。</span></span><br></pre></td></tr></table></figure>
+
+<p>log4rs有上面的两种配置形式，函数如下：</p>
+<ul>
+<li>init_config 	—— Initializes the global logger as a log4rs logger with the provided config.（通过代码配置）</li>
+<li>init_file —— Initializes the global logger as a log4rs logger configured via a file.（通过配置文件配置）</li>
+</ul>
+<p>其实init_file函数实现的内部调用了init_config函数，也就是说是通过读配置文件通过序列化的方式得到config，再调用init_config。（源代码：<a href="https://docs.rs/log4rs/0.7.0/src/log4rs/priv_file.rs.html#23-51%EF%BC%89">https://docs.rs/log4rs/0.7.0/src/log4rs/priv_file.rs.html#23-51）</a></p>
+<p>通过程序配置较好理解，通过配置文件的话，是有一定的格式及定义要求的，yaml,json,toml等要按一定的规则才能生成正确的配置文件，下面以yaml格式为例：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># If set, log4rs will scan the file at the specified rate for changes and</span></span><br><span class="line"><span class="comment"># automatically reconfigure the logger. The input string is parsed by the</span></span><br><span class="line"><span class="comment"># humantime crate.</span></span><br><span class="line"><span class="attr">refresh_rate:</span> <span class="number">30</span> <span class="string">seconds#配置文件的刷新速率，可以理解为每隔30s重新读取一次配置文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The &quot;appenders&quot; map contains the set of appenders, indexed by their names.</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">foo:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># All appenders must specify a &quot;kind&quot;, which will be used to look up the</span></span><br><span class="line">    <span class="comment"># logic to construct the appender in the `Deserializers` passed to the</span></span><br><span class="line">    <span class="comment"># deserialization function.</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Filters attached to an appender are specified inside the &quot;filters&quot;</span></span><br><span class="line">    <span class="comment"># array.</span></span><br><span class="line">    <span class="attr">filters:</span></span><br><span class="line"></span><br><span class="line">      <span class="bullet">-</span></span><br><span class="line">        <span class="comment"># Like appenders, filters are identified by their &quot;kind&quot;.</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">threshold</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># The remainder of the configuration is passed along to the</span></span><br><span class="line">        <span class="comment"># filter&#x27;s builder, and will vary based on the kind of filter.</span></span><br><span class="line">        <span class="attr">level:</span> <span class="string">error</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The remainder of the configuration is passed along to the appender&#x27;s</span></span><br><span class="line">    <span class="comment"># builder, and will vary based on the kind of appender.</span></span><br><span class="line">    <span class="comment"># Appenders will commonly be associated with an encoder.</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># Like appenders, encoders are identified by their &quot;kind&quot;.</span></span><br><span class="line">      <span class="comment">#</span></span><br><span class="line">      <span class="comment"># Default: pattern</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># The remainder of the configuration is passed along to the</span></span><br><span class="line">      <span class="comment"># encoder&#x27;s builder, and will vary based on the kind of encoder.</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; [&#123;t&#125;] &#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The root logger is configured by the &quot;root&quot; map.</span></span><br><span class="line"><span class="attr">root:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The maximum log level for the root logger.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># Default: warn</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">warn</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># The list of appenders attached to the root logger.</span></span><br><span class="line">  <span class="comment">#</span></span><br><span class="line">  <span class="comment"># Default: empty list</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The &quot;loggers&quot; map contains the set of configured loggers, indexed by their</span></span><br><span class="line"><span class="comment"># names.</span></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">foo::bar::baz:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The maximum log level.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Default: parent logger&#x27;s level</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">trace</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The list of appenders attached to the logger.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># Default: empty list</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">foo</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># The additivity of the logger. If true, appenders attached to the logger&#x27;s</span></span><br><span class="line">    <span class="comment"># parent will also be attached to this logger.</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="attr">Default:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>通过上面的示例，基本用法就差不多了，下面继续深入学习一下log4rs。</p>
+<h2 id="二、log4rs"><a href="#二、log4rs" class="headerlink" title="二、log4rs"></a>二、log4rs</h2><p>log4rs由4部分组成：appenders（输出到什么地方去）， encoders（按什么格式输出）， filters（那些可以输出，那些不能输出），loggers（日志实例）。</p>
+<h4 id="【1】appenders"><a href="#【1】appenders" class="headerlink" title="【1】appenders"></a>【1】appenders</h4><blockquote>
+<p>An appender takes a log record and logs it somewhere, for example, to a file, the console, or the syslog.</p>
+</blockquote>
+<p>appenders主要有以下三种：</p>
+<ul>
+<li>console  —— The console appender.（输出到控制台）</li>
+<li>file 	——The file appender.（输出到文件）</li>
+<li>rolling_file ——  A rolling file appender.（实现文件回滚）</li>
+</ul>
+<p>分别实现了输出到控制台，输出到文件，实现文件回滚等功能。其中较为复杂的是rolling_file，这也是我们工程中常用到的，比如实现日志大小的控制（控制日志文件大小为10MB，到达10MB后，自动清空日志，重新开始记录），实现日志文件数量的控制(限制数量的同时限制单个文件大小)等等。下面给一个rolling_file的示例程序，说明一下它的用法。</p>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="meta">#[macro_use]</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log;</span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">crate</span> log4rs;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> std::default::<span class="built_in">Default</span>;</span><br><span class="line"><span class="keyword">use</span> std::thread;</span><br><span class="line"><span class="keyword">use</span> std::time::Duration;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    log4rs::<span class="title function_ invoke__">init_file</span>(<span class="string">&quot;config/log4rs.yaml&quot;</span>,<span class="built_in">Default</span>::<span class="title function_ invoke__">default</span>()).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> <span class="number">1</span>..<span class="number">2</span>&#123;</span><br><span class="line">        info!(<span class="string">&quot;booting up &#123;&#125;&quot;</span>,i);</span><br><span class="line">        error!(<span class="string">&quot;error test &#123;&#125;&quot;</span>,i);</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//无限循环，不断记录日志</span></span><br><span class="line">    <span class="keyword">loop</span>&#123;</span><br><span class="line">        thread::<span class="title function_ invoke__">sleep</span>(Duration::<span class="title function_ invoke__">from_secs</span>(<span class="number">1</span>));</span><br><span class="line">        info!(<span class="string">&quot;booting up &quot;</span>);</span><br><span class="line">        error!(<span class="string">&quot;error test&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重点是配置文件，通过不同的配置去实现不同功能：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#实现了限制日志文件大小为1024Byte的功能。</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="attr">stdout:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">console</span></span><br><span class="line">  <span class="attr">requests:</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;requests.log&quot;</span></span><br><span class="line">    <span class="attr">encoder:</span></span><br><span class="line">      <span class="attr">pattern:</span> <span class="string">&quot;&#123;d&#125; [&#123;t&#125;] &#123;l&#125; &#123;M&#125;:&#123;m&#125;&#123;n&#125;&quot;</span></span><br><span class="line"> <span class="comment">################################################## </span></span><br><span class="line">  <span class="string">roll:#定义rooling_file的appenders</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> <span class="string">&quot;roll.log&quot;</span></span><br><span class="line">    <span class="attr">append:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">encoder:</span> </span><br><span class="line">      <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line">      <span class="attr">trigger:</span> </span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">1024</span> <span class="comment">#限制大小为1024Byte</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">delete#回滚方式为直接删除</span></span><br><span class="line">  <span class="comment">##################################################</span></span><br><span class="line">  </span><br><span class="line"><span class="attr">root:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">appenders:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">roll#使用roll</span> <span class="string">appenders</span></span><br><span class="line"><span class="attr">loggers:</span></span><br><span class="line">  <span class="attr">app::backend::db:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">  <span class="attr">app::requests:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="string">info</span></span><br><span class="line">    <span class="attr">appenders:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">requests</span></span><br><span class="line">    <span class="attr">additive:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>另为附加限制日志文件大小的配置文件及限制日志文件数量的配置参考代码：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment">#yaml文件</span></span><br><span class="line"><span class="attr">appenders:</span></span><br><span class="line">  <span class="string">foo:#限制日志文件大小的配置</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> &#123;<span class="number">0</span>&#125;<span class="string">/foo.log</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">1024</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">delete</span></span><br><span class="line">  <span class="string">bar:#限制日志文件数量的配置</span></span><br><span class="line">    <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line">    <span class="attr">path:</span> &#123;<span class="number">0</span>&#125;<span class="string">/foo.log</span></span><br><span class="line">    <span class="attr">policy:</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line">      <span class="attr">trigger:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line">        <span class="attr">limit:</span> <span class="number">5</span> <span class="string">mb</span></span><br><span class="line">      <span class="attr">roller:</span></span><br><span class="line">        <span class="attr">kind:</span> <span class="string">fixed_window</span></span><br><span class="line">        <span class="attr">pattern:</span> <span class="string">&#x27;&#123;0&#125;/foo.log.<span class="template-variable">&#123;&#123;&#125;&#125;</span>&#x27;</span></span><br><span class="line">        <span class="attr">base:</span> <span class="number">1</span></span><br><span class="line">        <span class="attr">count:</span> <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+<p>对应的配置项的解说：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">///</span> <span class="comment"># Configuration</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="string">```yaml</span></span><br><span class="line"><span class="string">///</span> <span class="attr">kind:</span> <span class="string">rolling_file</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The path of the log file. Required.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">path:</span> <span class="string">log/foo.log</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># Specifies if the appender should append to or truncate the log file if it</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># already exists. Defaults to `true`.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">append:</span> <span class="literal">true</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The encoder to use to format output. Defaults to `kind: pattern`.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">encoder:</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">kind:</span> <span class="string">pattern</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span> <span class="comment"># The policy which handles rotation of the log file. Required.</span></span><br><span class="line"><span class="string">///</span> <span class="attr">policy:</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># Identifies which policy is to be used. If no kind is specified, it will</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># default to &quot;compound&quot;.</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">kind:</span> <span class="string">compound</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># The remainder of the configuration is passed along to the policy&#x27;s</span></span><br><span class="line"><span class="string">///</span>   <span class="comment"># deserializer, and will vary based on the kind of policy.</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">trigger:</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">kind:</span> <span class="string">size</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">limit:</span> <span class="number">10</span> <span class="string">mb</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">///</span>   <span class="attr">roller:</span></span><br><span class="line"><span class="string">///</span>     <span class="attr">kind:</span> <span class="string">delete</span></span><br><span class="line"><span class="string">///</span> <span class="string">```</span></span><br></pre></td></tr></table></figure>
+
+<p>为什么是这样配置呢，或者说，这些配置项是从哪里来的，就要分析源代码了，以rolling_file为例：<br>rolling_file中含有5个结构体，分别是：</p>
+<ul>
+<li>LogFile 	—— Information about the active log file.</li>
+<li>RollingFileAppender 	—— An appender which archives log files in a configurable strategy.</li>
+<li>RollingFileAppenderBuilder 	—— A builder for the RollingFileAppender.</li>
+<li><strong>RollingFileAppenderConfig 	—— Configuration for the rolling file appender.</strong></li>
+<li>RollingFileAppenderDeserializer 	—— A deserializer for the RollingFileAppender.</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// Configuration for the rolling file appender.</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">RollingFileAppenderConfig</span> &#123;</span><br><span class="line">    path: <span class="type">String</span>,</span><br><span class="line">    append: <span class="type">Option</span>&lt;<span class="type">bool</span>&gt;,</span><br><span class="line">    encoder: <span class="type">Option</span>&lt;EncoderConfig&gt;,</span><br><span class="line">    policy: Policy,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个就列出了rolling_file appender的需要的配置项，其他的配置也是在***Config中，道理是一样的。</p>
+<h4 id="【2】encoders"><a href="#【2】encoders" class="headerlink" title="【2】encoders"></a>【2】encoders</h4><blockquote>
+<p>An encoder is responsible for taking a log record, transforming it into the appropriate output format, and writing it out.</p>
+</blockquote>
+<p>encoders主要由以下三部分组成：</p>
+<ul>
+<li>json ——	An encoder which writes a JSON object.</li>
+<li>pattern ——	A simple pattern-based encoder.</li>
+<li>writer —— 	Implementations of the encode::Write trait.</li>
+</ul>
+<p>最常用的是pattern，所以着重分析一下pattern。这个有些类似与其他语言的格式化器或者日志属性等概念，链接：<a href="https://docs.rs/log4rs/0.7.0/log4rs/encode/pattern/index.html">https://docs.rs/log4rs/0.7.0/log4rs/encode/pattern/index.html</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">d, date - The current time. By default, the ISO 8601 format is used. A custom format may be provided in the syntax accepted by chrono. The timezone defaults to local, but can be specified explicitly by passing a second argument of utc for UTC or local for local time.</span><br><span class="line">&#123;d&#125; - 2016-03-20T14:22:20.644420340-08:00</span><br><span class="line">&#123;d(%Y-%m-%d %H:%M:%S)&#125; - 2016-03-20 14:22:20</span><br><span class="line">&#123;d(%Y-%m-%d %H:%M:%S %Z)(utc)&#125; - 2016-03-20 22:22:20 UTC</span><br><span class="line">f, file - The source file that the log message came from, or ??? if not provided.</span><br><span class="line">h, highlight - Styles its argument according to the log level. The style is intense red for errors, red for warnings, blue for info, and the default style for all other levels.</span><br><span class="line">&#123;h(the level is &#123;l&#125;)&#125; - the level is ERROR</span><br><span class="line">l``, level - The log level.</span><br><span class="line">L, line - The line that the log message came from, or ??? if not provided.</span><br><span class="line">m, message - The log message.</span><br><span class="line">M, module - The module that the log message came from, or ??? if not provided.</span><br><span class="line">n - A platform-specific newline.</span><br><span class="line">t, target - The target of the log message.</span><br><span class="line">T, thread - The name of the current thread.</span><br><span class="line">I, thread_id - The ID of the current thread.</span><br><span class="line">X, mdc - A value from the MDC. The first argument specifies the key, and the second argument specifies the default value if the key is not present in the MDC. The second argument is optional, and defaults to the empty string.</span><br><span class="line">&#123;X(user_id)&#125; - 123e4567-e89b-12d3-a456-426655440000</span><br><span class="line">&#123;X(nonexistent_key)(no mapping)&#125; - no mapping</span><br><span class="line">An &quot;unnamed&quot; formatter simply formats its argument, applying the format specification.</span><br><span class="line">&#123;(&#123;l&#125; &#123;m&#125;)&#125; - INFO hello</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>编程语言</category>
+        <category>Rust</category>
+      </categories>
+      <tags>
+        <tag>Rust</tag>
+        <tag>log4rs</tag>
       </tags>
   </entry>
   <entry>
@@ -3658,78 +3658,6 @@
       </tags>
   </entry>
   <entry>
-    <title>深入浅出SSD（一）</title>
-    <url>/hexo-blog/11b7e709.html</url>
-    <content><![CDATA[<blockquote>
-<p>本文是《深入浅出SSD 固态存储核心技术、原理与实战》的学习笔记</p>
-</blockquote>
-<span id="more"></span>
-
-<h2 id="一、SSD-介绍"><a href="#一、SSD-介绍" class="headerlink" title="一、SSD 介绍"></a>一、SSD 介绍</h2><p>SSD(Solid State Drive) 固态硬盘，主要以半导体闪存为介质的存储设备，属于 ROM 的一种。</p>
-<p>SSD 硬件包括几大组成部分:主控、闪存、缓存芯片DRAM（可选，有些SSD上可能只有 SRAM，并没有配置 DRAM）、PCB（电源芯片、电阻、电容等）、接口（SATA、SAS、PCle等），其主体就是一块 PCB。</p>
-<p>软件角度，SSD 内部运行固件（Firmware, FW）负责调度数据从接口端到介质端的读写，还包括嵌入核心的闪存介质寿命和可靠性管理调度算法，以及其他 SSD 的算法。</p>
-<p>SSD 控制器，闪存和固件是 SSD 三大技术核心。</p>
-<p>SSD 的容量，性能，可靠性，寿命，尺寸，功耗，噪声，重量，抗震，温度都优于机械硬盘，目前价格也逐渐接近机械硬盘。</p>
-<h2 id="二、SSD-基本工作原理"><a href="#二、SSD-基本工作原理" class="headerlink" title="二、SSD 基本工作原理"></a>二、SSD 基本工作原理</h2><p>SSD 的输入是命令(Command)，输出是数据(Data)和命令状态(Command Status)。SSD 前端(Front End)接收用户命令请求，经过内部计算和处理逻辑，输出用户所需要的数据或状态。</p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512163939.png" alt="SSD系统调用"></p>
-<p>SSD 的三大功能模块：</p>
-<ul>
-<li>前端接口和相关的协议模块;</li>
-<li>中间的 FTL 层（Flash Translation Layer，闪存转换层）模块;</li>
-<li>后端和闪存通信模块</li>
-</ul>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512164826.png" alt="接口协议"></p>
-<p>FTL 算法决定了性能、可靠性、功耗等 SSD 的核心参数。</p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512165605.png" alt="SSD的垃圾回收（GC）"></p>
-<h2 id="三、SSD-系统架构"><a href="#三、SSD-系统架构" class="headerlink" title="三、SSD 系统架构"></a>三、SSD 系统架构</h2><p>SSD 作为数据存储设备，其实是一种典型的(System on Chip)单机系统，有主控CPU、RAM、操作加速器、总线、数据编码译码等模块(见图2-1)，操作对象为协议、数据命令、介质，操作目的是写入和读取用户数据。</p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512170135.png" alt="SSD主控模块硬件图"></p>
-<p>SSD 系统架构分为前端（Host Interface Controller，主机接口控制器）和后端（Flash Controller，闪存控制器），前端和主机接口打交道，包含 SATA、PCIe、SAS 接口等，后端和闪存打交道，完成数据编解码和 ECC。</p>
-<h3 id="1-前端"><a href="#1-前端" class="headerlink" title="1. 前端"></a>1. 前端</h3><p>SATA 的全称是 Serial Advanced Technology Attachment（串行高级技术附件），是一种串行硬件驱动器接口。</p>
-<p>SAS（Serial Attached SCSI）即串行连接 SCSI，是新一代的 SCSI 技术。</p>
-<p>PCIe（Peripheral Component Interconnect Express）是一种高速串行计算机扩展总线标准，原来被称为 3GIO</p>
-<h3 id="2-主控-CPU"><a href="#2-主控-CPU" class="headerlink" title="2. 主控 CPU"></a>2. 主控 CPU</h3><h3 id="3-后端"><a href="#3-后端" class="headerlink" title="3. 后端"></a>3. 后端</h3><p>后端两大模块分别为 ECC 和闪存控制器。</p>
-<p>ECC 模块是数据编解码单元，由于闪存存储天生的误码率，要在数据写入是加上 ECC 检验保护，同样读取的时候要通过 ECC 进行解码。</p>
-<p>SSD 中的 ECC 算法主要有 BCH 和 LDPC，后者逐渐成为主流。</p>
-<h2 id="四、闪存物理结构"><a href="#四、闪存物理结构" class="headerlink" title="四、闪存物理结构"></a>四、闪存物理结构</h2><p>现在固态硬盘采用 NAND 闪存作为存储介质。闪存在写之前必须先擦除，不能覆盖写，因此 SSD 需要有垃圾回收，一个块读写次数超过一定限度就会损坏，因此要有磨损均衡。</p>
-<p>闪存是一种非易失性存储器，基本存储单元是一种类 NMOS 的双层浮栅 MOS 管，电子被上下绝缘层包围，因此掉电不会消失。</p>
-<p>施敏发明浮栅晶体管的来源是奶酪蛋糕~~</p>
-<h3 id="SLC、MLC、TCL"><a href="#SLC、MLC、TCL" class="headerlink" title="SLC、MLC、TCL"></a>SLC、MLC、TCL</h3><p>一个存储单元存储 1bit 的数据的闪存，叫做 SLC（Single Level Cell），存储 2bit 数据的闪存叫 MLC（Multiple Level Cell），存储 3bit 数据的闪存为 TLC（Triple Level Cell）。</p>
-<p>存储单元存储的值是按照存储单元里的电子相对个数来判断的，电子相对个数通过电压的区间范围来判断。</p>
-<p>但同时，一个存储单元电子划分得越多，那么在写入的时候，控制进入浮栅极的电子个数就要越精细，所以写耗费的时间就越长;同样的，读的时候，需要尝试用不同的参考电压去读取，一定程度上加长了读取时间。所以我们会看到在性能上，TLC 不如 MLC，MLC 不如 SLC。</p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194602.png" alt="SLC、MLC和TCL参数比较"></p>
-<p>一个闪存内部的存储组织结构如下图所示:<br>一个闪存芯片有若干个 DIE（或者叫LUN），每个 DIE 有若干个 Plane，每个 Plane 有若干个 Block，每个 Block 有若干个 Page,每个 Page 对应着一个 Wordline，Wordline 由成千上万个存储单元构成。</p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194929.png" alt="闪存内部组织架构"></p>
-<p>DIE&#x2F;LUN 是接收和执行闪存命令的最基本单元，在一个 LUN 中，不能对某个 Page 写的同时，又对其他 Page 进行读访问。</p>
-<p>一个 LUN 又分为若干个 Plane，市面上常见的是 1 个或者 2 个 Plane，现在也有 4 个 Plane 的闪存了。每个 Plane 都有自己独立的 Cache Register 和 Page Register，其大小等于一个 Page 的大小。</p>
-<p>固态硬盘主控在写某个 Page 的时候，先把数据从主控传输到该 Page 所对应 Plane 的 Cache Register 中，然后把整个 Cache Register 写到闪存阵列，读的时候相反，先把这个 Page 中的数据从闪存介质读取到 Cache Register 中，然后<strong>按需</strong>传给主控。</p>
-<p>同时有 Cache Register 和 Page Register 的目的是优化闪存的访问速度（类似于二级缓存）。</p>
-<p>我们通常所说的闪存读写时间，并不包含数据从闪存到主控之间的数据传输时间，也不包括数据在 Cache Register 和 Page Register 之间的传输时间。闪存写人时间是指一个 Page 的数据从 Page Register 当中写人闪存介质的时间，闪存读取时间是指一个 Page 的数据从闪存介质读取到 Page Register 的时间。</p>
-<p>闪存一般都支持 Multi-Plane（或者Dual-Plane）操作，就是将同一个 LUN 中多个 Plane 中 Cache Register 写入数据后同时写入闪存介质，这样可以节省 Page 写入时间。</p>
-<p>闪存的擦除是以 block 为单位的，因为在物理结构上，一个 block 中的存储单元共用一个衬底（Substrate）。</p>
-<h3 id="读、写、擦原理"><a href="#读、写、擦原理" class="headerlink" title="读、写、擦原理"></a>读、写、擦原理</h3><p>量子隧道效应</p>
-<h3 id="三维闪存"><a href="#三维闪存" class="headerlink" title="三维闪存"></a>三维闪存</h3><h3 id="3D-XPoint"><a href="#3D-XPoint" class="headerlink" title="3D XPoint"></a>3D XPoint</h3><p>相变存储器：PRAM，PCM</p>
-<p>PCM 通过一种微小的电阻作用使得玻璃融化，相变为晶体，现在 PCM 读取时间已经可以到皮秒级别。</p>
-<p>PCM 特点：</p>
-<ul>
-<li>掉电数据不丢失</li>
-<li>可以按照字节访问</li>
-<li>软件简单</li>
-<li>写之前不需要擦除操作</li>
-<li>功耗低，和闪存差不多</li>
-<li>读写速度快</li>
-<li>寿命远长于闪存</li>
-</ul>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513213919.png" alt="几种存储器特性对比"></p>
-]]></content>
-      <categories>
-        <category>OpenSSD</category>
-        <category>SSD</category>
-      </categories>
-      <tags>
-        <tag>SSD</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>清理git记录中的大文件</title>
     <url>/hexo-blog/f6c73689.html</url>
     <content><![CDATA[<p>前几天我想把一个本地仓库推送到 github 仓库中时提示：</p>
@@ -3815,6 +3743,164 @@
       <tags>
         <tag>Linux</tag>
         <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入浅出SSD（一）</title>
+    <url>/hexo-blog/11b7e709.html</url>
+    <content><![CDATA[<blockquote>
+<p>本文是《深入浅出SSD 固态存储核心技术、原理与实战》的学习笔记</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="一、SSD-介绍"><a href="#一、SSD-介绍" class="headerlink" title="一、SSD 介绍"></a>一、SSD 介绍</h2><p>SSD(Solid State Drive) 固态硬盘，主要以半导体闪存为介质的存储设备，属于 ROM 的一种。</p>
+<p>SSD 硬件包括几大组成部分:主控、闪存、缓存芯片DRAM（可选，有些SSD上可能只有 SRAM，并没有配置 DRAM）、PCB（电源芯片、电阻、电容等）、接口（SATA、SAS、PCle等），其主体就是一块 PCB。</p>
+<p>软件角度，SSD 内部运行固件（Firmware, FW）负责调度数据从接口端到介质端的读写，还包括嵌入核心的闪存介质寿命和可靠性管理调度算法，以及其他 SSD 的算法。</p>
+<p>SSD 控制器，闪存和固件是 SSD 三大技术核心。</p>
+<p>SSD 的容量，性能，可靠性，寿命，尺寸，功耗，噪声，重量，抗震，温度都优于机械硬盘，目前价格也逐渐接近机械硬盘。</p>
+<h2 id="二、SSD-基本工作原理"><a href="#二、SSD-基本工作原理" class="headerlink" title="二、SSD 基本工作原理"></a>二、SSD 基本工作原理</h2><p>SSD 的输入是命令(Command)，输出是数据(Data)和命令状态(Command Status)。SSD 前端(Front End)接收用户命令请求，经过内部计算和处理逻辑，输出用户所需要的数据或状态。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512163939.png" alt="SSD系统调用"></p>
+<p>SSD 的三大功能模块：</p>
+<ul>
+<li>前端接口和相关的协议模块;</li>
+<li>中间的 FTL 层（Flash Translation Layer，闪存转换层）模块;</li>
+<li>后端和闪存通信模块</li>
+</ul>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512164826.png" alt="接口协议"></p>
+<p>FTL 算法决定了性能、可靠性、功耗等 SSD 的核心参数。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512165605.png" alt="SSD的垃圾回收（GC）"></p>
+<h2 id="三、SSD-系统架构"><a href="#三、SSD-系统架构" class="headerlink" title="三、SSD 系统架构"></a>三、SSD 系统架构</h2><p>SSD 作为数据存储设备，其实是一种典型的(System on Chip)单机系统，有主控CPU、RAM、操作加速器、总线、数据编码译码等模块(见图2-1)，操作对象为协议、数据命令、介质，操作目的是写入和读取用户数据。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220512170135.png" alt="SSD主控模块硬件图"></p>
+<p>SSD 系统架构分为前端（Host Interface Controller，主机接口控制器）和后端（Flash Controller，闪存控制器），前端和主机接口打交道，包含 SATA、PCIe、SAS 接口等，后端和闪存打交道，完成数据编解码和 ECC。</p>
+<h3 id="1-前端"><a href="#1-前端" class="headerlink" title="1. 前端"></a>1. 前端</h3><p>SATA 的全称是 Serial Advanced Technology Attachment（串行高级技术附件），是一种串行硬件驱动器接口。</p>
+<p>SAS（Serial Attached SCSI）即串行连接 SCSI，是新一代的 SCSI 技术。</p>
+<p>PCIe（Peripheral Component Interconnect Express）是一种高速串行计算机扩展总线标准，原来被称为 3GIO</p>
+<h3 id="2-主控-CPU"><a href="#2-主控-CPU" class="headerlink" title="2. 主控 CPU"></a>2. 主控 CPU</h3><h3 id="3-后端"><a href="#3-后端" class="headerlink" title="3. 后端"></a>3. 后端</h3><p>后端两大模块分别为 ECC 和闪存控制器。</p>
+<p>ECC 模块是数据编解码单元，由于闪存存储天生的误码率，要在数据写入是加上 ECC 检验保护，同样读取的时候要通过 ECC 进行解码。</p>
+<p>SSD 中的 ECC 算法主要有 BCH 和 LDPC，后者逐渐成为主流。</p>
+<h2 id="四、闪存物理结构"><a href="#四、闪存物理结构" class="headerlink" title="四、闪存物理结构"></a>四、闪存物理结构</h2><p>现在固态硬盘采用 NAND 闪存作为存储介质。闪存在写之前必须先擦除，不能覆盖写，因此 SSD 需要有垃圾回收，一个块读写次数超过一定限度就会损坏，因此要有磨损均衡。</p>
+<p>闪存是一种非易失性存储器，基本存储单元是一种类 NMOS 的双层浮栅 MOS 管，电子被上下绝缘层包围，因此掉电不会消失。</p>
+<p>施敏发明浮栅晶体管的来源是奶酪蛋糕~~</p>
+<h3 id="SLC、MLC、TCL"><a href="#SLC、MLC、TCL" class="headerlink" title="SLC、MLC、TCL"></a>SLC、MLC、TCL</h3><p>一个存储单元存储 1bit 的数据的闪存，叫做 SLC（Single Level Cell），存储 2bit 数据的闪存叫 MLC（Multiple Level Cell），存储 3bit 数据的闪存为 TLC（Triple Level Cell）。</p>
+<p>存储单元存储的值是按照存储单元里的电子相对个数来判断的，电子相对个数通过电压的区间范围来判断。</p>
+<p>但同时，一个存储单元电子划分得越多，那么在写入的时候，控制进入浮栅极的电子个数就要越精细，所以写耗费的时间就越长;同样的，读的时候，需要尝试用不同的参考电压去读取，一定程度上加长了读取时间。所以我们会看到在性能上，TLC 不如 MLC，MLC 不如 SLC。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194602.png" alt="SLC、MLC和TCL参数比较"></p>
+<p>一个闪存内部的存储组织结构如下图所示:<br>一个闪存芯片有若干个 DIE（或者叫LUN），每个 DIE 有若干个 Plane，每个 Plane 有若干个 Block，每个 Block 有若干个 Page,每个 Page 对应着一个 Wordline，Wordline 由成千上万个存储单元构成。</p>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513194929.png" alt="闪存内部组织架构"></p>
+<p>DIE&#x2F;LUN 是接收和执行闪存命令的最基本单元，在一个 LUN 中，不能对某个 Page 写的同时，又对其他 Page 进行读访问。</p>
+<p>一个 LUN 又分为若干个 Plane，市面上常见的是 1 个或者 2 个 Plane，现在也有 4 个 Plane 的闪存了。每个 Plane 都有自己独立的 Cache Register 和 Page Register，其大小等于一个 Page 的大小。</p>
+<p>固态硬盘主控在写某个 Page 的时候，先把数据从主控传输到该 Page 所对应 Plane 的 Cache Register 中，然后把整个 Cache Register 写到闪存阵列，读的时候相反，先把这个 Page 中的数据从闪存介质读取到 Cache Register 中，然后<strong>按需</strong>传给主控。</p>
+<p>同时有 Cache Register 和 Page Register 的目的是优化闪存的访问速度（类似于二级缓存）。</p>
+<p>我们通常所说的闪存读写时间，并不包含数据从闪存到主控之间的数据传输时间，也不包括数据在 Cache Register 和 Page Register 之间的传输时间。闪存写人时间是指一个 Page 的数据从 Page Register 当中写人闪存介质的时间，闪存读取时间是指一个 Page 的数据从闪存介质读取到 Page Register 的时间。</p>
+<p>闪存一般都支持 Multi-Plane（或者Dual-Plane）操作，就是将同一个 LUN 中多个 Plane 中 Cache Register 写入数据后同时写入闪存介质，这样可以节省 Page 写入时间。</p>
+<p>闪存的擦除是以 block 为单位的，因为在物理结构上，一个 block 中的存储单元共用一个衬底（Substrate）。</p>
+<h3 id="读、写、擦原理"><a href="#读、写、擦原理" class="headerlink" title="读、写、擦原理"></a>读、写、擦原理</h3><p>量子隧道效应</p>
+<h3 id="三维闪存"><a href="#三维闪存" class="headerlink" title="三维闪存"></a>三维闪存</h3><h3 id="3D-XPoint"><a href="#3D-XPoint" class="headerlink" title="3D XPoint"></a>3D XPoint</h3><p>相变存储器：PRAM，PCM</p>
+<p>PCM 通过一种微小的电阻作用使得玻璃融化，相变为晶体，现在 PCM 读取时间已经可以到皮秒级别。</p>
+<p>PCM 特点：</p>
+<ul>
+<li>掉电数据不丢失</li>
+<li>可以按照字节访问</li>
+<li>软件简单</li>
+<li>写之前不需要擦除操作</li>
+<li>功耗低，和闪存差不多</li>
+<li>读写速度快</li>
+<li>寿命远长于闪存</li>
+</ul>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220513213919.png" alt="几种存储器特性对比"></p>
+]]></content>
+      <categories>
+        <category>OpenSSD</category>
+        <category>SSD</category>
+      </categories>
+      <tags>
+        <tag>SSD</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>笔试题总结</title>
+    <url>/hexo-blog/200b33f8.html</url>
+    <content><![CDATA[<h1 id="刷笔试题错误和易混点总结"><a href="#刷笔试题错误和易混点总结" class="headerlink" title="刷笔试题错误和易混点总结"></a>刷笔试题错误和易混点总结</h1><h3 id="1-下面哪些机制可以用于进程间通信？"><a href="#1-下面哪些机制可以用于进程间通信？" class="headerlink" title="1. 下面哪些机制可以用于进程间通信？"></a>1. 下面哪些机制可以用于进程间通信？</h3><ul>
+<li><input checked disabled type="checkbox"> Socket</li>
+<li><input checked disabled type="checkbox"> Named pipe</li>
+<li><input disabled type="checkbox"> Named event</li>
+<li><input disabled type="checkbox"> Critical Section</li>
+<li><input checked disabled type="checkbox"> Shared memory</li>
+<li><input disabled type="checkbox"> Virtual memory</li>
+</ul>
+<blockquote>
+<p>Linux进程间通信：管道、信号、消息队列、共享内存、信号量、套接字(socket)<br>Linux线程间通信：互斥量（mutex），信号量，条件变量<br>Windows进程间通信：管道、消息队列、共享内存、信号量（semaphore）、套接字(socket)<br>Windows线程间通信：互斥量（mutex），信号量（semaphore）、临界区（critical section）、事件（event）</p>
+</blockquote>
+<span id="more"></span>
+
+<blockquote>
+<ul>
+<li>管道( pipe )：管道是一种半双工的通信方式，数据只能单向流动，而且只能在具有亲缘关系的进程间使用。进程的亲缘关系通常是指父子进程关系。</li>
+<li>有名管道 (named pipe) ： 有名管道也是半双工的通信方式，但是它允许无亲缘关系进程间的通信。</li>
+<li>信号量( semophore ) ： 信号量是一个计数器，可以用来控制多个进程对共享资源的访问。它常作为一种锁机制，防止某进程正在访问共享资源时，其他进程也访问该资源。因此，主要作为进程间以及同一进程内不同线程之间的同步手段。</li>
+<li>消息队列( message queue ) ： 消息队列是由消息的链表，存放在内核中并由消息队列标识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限等缺点。</li>
+<li>信号 ( signal ) ： 信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</li>
+<li>共享内存( shared memory ) ：共享内存就是映射一段能被其他进程所访问的内存，这段共享内存由一个进程创建，但多个进程都可以访问。共享内存是最快的 IPC 方式，它是针对其他进程间通信方式运行效率低而专门设计的。它往往与其他通信机制，如信号两，配合使用，来实现进程间的同步和通信。</li>
+<li>套接字( socket ) ： 套解口也是一种进程间通信机制，与其他通信机制不同的是，它可用于不同及其间的进程通信。</li>
+</ul>
+</blockquote>
+<h3 id="2-Linux系统中的wc-Word-Count-命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出"><a href="#2-Linux系统中的wc-Word-Count-命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出" class="headerlink" title="2. Linux系统中的wc (Word Count) 命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出"></a>2. Linux系统中的wc (Word Count) 命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出</h3><p>1．命令格式：</p>
+<p>wc [选项]文件…</p>
+<p>2．命令功能：</p>
+<p>统计指定文件中的字节数、字数、行数，并将统计结果显示输出。该命令统计指定文件中的字节数、字数、行数。如果没有给出文件名，则从标准输入读取。wc同时也给出所指定文件的***计数。</p>
+<p>3．命令参数：</p>
+<p>-c 统计字节数。</p>
+<p>-l 统计行数。</p>
+<p>-m 统计字符数。这个标志不能与 -c 标志一起使用。</p>
+<p>-w 统计字数。一个字被定义为由空白、跳格或换行字符分隔的字符串。</p>
+<p>-L 打印最长行的长度。</p>
+<p>-help 显示帮助信息</p>
+<p>–version 显示版本信息</p>
+<p>4．使用实例：</p>
+<p>实例1：查看文件的字节数、字数、行数</p>
+<p>命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc test.txt</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost test] # cat test.txt </span><br><span class="line">hnlinux</span><br><span class="line">peida.cnblogs.com</span><br><span class="line">ubuntu</span><br><span class="line">ubuntu linux</span><br><span class="line">redhat</span><br><span class="line">Redhat</span><br><span class="line">linuxmint</span><br><span class="line">[root @localhost test] # wc test.txt</span><br><span class="line">7 8 70 test.txt</span><br><span class="line">[root @localhost test] # wc -l test.txt </span><br><span class="line">7 test.txt</span><br><span class="line">[root @localhost test] # wc -c test.txt </span><br><span class="line">70 test.txt</span><br><span class="line">[root @localhost test] # wc -w test.txt </span><br><span class="line">8 test.txt</span><br><span class="line">[root @localhost test] # wc -m test.txt </span><br><span class="line">70 test.txt</span><br><span class="line">[root @localhost test] # wc -L test.txt </span><br><span class="line">17 test.txt</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">7 8 70 test.txt</span><br><span class="line">行数 单词数 字节数 文件名</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层"><a href="#3-Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层" class="headerlink" title="3. Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层"></a>3. Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层</h3><p>正确</p>
+<p>当浏览器访问服务器时，服务器会创建一个session对象（该对象有一个唯一的id号，称之为sessionId）服务器在默认的情况下，会将sessionId以cookie的方式，发送给浏览器，浏览器会将sessionId保存到内存中。当浏览器再次访问服务器时，会将sessionId发送给服务器，服务器依据sessionId就可以找到之间创建的session对象</p>
+<h3 id="4-定义字符串-String-str-x3D-“用户1-用户2-用户3-用户4”，现在想要对字符串根据字符“-”进行分割解析，下面哪种分割方式是正确的？"><a href="#4-定义字符串-String-str-x3D-“用户1-用户2-用户3-用户4”，现在想要对字符串根据字符“-”进行分割解析，下面哪种分割方式是正确的？" class="headerlink" title="4. 定义字符串 String str &#x3D; “用户1|用户2|用户3|用户4”，现在想要对字符串根据字符“|”进行分割解析，下面哪种分割方式是正确的？"></a>4. 定义字符串 String str &#x3D; “用户1|用户2|用户3|用户4”，现在想要对字符串根据字符“|”进行分割解析，下面哪种分割方式是正确的？</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">str.split(&amp;ldquo;\\|&amp;rdquo;)</span><br></pre></td></tr></table></figure>
+
+<p><code>|</code>属于正则表达式中的字符，转义字符前面加<code>\\</code></p>
+<h3 id="5-ATM-既可以用于广域网，又可以用于局域网，这是因为它的工作原理与-Ethernet-基本上是相同的"><a href="#5-ATM-既可以用于广域网，又可以用于局域网，这是因为它的工作原理与-Ethernet-基本上是相同的" class="headerlink" title="5. ATM 既可以用于广域网，又可以用于局域网，这是因为它的工作原理与 Ethernet 基本上是相同的"></a>5. ATM 既可以用于广域网，又可以用于局域网，这是因为它的工作原理与 Ethernet 基本上是相同的</h3><p>错误</p>
+<p>ATM可以用于广域网，也可以用于广域网，一般用于广域网比较多。<br>ATM的原理是采用面向连接的传输方式，将数据分割成固定长度的信元，通过虚连接进行交换。<br>ATM的原理和以太网的原理是不一样的。</p>
+<p>ATM是一种为了多种业务设计的通用的面向连接的传输模式。它适用于局域网和广域网，它具有高速数据传输率和支持许多种类型如声音、数据、传真、实时视频、CD质量音频和图像的通信。<br>ATM采用面向连接的传输方式，将数据分割成固定长度的信元，通过虚连接进行交换。ATM集交换、复用、传输为一体，在复用上采用的是异步时分复用方式，通过信息的首部或标头来区分不同信道。</p>
+<h3 id="6-如果一个接口Glass有个方法setColor-，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是"><a href="#6-如果一个接口Glass有个方法setColor-，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是" class="headerlink" title="6. 如果一个接口Glass有个方法setColor()，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是"></a>6. 如果一个接口Glass有个方法setColor()，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是</h3><ul>
+<li><input disabled type="checkbox"> protected void setColor() {…}</li>
+<li><input disabled type="checkbox"> void setColor() {…}</li>
+<li><input checked disabled type="checkbox"> public void setColor() {…}</li>
+<li><input disabled type="checkbox"> 以上语句都可以用在类BlueGlass中</li>
+</ul>
+<p>JAVA 子类重写继承的方法时,不可以降低方法的访问权限，子类继承父类的访问修饰符要比父类的更大，也就是更加开放，假如我父类是protected修饰的，其子类只能是protected或者public，绝对不能是friendly(默认的访问范围)或者private，当然使用private就不是继承了。还要注意的是，继承当中子类抛出的异常必须是父类抛出的异常的子异常，或者子类抛出的异常要比父类抛出的异常要少。<br>接口中属性为public static final，方法为public abstract.</p>
+<h3 id="7-以下哪些命令可以查看当前系统的启动时间"><a href="#7-以下哪些命令可以查看当前系统的启动时间" class="headerlink" title="7. 以下哪些命令可以查看当前系统的启动时间"></a>7. 以下哪些命令可以查看当前系统的启动时间</h3><ul>
+<li><input checked disabled type="checkbox"> w</li>
+<li><input checked disabled type="checkbox"> top</li>
+<li><input disabled type="checkbox"> ps</li>
+<li><input checked disabled type="checkbox"> uptime</li>
+</ul>
+<p><code>w</code>: 查看当前登录到系统中的用户，并查看该用户正在运行的进程<br><code>top</code>: 查看Linux中的资源信息，第一行开始部分显示了系统当前时间，并显示已经运行了多长时间，两者相减就是系统启动时间<br><code>uptime</code>: 查看系统启动时间<br><code>who -b</code>: 查看登录到系统中的用户什么时候登录的</p>
+<h3 id="8-关于Nginx的安全加固，以下说法正确的是"><a href="#8-关于Nginx的安全加固，以下说法正确的是" class="headerlink" title="8. 关于Nginx的安全加固，以下说法正确的是"></a>8. 关于Nginx的安全加固，以下说法正确的是</h3><ul>
+<li><input disabled type="checkbox"> nginx的master进程不能以root权限启动</li>
+<li><input checked disabled type="checkbox"> nginx的Worker进程不能以root权限启动</li>
+<li><input checked disabled type="checkbox"> 图片等静态资源目录不能给脚本执行权限</li>
+<li><input checked disabled type="checkbox"> 禁止访问.git、.svn和.sql目录，可以防止因运维操作不当造成的代码或数据泄漏</li>
+</ul>
+]]></content>
+      <categories>
+        <category>工作</category>
+      </categories>
+      <tags>
+        <tag>笔试题</tag>
       </tags>
   </entry>
   <entry>
@@ -3952,92 +4038,6 @@
       </categories>
       <tags>
         <tag>组会</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>笔试题总结</title>
-    <url>/hexo-blog/200b33f8.html</url>
-    <content><![CDATA[<h1 id="刷笔试题错误和易混点总结"><a href="#刷笔试题错误和易混点总结" class="headerlink" title="刷笔试题错误和易混点总结"></a>刷笔试题错误和易混点总结</h1><h3 id="1-下面哪些机制可以用于进程间通信？"><a href="#1-下面哪些机制可以用于进程间通信？" class="headerlink" title="1. 下面哪些机制可以用于进程间通信？"></a>1. 下面哪些机制可以用于进程间通信？</h3><ul>
-<li><input checked disabled type="checkbox"> Socket</li>
-<li><input checked disabled type="checkbox"> Named pipe</li>
-<li><input disabled type="checkbox"> Named event</li>
-<li><input disabled type="checkbox"> Critical Section</li>
-<li><input checked disabled type="checkbox"> Shared memory</li>
-<li><input disabled type="checkbox"> Virtual memory</li>
-</ul>
-<blockquote>
-<p>Linux进程间通信：管道、信号、消息队列、共享内存、信号量、套接字(socket)<br>Linux线程间通信：互斥量（mutex），信号量，条件变量<br>Windows进程间通信：管道、消息队列、共享内存、信号量（semaphore）、套接字(socket)<br>Windows线程间通信：互斥量（mutex），信号量（semaphore）、临界区（critical section）、事件（event）</p>
-</blockquote>
-<span id="more"></span>
-
-<blockquote>
-<ul>
-<li>管道( pipe )：管道是一种半双工的通信方式，数据只能单向流动，而且只能在具有亲缘关系的进程间使用。进程的亲缘关系通常是指父子进程关系。</li>
-<li>有名管道 (named pipe) ： 有名管道也是半双工的通信方式，但是它允许无亲缘关系进程间的通信。</li>
-<li>信号量( semophore ) ： 信号量是一个计数器，可以用来控制多个进程对共享资源的访问。它常作为一种锁机制，防止某进程正在访问共享资源时，其他进程也访问该资源。因此，主要作为进程间以及同一进程内不同线程之间的同步手段。</li>
-<li>消息队列( message queue ) ： 消息队列是由消息的链表，存放在内核中并由消息队列标识符标识。消息队列克服了信号传递信息少、管道只能承载无格式字节流以及缓冲区大小受限等缺点。</li>
-<li>信号 ( signal ) ： 信号是一种比较复杂的通信方式，用于通知接收进程某个事件已经发生。</li>
-<li>共享内存( shared memory ) ：共享内存就是映射一段能被其他进程所访问的内存，这段共享内存由一个进程创建，但多个进程都可以访问。共享内存是最快的 IPC 方式，它是针对其他进程间通信方式运行效率低而专门设计的。它往往与其他通信机制，如信号两，配合使用，来实现进程间的同步和通信。</li>
-<li>套接字( socket ) ： 套解口也是一种进程间通信机制，与其他通信机制不同的是，它可用于不同及其间的进程通信。</li>
-</ul>
-</blockquote>
-<h3 id="2-Linux系统中的wc-Word-Count-命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出"><a href="#2-Linux系统中的wc-Word-Count-命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出" class="headerlink" title="2. Linux系统中的wc (Word Count) 命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出"></a>2. Linux系统中的wc (Word Count) 命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出</h3><p>1．命令格式：</p>
-<p>wc [选项]文件…</p>
-<p>2．命令功能：</p>
-<p>统计指定文件中的字节数、字数、行数，并将统计结果显示输出。该命令统计指定文件中的字节数、字数、行数。如果没有给出文件名，则从标准输入读取。wc同时也给出所指定文件的***计数。</p>
-<p>3．命令参数：</p>
-<p>-c 统计字节数。</p>
-<p>-l 统计行数。</p>
-<p>-m 统计字符数。这个标志不能与 -c 标志一起使用。</p>
-<p>-w 统计字数。一个字被定义为由空白、跳格或换行字符分隔的字符串。</p>
-<p>-L 打印最长行的长度。</p>
-<p>-help 显示帮助信息</p>
-<p>–version 显示版本信息</p>
-<p>4．使用实例：</p>
-<p>实例1：查看文件的字节数、字数、行数</p>
-<p>命令：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">wc test.txt</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@localhost test] # cat test.txt </span><br><span class="line">hnlinux</span><br><span class="line">peida.cnblogs.com</span><br><span class="line">ubuntu</span><br><span class="line">ubuntu linux</span><br><span class="line">redhat</span><br><span class="line">Redhat</span><br><span class="line">linuxmint</span><br><span class="line">[root @localhost test] # wc test.txt</span><br><span class="line">7 8 70 test.txt</span><br><span class="line">[root @localhost test] # wc -l test.txt </span><br><span class="line">7 test.txt</span><br><span class="line">[root @localhost test] # wc -c test.txt </span><br><span class="line">70 test.txt</span><br><span class="line">[root @localhost test] # wc -w test.txt </span><br><span class="line">8 test.txt</span><br><span class="line">[root @localhost test] # wc -m test.txt </span><br><span class="line">70 test.txt</span><br><span class="line">[root @localhost test] # wc -L test.txt </span><br><span class="line">17 test.txt</span><br></pre></td></tr></table></figure>
-
-<p>说明：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">7 8 70 test.txt</span><br><span class="line">行数 单词数 字节数 文件名</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层"><a href="#3-Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层" class="headerlink" title="3. Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层"></a>3. Cookie可以用于验证用户，并且可以在无状态的HTTP上建立一个用户会话层</h3><p>正确</p>
-<p>当浏览器访问服务器时，服务器会创建一个session对象（该对象有一个唯一的id号，称之为sessionId）服务器在默认的情况下，会将sessionId以cookie的方式，发送给浏览器，浏览器会将sessionId保存到内存中。当浏览器再次访问服务器时，会将sessionId发送给服务器，服务器依据sessionId就可以找到之间创建的session对象</p>
-<h3 id="4-定义字符串-String-str-x3D-“用户1-用户2-用户3-用户4”，现在想要对字符串根据字符“-”进行分割解析，下面哪种分割方式是正确的？"><a href="#4-定义字符串-String-str-x3D-“用户1-用户2-用户3-用户4”，现在想要对字符串根据字符“-”进行分割解析，下面哪种分割方式是正确的？" class="headerlink" title="4. 定义字符串 String str &#x3D; “用户1|用户2|用户3|用户4”，现在想要对字符串根据字符“|”进行分割解析，下面哪种分割方式是正确的？"></a>4. 定义字符串 String str &#x3D; “用户1|用户2|用户3|用户4”，现在想要对字符串根据字符“|”进行分割解析，下面哪种分割方式是正确的？</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">str.split(&amp;ldquo;\\|&amp;rdquo;)</span><br></pre></td></tr></table></figure>
-
-<p><code>|</code>属于正则表达式中的字符，转义字符前面加<code>\\</code></p>
-<h3 id="5-ATM-既可以用于广域网，又可以用于局域网，这是因为它的工作原理与-Ethernet-基本上是相同的"><a href="#5-ATM-既可以用于广域网，又可以用于局域网，这是因为它的工作原理与-Ethernet-基本上是相同的" class="headerlink" title="5. ATM 既可以用于广域网，又可以用于局域网，这是因为它的工作原理与 Ethernet 基本上是相同的"></a>5. ATM 既可以用于广域网，又可以用于局域网，这是因为它的工作原理与 Ethernet 基本上是相同的</h3><p>错误</p>
-<p>ATM可以用于广域网，也可以用于广域网，一般用于广域网比较多。<br>ATM的原理是采用面向连接的传输方式，将数据分割成固定长度的信元，通过虚连接进行交换。<br>ATM的原理和以太网的原理是不一样的。</p>
-<p>ATM是一种为了多种业务设计的通用的面向连接的传输模式。它适用于局域网和广域网，它具有高速数据传输率和支持许多种类型如声音、数据、传真、实时视频、CD质量音频和图像的通信。<br>ATM采用面向连接的传输方式，将数据分割成固定长度的信元，通过虚连接进行交换。ATM集交换、复用、传输为一体，在复用上采用的是异步时分复用方式，通过信息的首部或标头来区分不同信道。</p>
-<h3 id="6-如果一个接口Glass有个方法setColor-，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是"><a href="#6-如果一个接口Glass有个方法setColor-，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是" class="headerlink" title="6. 如果一个接口Glass有个方法setColor()，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是"></a>6. 如果一个接口Glass有个方法setColor()，有个类BlueGlass实现接口Glass，则在类BlueGlass中正确的是</h3><ul>
-<li><input disabled type="checkbox"> protected void setColor() {…}</li>
-<li><input disabled type="checkbox"> void setColor() {…}</li>
-<li><input checked disabled type="checkbox"> public void setColor() {…}</li>
-<li><input disabled type="checkbox"> 以上语句都可以用在类BlueGlass中</li>
-</ul>
-<p>JAVA 子类重写继承的方法时,不可以降低方法的访问权限，子类继承父类的访问修饰符要比父类的更大，也就是更加开放，假如我父类是protected修饰的，其子类只能是protected或者public，绝对不能是friendly(默认的访问范围)或者private，当然使用private就不是继承了。还要注意的是，继承当中子类抛出的异常必须是父类抛出的异常的子异常，或者子类抛出的异常要比父类抛出的异常要少。<br>接口中属性为public static final，方法为public abstract.</p>
-<h3 id="7-以下哪些命令可以查看当前系统的启动时间"><a href="#7-以下哪些命令可以查看当前系统的启动时间" class="headerlink" title="7. 以下哪些命令可以查看当前系统的启动时间"></a>7. 以下哪些命令可以查看当前系统的启动时间</h3><ul>
-<li><input checked disabled type="checkbox"> w</li>
-<li><input checked disabled type="checkbox"> top</li>
-<li><input disabled type="checkbox"> ps</li>
-<li><input checked disabled type="checkbox"> uptime</li>
-</ul>
-<p><code>w</code>: 查看当前登录到系统中的用户，并查看该用户正在运行的进程<br><code>top</code>: 查看Linux中的资源信息，第一行开始部分显示了系统当前时间，并显示已经运行了多长时间，两者相减就是系统启动时间<br><code>uptime</code>: 查看系统启动时间<br><code>who -b</code>: 查看登录到系统中的用户什么时候登录的</p>
-<h3 id="8-关于Nginx的安全加固，以下说法正确的是"><a href="#8-关于Nginx的安全加固，以下说法正确的是" class="headerlink" title="8. 关于Nginx的安全加固，以下说法正确的是"></a>8. 关于Nginx的安全加固，以下说法正确的是</h3><ul>
-<li><input disabled type="checkbox"> nginx的master进程不能以root权限启动</li>
-<li><input checked disabled type="checkbox"> nginx的Worker进程不能以root权限启动</li>
-<li><input checked disabled type="checkbox"> 图片等静态资源目录不能给脚本执行权限</li>
-<li><input checked disabled type="checkbox"> 禁止访问.git、.svn和.sql目录，可以防止因运维操作不当造成的代码或数据泄漏</li>
-</ul>
-]]></content>
-      <categories>
-        <category>工作</category>
-      </categories>
-      <tags>
-        <tag>笔试题</tag>
       </tags>
   </entry>
   <entry>
@@ -7206,7 +7206,14 @@ LRU 实现策略</p>
 <p>完整的 <code>CLHLock</code> 代码如下。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> spinlocks;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicBoolean;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CLHLock</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">QNode</span> &#123;</span><br><span class="line">        <span class="keyword">volatile</span> <span class="type">AtomicBoolean</span> <span class="variable">locked</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    AtomicReference&lt;QNode&gt; tail = <span class="literal">null</span>;</span><br><span class="line">    ThreadLocal&lt;QNode&gt; myPred = <span class="literal">null</span>;</span><br><span class="line">    ThreadLocal&lt;QNode&gt; myNode = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CLHLock</span><span class="params">()</span> &#123;</span><br><span class="line">        tail = <span class="keyword">new</span> <span class="title class_">AtomicReference</span>&lt;&gt;(<span class="keyword">new</span> <span class="title class_">QNode</span>());</span><br><span class="line">        myNode = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;&gt;() &#123;</span><br><span class="line">            <span class="keyword">protected</span> QNode <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">QNode</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        myPred = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;&gt;() &#123;</span><br><span class="line">            <span class="keyword">protected</span> QNode <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">QNode</span> <span class="variable">qnode</span> <span class="operator">=</span> myNode.get();</span><br><span class="line">        qnode.locked.set(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">QNode</span> <span class="variable">pred</span> <span class="operator">=</span> tail.getAndSet(qnode);</span><br><span class="line">        myPred.set(pred);</span><br><span class="line">        <span class="keyword">while</span> (pred.locked.get()) &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">QNode</span> <span class="variable">qnode</span> <span class="operator">=</span> myNode.get();</span><br><span class="line">        qnode.locked.set(<span class="literal">false</span>);        <span class="comment">// 通知后继线程</span></span><br><span class="line">        myNode.set(myPred.get());       <span class="comment">// 这句非常重要，避免同一个线程重复加锁导致自旋等待而死锁</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="5-3-MCS-队列锁"><a href="#5-3-MCS-队列锁" class="headerlink" title="5.3 MCS 队列锁"></a>5.3 MCS 队列锁</h3>]]></content>
+<h3 id="5-3-MCS-队列锁"><a href="#5-3-MCS-队列锁" class="headerlink" title="5.3 MCS 队列锁"></a>5.3 MCS 队列锁</h3><p>完整 <code>MCS</code> 锁代码实现如下。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> spinlocks;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicBoolean;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * @Author         : Cherry</span></span><br><span class="line"><span class="comment"> * @Date           : 2022-10-10 10:14:07</span></span><br><span class="line"><span class="comment"> * @LastEditors    : Cherry</span></span><br><span class="line"><span class="comment"> * @LastEditTime   : 2022-12-14 23:55:06</span></span><br><span class="line"><span class="comment"> * @FilePath       : MCSLock.java</span></span><br><span class="line"><span class="comment"> * @Description    : MCS 队列锁</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MCSLock</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">QNode</span> &#123;</span><br><span class="line">        <span class="keyword">volatile</span> <span class="type">AtomicBoolean</span> <span class="variable">locked</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomicBoolean</span>(<span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">volatile</span> <span class="type">QNode</span> <span class="variable">next</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    AtomicReference&lt;QNode&gt; tail;</span><br><span class="line">    ThreadLocal&lt;QNode&gt; myNode;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MCSLock</span><span class="params">()</span> &#123;</span><br><span class="line">        tail = <span class="keyword">new</span> <span class="title class_">AtomicReference</span>&lt;&gt;(<span class="literal">null</span>);</span><br><span class="line">        myNode = <span class="keyword">new</span> <span class="title class_">ThreadLocal</span>&lt;&gt;() &#123;</span><br><span class="line">            <span class="keyword">protected</span> QNode <span class="title function_">initialValue</span><span class="params">()</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">QNode</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 详细解释 MCS 加锁的过程：</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">lock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">QNode</span> <span class="variable">qnode</span> <span class="operator">=</span> myNode.get();</span><br><span class="line">        <span class="type">QNode</span> <span class="variable">pred</span> <span class="operator">=</span> tail.getAndSet(qnode);</span><br><span class="line">        <span class="keyword">if</span> (pred != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// if (qnode.locked.get() == false) &#123;</span></span><br><span class="line">            <span class="comment">//     System.out.println(&quot;The qnode.locked is false&quot;);</span></span><br><span class="line">            <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 不能初始化为 true，避免在释放锁时但是还未将 next 域置为 null 时该线程再次申请锁，这样就会导致多个线程同时访问一个变量导致计数错误</span></span><br><span class="line">            qnode.locked.set(<span class="literal">true</span>);         </span><br><span class="line">            pred.next = qnode;</span><br><span class="line">            <span class="keyword">while</span> (qnode.locked.get()) &#123;</span><br><span class="line">                <span class="comment">// Thread.yield();</span></span><br><span class="line">                <span class="comment">// System.out.println(&quot;当前线程 &quot; + Thread.currentThread().getName() + &quot; 的前一个线程未释放锁，自旋等待&quot;);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// System.out.println(&quot;线程 &quot; + Thread.currentThread().getName() + &quot; 已获得锁～～&quot;);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * MCS 释放锁的过程：检查当前结点是否为链表最后一个结点，如果不是最后一个结点，且 qnode.next 为空，</span></span><br><span class="line"><span class="comment">     * 说明下一个结点已经准备申请锁，但是结点的链接还未完成，这时当前线程释放锁需要自旋等待，直到下一个线程</span></span><br><span class="line"><span class="comment">     * 将链表链接完成。</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * 最后一句：qnode.next = null 是必要的。若线程释放锁后不将 next 指针置空，则下列这种线程执行情况</span></span><br><span class="line"><span class="comment">     * 将导致线程忙等：A.lock() -&gt; B.lock() -&gt; A.unlock() -&gt; A.lock() -&gt; B.unlock() -&gt; A.unlock() -&gt; A.lock()，</span></span><br><span class="line"><span class="comment">     * 即当线程队列形成回路时，释放锁时分支 if (qnode.next == null) 将不会进入正确的代码块执行，</span></span><br><span class="line"><span class="comment">     * 导致 tail 不会被置为 null，当下一次申请锁时，就会导致无限空转</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">QNode</span> <span class="variable">qnode</span> <span class="operator">=</span> myNode.get();</span><br><span class="line">        <span class="keyword">if</span> (qnode.next == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// System.out.println(&quot;这里卡死。。。&quot;);</span></span><br><span class="line">            <span class="keyword">if</span> (tail.compareAndSet(qnode, <span class="literal">null</span>)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果执行到这，说明 tail 指向的不是 qnode 结点，但是 qnode 结点的后继却是 null，说明有一个结点正在链接过程中还没有链接好</span></span><br><span class="line">            <span class="keyword">while</span> (qnode.next == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="comment">// System.out.println(&quot;线程 &quot; + Thread.currentThread().getName() + &quot; 未链接好，正在等待链接。。。&quot;);</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        qnode.next.locked.set(<span class="literal">false</span>);</span><br><span class="line">        qnode.next = <span class="literal">null</span>;              <span class="comment">// 这句是必要的</span></span><br><span class="line">        <span class="comment">// System.out.println(&quot;线程 &quot; + Thread.currentThread().getName() + &quot; 已释放锁##&quot;);</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+]]></content>
       <categories>
         <category>计算机原理知识</category>
       </categories>
