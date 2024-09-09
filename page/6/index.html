@@ -230,7 +230,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -351,7 +351,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -474,7 +474,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -538,7 +538,7 @@
       
           <h2 id="TFTP简单文本传输协议的介绍"><a href="#TFTP简单文本传输协议的介绍" class="headerlink" title="TFTP简单文本传输协议的介绍"></a>TFTP简单文本传输协议的介绍</h2><p>随着互联网发展，文件传输效率越来越快，相应的传输协议也越来越复杂。早年有很多文件传输协议如今已经很少再用，所谓老兵不死，只是慢慢凋零。这些协议尽管现在使用不多，但它们的设计思想依然值得我们好好研究和掌握。</p>
 <p>例如 FTP 以及它的 UDP 版本 TFTP，它们实现文件传输的协议设计思想依然非常值得研究，它对我们设计新协议依然很有启发性。本节开始，我们研究 TFTP 协议的原理以及相关代码实现。</p>
-<p>TFTP 原名叫<code>Trivial File Transport Protocol</code>.对互联网早期存有记忆的同学对 FTP 协议一定非常了解，当时局域网乃至整个网络上很多大文件，例如电影的传输依靠的就是该协议。FTP 协议运行在 TCP 协议之上，它的内容很复杂，除了文件传输外，它还支持很多文件相关操作，例如远程实现文件建立，删除等。TFTP 是 FTP 协议的简化版，它运行在 UDP 协议上，同时简化了很多 FTP 操作，只支持文件的传输功能。</p>
+<p>TFTP 原名叫<code>Trivial File Transport Protocol</code>.对互联网早期存有记忆的同学对 FTP 协议一定非常了解，当时局域网乃至整个网络上很多大文件，例如电影的传输依靠的就是该协议。FTP 协议运行在 TCP 协议之上，它的内容很复杂，除了文件传输外，它还支持很多文件相关操作，例如远程实现文件建立，删除等。TFTP 是 FTP 协议的简化版，它运行在 UDP 协议上，同时简化了很多 FTP 操作，只支持文件的传输功能。<br></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo-blog/2c942dc5.html#more" rel="contents">
@@ -597,7 +597,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -661,7 +661,7 @@
       
           <h2 id="DNS-域名解析协议-基本原理介绍"><a href="#DNS-域名解析协议-基本原理介绍" class="headerlink" title="DNS(域名解析协议)基本原理介绍"></a>DNS(域名解析协议)基本原理介绍</h2><p>我们这章开始研究和实现一个体系较为复杂的协议，也就是域名解析协议，简写为DNS。该协议几乎也是我们”日用而不知”的幕后英雄，没有它肯定就没有现在的互联网繁荣。</p>
 <p>当我们在浏览器上输入网址，例如<code>www.baidu.com</code>时，浏览器先通过DNS协议找到与该网址对应的IP地址，然后再使用IP去向服务器获取网页信息。也就是说互联网上的设备其实有两种辨认方法，一种是IP，一种是域名。就如同人的身份证，人有名字，同时也有几十位数字组成的身份证号。</p>
-<p>人与人相互识别时，使用的都是名字，几乎没有人使用身份证号来识别他人的，即使身份证号相对于名字而言更加唯一和准确。说到底是因为人对数字识别很费劲，而记住名字很容易。</p>
+<p>人与人相互识别时，使用的都是名字，几乎没有人使用身份证号来识别他人的，即使身份证号相对于名字而言更加唯一和准确。说到底是因为人对数字识别很费劲，而记住名字很容易。<br></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo-blog/47ec812d.html#more" rel="contents">
@@ -720,7 +720,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -837,7 +837,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -949,7 +949,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1007,7 +1007,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="Java虚拟机介绍"><a href="#Java虚拟机介绍" class="headerlink" title="Java虚拟机介绍"></a>Java虚拟机介绍</h2><p>Java虚拟机(Java Virtual Machine，JVM)，一种能够运行Java字节码的虚拟机。作为一种编程语言的虚拟机，实际上<br>不只是专用于Java语言，只要生成的编译文件匹配JVM对加载编译文件格式要求，任何语言都可以由JVM编译运行。</p>
+          <h2 id="Java虚拟机介绍"><a href="#Java虚拟机介绍" class="headerlink" title="Java虚拟机介绍"></a>Java虚拟机介绍</h2><p>Java虚拟机(Java Virtual Machine，JVM)，一种能够运行Java字节码的虚拟机。作为一种编程语言的虚拟机，实际上<br>不只是专用于Java语言，只要生成的编译文件匹配JVM对加载编译文件格式要求，任何语言都可以由JVM编译运行。<br></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo-blog/bc4fb6eb.html#more" rel="contents">
@@ -1066,7 +1066,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1132,7 +1132,7 @@
 <p>DHCP 协议(Dynamic Host Configuration Protocol)是一个基于UDP协议的局域网的网络协议。指的是由服务器控制一段 IP 地址范围，客户机登录服务器时就可以自动获得服务器分配的 IP 地址和子网掩码。</p>
 <p>该协议的最大作用是动态的为加入网络的设备分配 IP 地址，在该协议出现前，IP 地址的分配基于静态模式，你把设备的 mac 地址手动在路由器设置，然后路由器自动生成一个 IP 与你的 mac 地址绑定起来。这种应用在有线网络时代可以适用，但在无线时代，每时每刻可能有不同的设备加入或离开网络，因此原有静态匹配 IP 的做法不再适合。</p>
 <p>DHCP 协议的诞生就是为了迎合在无线情况下，网络内部连接设备不断变化的情况。它包含两部分，一是分配 IP 地址，二是支持客户端请求，服务器应答，使得两者之间有效交换配置信息。</p>
-<p>DHCP 最重要功能显然是动态分配 IP 地址，当我们的设备连接上网络之后里面获得一个可用的 IP 地址，就得感谢该协议的执行，现在我们大多数设备都依靠 DHCP 来从路由器动态获得 IP</p>
+<p>DHCP 最重要功能显然是动态分配 IP 地址，当我们的设备连接上网络之后里面获得一个可用的 IP 地址，就得感谢该协议的执行，现在我们大多数设备都依靠 DHCP 来从路由器动态获得 IP<br></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo-blog/2a5bb25d.html#more" rel="contents">
@@ -1191,7 +1191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1253,7 +1253,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="BAT批处理（二）：批量删除指定文件以及相关简单的语法结构-if-for-，系统变量errorlevel，变量延迟等"><a href="#BAT批处理（二）：批量删除指定文件以及相关简单的语法结构-if-for-，系统变量errorlevel，变量延迟等" class="headerlink" title="BAT批处理（二）：批量删除指定文件以及相关简单的语法结构(if,for)，系统变量errorlevel，变量延迟等"></a>BAT批处理（二）：批量删除指定文件以及相关简单的语法结构(if,for)，系统变量errorlevel，变量延迟等</h2><p>前两天在使用 VSCode 的时候，看到之前那么多 cpp 编译产生的 exe 可执行文件，于是心生一个念头，我要把它们全部删掉，但是又不想一个个地删，便想到了利用 <code>bat</code> 脚本批量删除 exe 文件。于是在搜集了大量资料后，开始了编写。</p>
+          <h2 id="BAT批处理（二）：批量删除指定文件以及相关简单的语法结构-if-for-，系统变量errorlevel，变量延迟等"><a href="#BAT批处理（二）：批量删除指定文件以及相关简单的语法结构-if-for-，系统变量errorlevel，变量延迟等" class="headerlink" title="BAT批处理（二）：批量删除指定文件以及相关简单的语法结构(if,for)，系统变量errorlevel，变量延迟等"></a>BAT批处理（二）：批量删除指定文件以及相关简单的语法结构(if,for)，系统变量errorlevel，变量延迟等</h2><p>前两天在使用 VSCode 的时候，看到之前那么多 cpp 编译产生的 exe 可执行文件，于是心生一个念头，我要把它们全部删掉，但是又不想一个个地删，便想到了利用 <code>bat</code> 脚本批量删除 exe 文件。于是在搜集了大量资料后，开始了编写。<br></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo-blog/58ced44c.html#more" rel="contents">
@@ -1312,7 +1312,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-09-08 11:01:25" itemprop="dateModified" datetime="2024-09-08T11:01:25+00:00">2024-09-08</time>
+                <time title="修改时间：2024-09-09 15:45:13" itemprop="dateModified" datetime="2024-09-09T15:45:13+00:00">2024-09-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1355,7 +1355,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.8k</span>
+              <span>3.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -1374,7 +1374,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="维吉尼亚密码的破解"><a href="#维吉尼亚密码的破解" class="headerlink" title="维吉尼亚密码的破解"></a>维吉尼亚密码的破解</h2><h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 <strong>e</strong> 是出现频率最高的，占<strong>12.7%<strong>；其次是</strong>t</strong>，<strong>9.1%<strong>；然后是</strong>a</strong>，<strong>o</strong>，<strong>i</strong>，<strong>n</strong>等，最少的是<strong>z</strong>，只占**0.1%**。</p>
+          <h2 id="维吉尼亚密码的破解"><a href="#维吉尼亚密码的破解" class="headerlink" title="维吉尼亚密码的破解"></a>维吉尼亚密码的破解</h2><h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 <strong>e</strong> 是出现频率最高的，占<strong>12.7%</strong>；其次是<strong>t</strong>，<strong>9.1%</strong>；然后是<strong>a</strong>，<strong>o</strong>，<strong>i</strong>，<strong>n</strong>等，最少的是<strong>z</strong>，只占<strong>0.1%</strong>。<br></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo-blog/a1c2e50d.html#more" rel="contents">
@@ -1526,13 +1526,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">216k</span>
+    <span title="站点总字数">214k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:17</span>
+    <span title="站点阅读时长">3:15</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
@@ -1590,9 +1590,14 @@
                 console.error('Failed to save visitor count', error);
               });
           } else {
-              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
-              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
-            
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
           }
         })
         .catch(error => {
@@ -1619,7 +1624,7 @@
         });
     }
 
-    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":true};
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":false};
     function fetchData(api_server) {
       var Counter = (method, url, data) => {
         return fetch(`${api_server}/1.1${url}`, {
