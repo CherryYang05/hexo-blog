@@ -125,8 +125,8 @@
       </tags>
   </entry>
   <entry>
-    <title>异构模块设计</title>
-    <url>/hexo-blog//post/heterogenic-module-design-zpdnkf.html</url>
+    <title></title>
+    <url>/hexo-blog/0.html</url>
     <content><![CDATA[<h1 id="异构模块设计"><a href="#异构模块设计" class="headerlink" title="异构模块设计"></a>异构模块设计</h1><h1 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h1><p>将 SSD 和磁带组成缓存结构的异构系统，SSD 作为主要流量承担的缓存设备，磁带作为数据永久存储的容量设备，用 SSD 平衡磁带的读写性能，使得异构系统用磁带的低成本大容量，表现出近似于 SSD 的读写性能。</p>
 <p>但是和 SSD 和 HDD 这样的块设备不同，磁带是顺序设备，只支持顺序写入。传统的以 SSD 与 HDD 为主的异构系统的缓存设计更适用于小粒度的频繁读写，而磁带设备适用于大文件的归档及备份场景，传统的缓存结构对于这种场景来说效率较低。同时传统的缓存设计对时延较为敏感，而在档案馆这种地方，读取数据耽误个几秒钟似乎并没那么重要。</p>
 <p>我们最需要考虑的一点是，当缓存上的数据下刷到磁带上时，应该保证顺序写入，但是真实情况下用户无法保证刷下去的数据都是顺序的。于是需要设计一个地址映射层，这样在外部看来，磁带是可以随机写的。</p>
@@ -266,12 +266,6 @@
 <h2 id="5-3-开题预答辩"><a href="#5-3-开题预答辩" class="headerlink" title="5.3. 开题预答辩"></a>5.3. 开题预答辩</h2><h1 id="6-参考资料"><a href="#6-参考资料" class="headerlink" title="6. 参考资料"></a>6. 参考资料</h1><p><strong>日志文件系统</strong></p>
 <p>‍</p>
 ]]></content>
-      <categories>
-        <category>系统架构</category>
-      </categories>
-      <tags>
-        <tag>异构</tag>
-      </tags>
   </entry>
   <entry>
     <title>使用patchelf解决vscode远程连接不支持低版本glibc的问题</title>
