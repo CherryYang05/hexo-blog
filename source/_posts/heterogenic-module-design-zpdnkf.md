@@ -1,15 +1,3 @@
----
-title: 异构模块设计
-date: '2024-10-26 01:50:28'
-updated: '2024-10-26 02:33:49'
-tags:
-  - 异构
-categories:
-  - 系统架构
-permalink: /post/heterogenic-module-design-zpdnkf.html
-comments: true
-toc: true
----
 
 # 异构模块设计
 
