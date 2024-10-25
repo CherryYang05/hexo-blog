@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/hexo-blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/hexo-blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/hexo-blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/hexo-blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/hexo-blog/css/main.css">
+
+
+<link rel="stylesheet" href="/hexo-blog/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="异构模块设计1. 背景介绍将 SSD 和磁带组成缓存结构的异构系统，SSD 作为主要流量承担的缓存设备，磁带作为数据永久存储的容量设备，用 SSD 平衡磁带的读写性能，使得异构系统用磁带的低成本大容量，表现出近似于 SSD 的读写性能。 但是和 SSD 和 HDD 这样的块设备不同，磁带是顺序设备，只支持顺序写入。传统的以 SSD 与 HDD 为主的异构系统的缓存设计更适用于小粒度的频繁读写，而磁">
+<meta property="og:type" content="article">
+<meta property="og:title" content="异构模块设计">
+<meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/post/heterogenic-module-design-zpdnkf.html">
+<meta property="og:site_name" content="北极熊不吃企鹅宝宝">
+<meta property="og:description" content="异构模块设计1. 背景介绍将 SSD 和磁带组成缓存结构的异构系统，SSD 作为主要流量承担的缓存设备，磁带作为数据永久存储的容量设备，用 SSD 平衡磁带的读写性能，使得异构系统用磁带的低成本大容量，表现出近似于 SSD 的读写性能。 但是和 SSD 和 HDD 这样的块设备不同，磁带是顺序设备，只支持顺序写入。传统的以 SSD 与 HDD 为主的异构系统的缓存设计更适用于小粒度的频繁读写，而磁">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721715368909-6435d196-bc2f-40ee-ba16-a843639fb980.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721714040896-1ed232ce-ac93-45f7-aca8-504ef8cf0f3d.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1720704704438-4a086dd5-4d1b-4c68-8e85-0a8034b398ea.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/b6f95f4de4cd5a135b26d0fdf46ede99.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/81850fef59d52e524daf8a9755c4dd65.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721716327392-e81b9c9e-92f0-4127-a0a6-5f78a38fe27e.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1720704690588-6a98fefa-97b0-468b-8da7-867ad63a1330.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721719315323-676259ae-6bb3-4e49-a1f8-a094b61b0ab8.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721719918821-225cfd82-0c19-40cd-b72f-807891199697.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/4b46685f65a37bff105c6a14ce103f48.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/d3980096c192fa6d238544738f976fe5.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/4b46685f65a37bff105c6a14ce103f48.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/d3980096c192fa6d238544738f976fe5.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1722950778624-501d73f6-b533-4340-92a9-4473555984e4.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/77db1de84c57b9099d7206fb2c0f1ca3.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/ab91acd42146db3a3a7c7f761f714dff.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/27aadc064e81cfaf0acbe9a4fc8b7daa.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/39c69fbad0041c1d5caa9acf313cb0e6.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/0825f86295a52b885ab499a550488ab3.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/7255eb6eb60692bf285b57ffc6c40f7d.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/b140cae608bfef9a9b9600f58add5dd4.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/85703ea08de0b8027067f7188054e987.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/459f3c80a50b7be28751b0869ef5386a.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/2cb2eb88a6168b9a5d6599126d49ba8d.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/ba1b6e7a2a5f6e2808e06f1b6133bb82.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/2443fbcfeb7e85e1d62b6f5e4f27207e.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/4760e2f007e23d820825ba241c47ce3b.svg">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/__latex/eee2466f228c099cec8a86dec4bf6eb0.svg">
+<meta property="article:published_time" content="2024-10-26T01:50:28.000Z">
+<meta property="article:modified_time" content="2024-10-26T02:33:49.000Z">
+<meta property="article:author" content="Cherry">
+<meta property="article:tag" content="异构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721715368909-6435d196-bc2f-40ee-ba16-a843639fb980.png">
+
+<link rel="canonical" href="https://cherryyang05.github.io/hexo-blog/post/heterogenic-module-design-zpdnkf.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>异构模块设计 | 北极熊不吃企鹅宝宝</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/hexo-blog/atom.xml" title="北极熊不吃企鹅宝宝" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/hexo-blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">北极熊不吃企鹅宝宝</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">为什么呢？</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/hexo-blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/hexo-blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">30</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/hexo-blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">62</span></a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/hexo-blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">57</span></a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/hexo-blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/hexo-blog/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cherryyang05.github.io/hexo-blog/post/heterogenic-module-design-zpdnkf.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/hexo-blog/images/avatar2.png">
+      <meta itemprop="name" content="Cherry">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="北极熊不吃企鹅宝宝">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          异构模块设计
+        </h1>
+
+        <div class="post-meta">
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-10-26 01:50:28 / 修改时间：02:33:49" itemprop="dateCreated datePublished" datetime="2024-10-26T01:50:28+00:00">2024-10-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/hexo-blog/categories/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">系统架构</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/hexo-blog/post/heterogenic-module-design-zpdnkf.html" class="post-meta-item leancloud_visitors" data-flag-title="异构模块设计" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/hexo-blog/post/heterogenic-module-design-zpdnkf.html#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/hexo-blog/post/heterogenic-module-design-zpdnkf.html" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="异构模块设计"><a href="#异构模块设计" class="headerlink" title="异构模块设计"></a>异构模块设计</h1><h1 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h1><p>将 SSD 和磁带组成缓存结构的异构系统，SSD 作为主要流量承担的缓存设备，磁带作为数据永久存储的容量设备，用 SSD 平衡磁带的读写性能，使得异构系统用磁带的低成本大容量，表现出近似于 SSD 的读写性能。</p>
+<p>但是和 SSD 和 HDD 这样的块设备不同，磁带是顺序设备，只支持顺序写入。传统的以 SSD 与 HDD 为主的异构系统的缓存设计更适用于小粒度的频繁读写，而磁带设备适用于大文件的归档及备份场景，传统的缓存结构对于这种场景来说效率较低。同时传统的缓存设计对时延较为敏感，而在档案馆这种地方，读取数据耽误个几秒钟似乎并没那么重要。</p>
+<p>我们最需要考虑的一点是，当缓存上的数据下刷到磁带上时，应该保证顺序写入，但是真实情况下用户无法保证刷下去的数据都是顺序的。于是需要设计一个地址映射层，这样在外部看来，磁带是可以随机写的。</p>
+<p>异构模块在全局的架构图如下。</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721715368909-6435d196-bc2f-40ee-ba16-a843639fb980.png" title="异构模块全局架构">​</p>
+<p>其他需要关注的地方包括：缓存结构，替换算法。</p>
+<p>可以进一步优化的点：高效查表，使用倒排页表，参考日志结构文件系统（LFS）将写操作先写入日志，在上层设计存储协议，数据去重和压缩，元数据管理，异步操作，预取和缓存预热，负载均衡和错误处理等。</p>
+<h1 id="2-地址映射层（AML-Address-Mapping-Layer）"><a href="#2-地址映射层（AML-Address-Mapping-Layer）" class="headerlink" title="2. 地址映射层（AML, Address Mapping Layer）"></a>2. 地址映射层（AML, Address Mapping Layer）</h1><h2 id="2-1-整体介绍"><a href="#2-1-整体介绍" class="headerlink" title="2.1. 整体介绍"></a>2.1. 整体介绍</h2><p>地址映射层主要有两部分，第一部分位于缓存层上方，主要是为了将上层传来的逻辑地址转换成物理地址（磁带上的实际位置），以适应磁带的顺序写入特性。</p>
+<p>第二部分位于缓存层和磁带中间，主要为了将缓存替换后的数据顺序下刷到磁带上。</p>
+<p>地址映射层所起到的功能与操作系统中的页表机制类似，只是分配的页框从物理上随机变成物理上连续。</p>
+<p>地址映射层在异构系统中的表现如下。</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721714040896-1ed232ce-ac93-45f7-aca8-504ef8cf0f3d.png">​</p>
+<h2 id="2-2-映射表的设计"><a href="#2-2-映射表的设计" class="headerlink" title="2.2. 映射表的设计"></a>2.2. 映射表的设计</h2><h3 id="2-2-1-逻辑地址到物理地址的映射"><a href="#2-2-1-逻辑地址到物理地址的映射" class="headerlink" title="2.2.1. 逻辑地址到物理地址的映射"></a>2.2.1. 逻辑地址到物理地址的映射</h3><p>逻辑地址映射为物理地址大致方式如下：</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1720704704438-4a086dd5-4d1b-4c68-8e85-0a8034b398ea.png">​</p>
+<p>其中：</p>
+<p><strong>逻辑地址</strong>  是输入的 trace 文件中的 offset 字段</p>
+<p><strong>物理地址</strong>  是写入磁带的地址</p>
+<p>和操作系统中的页表类似，需要维护一张表，称为<strong>块表（Block Table）</strong> ，用来存储逻辑地址到物理地址的映射关系。</p>
+<p>这里的每个表项存储的是一个块，块大小为 256KB，即该异构系统最小存储单位是 256KB。磁带容量为 18T，即有<img data-src="https://cdn.nlark.com/yuque/__latex/b6f95f4de4cd5a135b26d0fdf46ede99.svg">个表项，每个表项 4B，一共需要<img data-src="https://cdn.nlark.com/yuque/__latex/81850fef59d52e524daf8a9755c4dd65.svg">，即 512MB。</p>
+<p>【后续考虑是否需要设计多级块表】</p>
+<p><strong>块表表项结构</strong></p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721716327392-e81b9c9e-92f0-4127-a0a6-5f78a38fe27e.png">​</p>
+<p>映射表每个表项为 32 位，只需要高 27 位表示地址块号，第 0 位为有效位，第 1 位为修改位，2-4 位保留另作他用。</p>
+<p>由于映射表按照块来分配，每个数据块对应一个表项，因此表项的索引可以通过逻辑地址的前 27 位块号来唯一指示，因此表项中只需存放映射的物理地址块号。</p>
+<p>【PS：这里的页表和操作系统中的页表的不同之处在于，操作系统中的逻辑地址表示的范围远超过内存，而异构模块中逻辑地址和（磁带上的）物理地址表示范围一致】</p>
+<h3 id="2-2-2-映射表的创建"><a href="#2-2-2-映射表的创建" class="headerlink" title="2.2.2. 映射表的创建"></a>2.2.2. 映射表的创建</h3><p>由于需要确保映射的物理地址是连续的，因此需要一个地址分配模块来分配连续的物理地址。简便起见，确保输入的 trace 对 256KB 对齐。</p>
+<p><strong>地址分配模块</strong></p>
+<ul>
+<li>用变量 <code>pointer</code>​ 维护磁带上顺序的物理地址</li>
+<li>根据 <code>length</code>​ 确定要写入的块表的表项数量（length &#x2F; blk_size 向上取整）</li>
+<li>最后根据 <code>linear_phyaddr</code>​ 将表项填入表中</li>
+</ul>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1720704690588-6a98fefa-97b0-468b-8da7-867ad63a1330.png">​</p>
+<p><strong>AML 流程示例</strong></p>
+<p>地址映射层从缓存接收被逐出的数据块 B，获取到逻辑地址(二进制为：<strong>0</strong> <strong>0000 0000 0000 0000 0000 0001 00</strong>00 0000 0000 0000 0000，块号为 27 位，偏移量为 18 位，共 45 位)，长度为 1MB，pointer 字段为 <code>flushing_phyaddr</code>​，初始值为 0，表示已经下刷到磁带上的顺序物理地址。</p>
+<p>首先取出逻辑地址的块号为 <strong>0</strong> <strong>0000 0000 0000 0000 0000 0001 00</strong>，十进制为 4，再取出数据块的长度，为 1MB，需要切分成 4 个 256KB 的块。用来指示已经下刷到磁带上的顺序物理地址当前为 0，因此块号为 4 的逻辑地址映射到物理地址 0，块号为 5 的逻辑地址映射到物理地址 1，块号为 6 的逻辑地址映射到物理地址 2，块号为 7 的逻辑地址映射到物理地址 3。具体如下图。</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721719315323-676259ae-6bb3-4e49-a1f8-a094b61b0ab8.png">​</p>
+<h1 id="3-缓存层（Cache-Layer）"><a href="#3-缓存层（Cache-Layer）" class="headerlink" title="3. 缓存层（Cache Layer）"></a>3. 缓存层（Cache Layer）</h1><h2 id="3-1-整体介绍"><a href="#3-1-整体介绍" class="headerlink" title="3.1. 整体介绍"></a>3.1. 整体介绍</h2><p>在异构模块中，使用 SSD 承担绝大部分写入流量，当写满时便需要下刷数据到磁带中，因此缓存层主要功能是用来管理需要下刷的数据。如何增加系统的读写命中率，以及如何高效地下刷是缓存层首要考虑的事情。</p>
+<p>对于缓存的设计，见下面文档。</p>
+<p><a target="_blank" rel="noopener" href="https://www.yuque.com/attachments/yuque/0/2024/pdf/25899876/1720769013656-116a6e61-c9ac-4e00-a27d-2b18a392a9a1.pdf">缓存的设计与实现（新增）.pdf</a></p>
+<h2 id="3-2-缓存组织方式"><a href="#3-2-缓存组织方式" class="headerlink" title="3.2. 缓存组织方式"></a>3.2. 缓存组织方式</h2><p>缓存组织方式暂时采用组相连策略。</p>
+<h2 id="3-3-缓存替换策略"><a href="#3-3-缓存替换策略" class="headerlink" title="3.3. 缓存替换策略"></a>3.3. 缓存替换策略</h2><p>考虑到以顺序写为主，替换策略考虑使用 FIFO 策略。</p>
+<h2 id="3-4-缓存数据下刷"><a href="#3-4-缓存数据下刷" class="headerlink" title="3.4. 缓存数据下刷"></a>3.4. 缓存数据下刷</h2><h3 id="3-4-1-设计思路"><a href="#3-4-1-设计思路" class="headerlink" title="3.4.1. 设计思路"></a>3.4.1. 设计思路</h3><p>由于异构模块每次读取一个请求，因此当缓存满的时候，也会在缓存中替换下与该次请求等量数据大小的数据。遗憾的是，仅仅将每次替换的数据顺序写入不会让磁带机的性能达到最大，经过我们的测试发现，在请求粒度很小时（相对于磁带这种介质来说），例如 100MB 以下，带宽甚至达不到峰值带宽的一半。因此我考虑使用写缓冲，异构模块会跟踪 SSD 中的缓冲区（将作为缓存的 SSD 划分一点空间作为缓冲区），当缓冲区收到足够数量的数据时（例如 2GB），会统一刷新到磁带上。</p>
+<h3 id="3-4-2-P2P-映射表的创建"><a href="#3-4-2-P2P-映射表的创建" class="headerlink" title="3.4.2. P2P 映射表的创建"></a>3.4.2. P2P 映射表的创建</h3><p>整体的流程如下图所示。</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1721719918821-225cfd82-0c19-40cd-b72f-807891199697.png">​</p>
+<p>首先地址映射层接收缓存替换下来的数据块<img data-src="https://cdn.nlark.com/yuque/__latex/4b46685f65a37bff105c6a14ce103f48.svg">，L 表示该数据块逻辑地址，根据 <code>flushing_phyaddr</code>​，图中为 m+1，将其物理地址映射成要下刷到磁带上的地址（图中为<img data-src="https://cdn.nlark.com/yuque/__latex/d3980096c192fa6d238544738f976fe5.svg">），然后写入缓冲区 1（图中称为 <code>Seq Segment 1</code>​），同时将映射信息写入块表（将<img data-src="https://cdn.nlark.com/yuque/__latex/4b46685f65a37bff105c6a14ce103f48.svg">映射到<img data-src="https://cdn.nlark.com/yuque/__latex/d3980096c192fa6d238544738f976fe5.svg">）。</p>
+<h3 id="3-4-3-写缓冲要多少"><a href="#3-4-3-写缓冲要多少" class="headerlink" title="3.4.3. 写缓冲要多少"></a>3.4.3. 写缓冲要多少</h3><p>写缓冲区是 SSD 中的一片区域，用来批量地聚集在缓存中替换下来的数据块。考虑到磁带如此令人担忧的性能，如果只设计单缓冲，在等待数据下刷的时候，缓存层只能被阻塞，等待数据的下刷完成，严重影响从上层接收数据的带宽。尽管磁带的顺序写带宽超过目前绝大多数的 HDD，但是我仍然想让它更高效，因此我在 3.4.2 的示意图中设置了两个写缓冲，但这只代表这不是单缓冲，毕竟从单到双和从双到多有本质区别。</p>
+<p>那么到底要设置多少个缓冲呢？更准确的表达应该是需要一个负责下刷的缓冲（毕竟目前只有一个磁带机，而磁带是单通道设备），以及多少负责暂存缓存替换下来的数据用以抵消负责下刷的缓冲的延时。</p>
+<p>经过朴素的理论分析，暂存缓冲区的数量受缓存中替换下来的数据块频率决定。试想如果一个负载总是没有命中缓存，那么缓存每次都要替换，那么进入写缓冲的数据就会变多，下刷到磁带的压力就会变大，整体系统的时延便会增加。反之，最理想的情况下，命中率为 100%，写缓冲就不会有数据进来。</p>
+<p>因此写缓冲的大小至少为两个，一个下刷，另一个承接缓存中替换下来的数据块。而这样的双缓冲是否可以抵消下刷到磁带的延时，可以考虑使用配置参数给系统动态调整，当然写缓冲也不宜过多，毕竟占据了 SSD 的空间，管理起来也需要开销。</p>
+<h1 id="4-负载的读操作随机度度量"><a href="#4-负载的读操作随机度度量" class="headerlink" title="4. 负载的读操作随机度度量"></a>4. 负载的读操作随机度度量</h1><p>引入随机度的动机：探究与 SSD 和 HDD 的异构性能一致的随机度的临界点</p>
+<p>地址映射前有个读随机度，映射后有个随机度，可以比较异构模块对降低随机度的影响</p>
+<h2 id="4-1-熵（Entropy）"><a href="#4-1-熵（Entropy）" class="headerlink" title="4.1. 熵（Entropy）"></a>4.1. 熵（Entropy）</h2><p>​<img data-src="https://cdn.nlark.com/yuque/0/2024/png/25899876/1722950778624-501d73f6-b533-4340-92a9-4473555984e4.png">​</p>
+<p>熵是信息论中的一个概念，用来衡量信息的不确定性或随机性。在存储系统的上下文中，熵可以反映读操作的随机性。</p>
+<p><strong>计算步骤：</strong></p>
+<ol>
+<li>统计频率：对于每个数据块，计算其被访问的次数，并计算这些访问次数在所有读操作中所占的比例。</li>
+</ol>
+<p>比如某个块被访问了<img data-src="https://cdn.nlark.com/yuque/__latex/77db1de84c57b9099d7206fb2c0f1ca3.svg">次，总共有 N 次读操作，那么这个块的访问比例为<img data-src="https://cdn.nlark.com/yuque/__latex/ab91acd42146db3a3a7c7f761f714dff.svg">。</p>
+<ol start="2">
+<li>计算熵：根据每个块的访问比例，使用以下公式计算熵：</li>
+</ol>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/27aadc064e81cfaf0acbe9a4fc8b7daa.svg">​</p>
+<p>其中，m 是被访问的块的数量，<img data-src="https://cdn.nlark.com/yuque/__latex/39c69fbad0041c1d5caa9acf313cb0e6.svg">是第 i 个块的访问比例。</p>
+<p><strong>熵越高，表示读操作的分布越均匀、越随机。</strong> 最大熵发生在所有数据块被均匀访问的情况下。</p>
+<p><strong>熵越低，表示读操作的分布越集中、越有规律。</strong> 例如，如果只有少数几个块被频繁访问，而其他块很少被访问，熵值会很低。</p>
+<p>考虑到熵的值会受访问次数的影响，因此在不同的负载下，无法直接用熵值比较其随机性。考虑使用归一化熵（normalized entropy），使得熵值能够在不同的访问次数下进行统一比较。</p>
+<p>归一化熵通过将熵值归一化，使其范围固定在 <code>[0, 1]</code>​ 之间。归一化的过程是将实际的熵值除以其最大可能的熵值。</p>
+<p>对于一个有 <code>n</code>​ 个数据块的系统，最大熵发生在所有数据块被均匀访问的情况下，此时熵值为：</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/0825f86295a52b885ab499a550488ab3.svg">​</p>
+<p>归一化熵的计算公式为：</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/7255eb6eb60692bf285b57ffc6c40f7d.svg">​</p>
+<p>这样，无论访问次数是多少，归一化熵都可以在 <code>0</code>​ 到 <code>1</code>​ 之间进行比较，其中 <code>0</code>​ 表示完全有规律的分布（例如完全集中于一个块），<code>1</code>​ 表示完全随机的均匀分布。</p>
+<h2 id="4-2-平均跳跃距离-（Average-Jump-Distance）"><a href="#4-2-平均跳跃距离-（Average-Jump-Distance）" class="headerlink" title="4.2. 平均跳跃距离 （Average Jump Distance）"></a>4.2. 平均跳跃距离 <strong>（Average Jump Distance）</strong></h2><p>跳跃距离指的是每一个读操作上一个请求结束后磁头所处的位置的块号之差。如果读操作是顺序的，这个差值会很小。</p>
+<p><strong>计算方法：</strong></p>
+<ol>
+<li>计算相邻读操作的跳跃距离：对于每一个读操作，计算该读操作距离上一个请求结束后磁头所处的位置的块号之差，得到一系列的跳跃距离。</li>
+</ol>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/b140cae608bfef9a9b9600f58add5dd4.svg">​</p>
+<ol start="2">
+<li>求平均跳跃距离：将所有的跳跃距离取平均，得到平均跳跃距离。</li>
+</ol>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/85703ea08de0b8027067f7188054e987.svg">​</p>
+<p>其中，<img data-src="https://cdn.nlark.com/yuque/__latex/459f3c80a50b7be28751b0869ef5386a.svg">是读操作的总数。</p>
+<p>平均跳跃距离越大，说明读操作的随机性越高；越小，说明读操作顺序性越高。</p>
+<h2 id="4-3-熵和平均跳跃距离结合"><a href="#4-3-熵和平均跳跃距离结合" class="headerlink" title="4.3. 熵和平均跳跃距离结合"></a>4.3. 熵和平均跳跃距离结合</h2><p>熵指示了<strong>读操作的局部性</strong>，可以反映出是否读操作集中在某些热点区域。</p>
+<p>平均跳跃距离指示了<strong>读操作的顺序性</strong>，映射到磁带机上就是磁头平均移动的距离。</p>
+<p>使用   <strong>(熵, 平均跳跃距离)</strong>   的二元组来表征一个负载的随机性，可以将负载分为四个区域。</p>
+<h3 id="4-3-1-熵高平均跳跃距离高"><a href="#4-3-1-熵高平均跳跃距离高" class="headerlink" title="4.3.1. 熵高平均跳跃距离高"></a>4.3.1. <strong>熵高平均跳跃距离高</strong></h3><p><strong>读操作分布均匀（局部性不好），随机性较高。</strong></p>
+<p>这种负载的随机性是最大的，会造成最大的磁头移动和 IO 开销，性能最差。</p>
+<h3 id="4-3-2-熵高平均跳跃距离低"><a href="#4-3-2-熵高平均跳跃距离低" class="headerlink" title="4.3.2. 熵高平均跳跃距离低"></a>4.3.2. <strong>熵高平均跳跃距离低</strong></h3><p><strong>读操作分布均匀（局部性不好），顺序性较高。</strong></p>
+<p>负载在全局的顺序性都较强，不存在热点区域，可能在全局上会有较好的缓存命中率，性能最好。</p>
+<h3 id="4-3-3-熵低平均跳跃距离高"><a href="#4-3-3-熵低平均跳跃距离高" class="headerlink" title="4.3.3. 熵低平均跳跃距离高"></a>4.3.3. <strong>熵低平均跳跃距离高</strong></h3><p><strong>读操作集中在某些热点区域（局部性好），且随机性较高。</strong></p>
+<p>表明负载可能存在几个分散的热点区域，在热点区域内的操作可能比较集中，但是热点相隔较远。</p>
+<p>这可能是由于应用程序在处理不同类型的数据时，需要访问分布在不同地址空间的几个关键区域。磁头可能需要在不同热点区域频繁移动，造成巨大开销。</p>
+<p>缓存可能在某些热点区域表现较好，但是由于不同特点区域相距较远，导致整体缓存命中率不理想，增加 IO 开销。</p>
+<h3 id="4-3-4-熵低平均跳跃距离低"><a href="#4-3-4-熵低平均跳跃距离低" class="headerlink" title="4.3.4. 熵低平均跳跃距离低"></a>4.3.4. <strong>熵低平均跳跃距离低</strong></h3><p><strong>读操作集中在某些热点区域（局部性好），且顺序性较高。</strong></p>
+<p>负载可能在一块热点区域上或多块热点区域内有较高的顺序性。</p>
+<p>读操作集中在某些块中会带来较低的熵值，从而对缓存系统较为友好，可能在局部带来较高的缓存命中率。因为磁带机是单通道设备，也无需担心操作过于集中在某些块上而导致并发访问的瓶颈。</p>
+<h2 id="4-4-其他可能的参数"><a href="#4-4-其他可能的参数" class="headerlink" title="4.4. 其他可能的参数"></a>4.4. 其他可能的参数</h2><h3 id="4-4-1-基尼系数（Gini-Coefficient）"><a href="#4-4-1-基尼系数（Gini-Coefficient）" class="headerlink" title="4.4.1. 基尼系数（Gini Coefficient）"></a>4.4.1. 基尼系数（Gini Coefficient）</h3><p>基尼系数通常用来衡量收入分配的不平等性，但在存储系统中，它可以用来衡量读操作的集中度。</p>
+<p><strong>计算步骤：</strong></p>
+<ol>
+<li>排序访问频率：首先将数据块按访问次数从小到大排序。</li>
+<li>计算累积频率：计算累积访问次数，并用这些数据来计算基尼系数。基尼系数的计算公式为：</li>
+</ol>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/2cb2eb88a6168b9a5d6599126d49ba8d.svg">​</p>
+<p>其中：</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/ba1b6e7a2a5f6e2808e06f1b6133bb82.svg">是到第<img data-src="https://cdn.nlark.com/yuque/__latex/2443fbcfeb7e85e1d62b6f5e4f27207e.svg">个块的累积访问次数。</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/4760e2f007e23d820825ba241c47ce3b.svg">是被访问块的数量。</p>
+<p>​<img data-src="https://cdn.nlark.com/yuque/__latex/eee2466f228c099cec8a86dec4bf6eb0.svg">是累积访问次数的总和。</p>
+<ol start="3">
+<li>图形解释：基尼系数的几何解释通常使用洛伦兹曲线来表示，曲线越偏离对角线，基尼系数越高，表示分布越不平等。</li>
+</ol>
+<p>基尼系数 = 0，表示完全平等，每个块被访问的次数完全相同。</p>
+<p>基尼系数 = 1，表示完全不平等，所有访问都集中在一个块上，其他块没有被访问。</p>
+<h3 id="4-4-2-局部顺序性"><a href="#4-4-2-局部顺序性" class="headerlink" title="4.4.2. 局部顺序性"></a>4.4.2. 局部顺序性</h3><p>通过分析操作是否具有局部性来判断随机度。局部性好的操作表现为在某个短时间内集中访问相邻的块，而不是随机跳跃。</p>
+<p><strong>计算方法：</strong></p>
+<ol>
+<li><strong>窗口滑动分析</strong>：设定一个固定大小的窗口（如 10 个操作），计算在这个窗口内访问的块的序列性。</li>
+<li><strong>序列性得分</strong>：为每个窗口分配一个序列性得分，如果在窗口内操作都是顺序的，则得分高，否则得分低。</li>
+<li><strong>总体评估</strong>：将所有窗口的得分取平均，得出整个负载的顺序性得分。</li>
+</ol>
+<p>得分越低，说明操作越随机；得分越高，说明操作越顺序。</p>
+<h1 id="5-修改意见"><a href="#5-修改意见" class="headerlink" title="5. 修改意见"></a>5. 修改意见</h1><h2 id="5-1-1"><a href="#5-1-1" class="headerlink" title="5.1. 1"></a>5.1. 1</h2><ul>
+<li>异构模块在软件栈的什么位置</li>
+<li>不同粒度大小测试</li>
+<li>补充逻辑地址和物理地址在磁带和异构模块中的含义</li>
+<li>缓存组相连适用于什么情况</li>
+<li>SSD 做 HDD 的缓存的工作</li>
+<li>ZNS SSD 做 Cache（HotStorage 2024）</li>
+<li>设计一个方案用来标示 trace 的读操作随机度</li>
+</ul>
+<h2 id="5-2-2"><a href="#5-2-2" class="headerlink" title="5.2. 2"></a>5.2. 2</h2><ul>
+<li>跨 wrap 代码</li>
+<li>ppt 和 word</li>
+</ul>
+<h2 id="5-3-开题预答辩"><a href="#5-3-开题预答辩" class="headerlink" title="5.3. 开题预答辩"></a>5.3. 开题预答辩</h2><h1 id="6-参考资料"><a href="#6-参考资料" class="headerlink" title="6. 参考资料"></a>6. 参考资料</h1><p><strong>日志文件系统</strong></p>
+<p>‍</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/hexo-blog/tags/%E5%BC%82%E6%9E%84/" rel="tag"># 异构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/hexo-blog/2cbef437.html" rel="prev" title="使用patchelf解决vscode远程连接不支持低版本glibc的问题">
+      <i class="fa fa-chevron-left"></i> 使用patchelf解决vscode远程连接不支持低版本glibc的问题
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%82%E6%9E%84%E6%A8%A1%E5%9D%97%E8%AE%BE%E8%AE%A1"><span class="nav-text">异构模块设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF%E4%BB%8B%E7%BB%8D"><span class="nav-text">1. 背景介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84%E5%B1%82%EF%BC%88AML-Address-Mapping-Layer%EF%BC%89"><span class="nav-text">2. 地址映射层（AML, Address Mapping Layer）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%95%B4%E4%BD%93%E4%BB%8B%E7%BB%8D"><span class="nav-text">2.1. 整体介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%98%A0%E5%B0%84%E8%A1%A8%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-text">2.2. 映射表的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%E5%88%B0%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E7%9A%84%E6%98%A0%E5%B0%84"><span class="nav-text">2.2.1. 逻辑地址到物理地址的映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-%E6%98%A0%E5%B0%84%E8%A1%A8%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">2.2.2. 映射表的创建</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E7%BC%93%E5%AD%98%E5%B1%82%EF%BC%88Cache-Layer%EF%BC%89"><span class="nav-text">3. 缓存层（Cache Layer）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E6%95%B4%E4%BD%93%E4%BB%8B%E7%BB%8D"><span class="nav-text">3.1. 整体介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E7%BC%93%E5%AD%98%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F"><span class="nav-text">3.2. 缓存组织方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E7%BC%93%E5%AD%98%E6%9B%BF%E6%8D%A2%E7%AD%96%E7%95%A5"><span class="nav-text">3.3. 缓存替换策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%8B%E5%88%B7"><span class="nav-text">3.4. 缓存数据下刷</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-%E8%AE%BE%E8%AE%A1%E6%80%9D%E8%B7%AF"><span class="nav-text">3.4.1. 设计思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-P2P-%E6%98%A0%E5%B0%84%E8%A1%A8%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">3.4.2. P2P 映射表的创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-3-%E5%86%99%E7%BC%93%E5%86%B2%E8%A6%81%E5%A4%9A%E5%B0%91"><span class="nav-text">3.4.3. 写缓冲要多少</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E8%B4%9F%E8%BD%BD%E7%9A%84%E8%AF%BB%E6%93%8D%E4%BD%9C%E9%9A%8F%E6%9C%BA%E5%BA%A6%E5%BA%A6%E9%87%8F"><span class="nav-text">4. 负载的读操作随机度度量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E7%86%B5%EF%BC%88Entropy%EF%BC%89"><span class="nav-text">4.1. 熵（Entropy）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E5%B9%B3%E5%9D%87%E8%B7%B3%E8%B7%83%E8%B7%9D%E7%A6%BB-%EF%BC%88Average-Jump-Distance%EF%BC%89"><span class="nav-text">4.2. 平均跳跃距离 （Average Jump Distance）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E7%86%B5%E5%92%8C%E5%B9%B3%E5%9D%87%E8%B7%B3%E8%B7%83%E8%B7%9D%E7%A6%BB%E7%BB%93%E5%90%88"><span class="nav-text">4.3. 熵和平均跳跃距离结合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-%E7%86%B5%E9%AB%98%E5%B9%B3%E5%9D%87%E8%B7%B3%E8%B7%83%E8%B7%9D%E7%A6%BB%E9%AB%98"><span class="nav-text">4.3.1. 熵高平均跳跃距离高</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-%E7%86%B5%E9%AB%98%E5%B9%B3%E5%9D%87%E8%B7%B3%E8%B7%83%E8%B7%9D%E7%A6%BB%E4%BD%8E"><span class="nav-text">4.3.2. 熵高平均跳跃距离低</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-3-%E7%86%B5%E4%BD%8E%E5%B9%B3%E5%9D%87%E8%B7%B3%E8%B7%83%E8%B7%9D%E7%A6%BB%E9%AB%98"><span class="nav-text">4.3.3. 熵低平均跳跃距离高</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-4-%E7%86%B5%E4%BD%8E%E5%B9%B3%E5%9D%87%E8%B7%B3%E8%B7%83%E8%B7%9D%E7%A6%BB%E4%BD%8E"><span class="nav-text">4.3.4. 熵低平均跳跃距离低</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-%E5%85%B6%E4%BB%96%E5%8F%AF%E8%83%BD%E7%9A%84%E5%8F%82%E6%95%B0"><span class="nav-text">4.4. 其他可能的参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-1-%E5%9F%BA%E5%B0%BC%E7%B3%BB%E6%95%B0%EF%BC%88Gini-Coefficient%EF%BC%89"><span class="nav-text">4.4.1. 基尼系数（Gini Coefficient）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-2-%E5%B1%80%E9%83%A8%E9%A1%BA%E5%BA%8F%E6%80%A7"><span class="nav-text">4.4.2. 局部顺序性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E4%BF%AE%E6%94%B9%E6%84%8F%E8%A7%81"><span class="nav-text">5. 修改意见</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-1"><span class="nav-text">5.1. 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-2"><span class="nav-text">5.2. 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E5%BC%80%E9%A2%98%E9%A2%84%E7%AD%94%E8%BE%A9"><span class="nav-text">5.3. 开题预答辩</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">6. 参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cherry"
+      src="/hexo-blog/images/avatar2.png">
+  <p class="site-author-name" itemprop="name">Cherry</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/hexo-blog/archives/">
+        
+          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/hexo-blog/categories/">
+          
+        <span class="site-state-item-count">30</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/hexo-blog/tags/">
+          
+        <span class="site-state-item-count">57</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/CherryYang05" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;CherryYang05" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_42650988" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_42650988" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cherry版权所有</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">222k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:22</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              Counter('post', '/classes/Counter', { title, url, time: 1 })
+                .then(response => response.json())
+                .then(() => {
+                  leancloudSelector(url).innerText = 1;
+                })
+                .catch(error => {
+                  console.error('Failed to create', error);
+                });
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz","app_key":"sye9GNy0K7KNBHd69HYFsPzV","server_url":null,"security":false};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/hexo-blog/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/fancyapps/fancybox@3/dist/jquery.fancybox.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.min.js"></script>
+  <script src="/hexo-blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/hexo-blog/js/utils.js"></script>
+
+<script src="/hexo-blog/js/motion.js"></script>
+
+
+<script src="/hexo-blog/js/schemes/muse.js"></script>
+
+
+<script src="/hexo-blog/js/next-boot.js"></script>
+
+<script src="/hexo-blog/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/hexo-blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/hexo-blog/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://cherryyang05.github.io/hexo-blog/post/heterogenic-module-design-zpdnkf.html',]
+      });
+      });
+  </script>
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'I0GaPlLWJSoCb0ieY9V3Vd7Q-gzGzoHsz',
+      appKey     : 'sye9GNy0K7KNBHd69HYFsPzV',
+      placeholder: "评论支持 MarkDown 语法",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '5' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : true,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
