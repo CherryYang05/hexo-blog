@@ -21,12 +21,12 @@
     var CONFIG = {"hostname":"cherryyang05.github.io","root":"/hexo-blog/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":true,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":true},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="维吉尼亚密码的破解一、引言上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 e 是出现频率最高的，占12.7%；其次是t，9.1%；然后是a，o，i，n等，最少的是z，只占0.1%。">
+  <meta name="description" content="维吉尼亚密码的破解一、引言上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 e 是出现频率最高的，占12.7%；其次是t，9.1%；然后是a，o，i，n等，最少的是z，只占**0.1%**。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="密码学（二）：古典密码之维吉尼亚密码的破解">
 <meta property="og:url" content="https://cherryyang05.github.io/hexo-blog/a1c2e50d.html">
 <meta property="og:site_name" content="北极熊不吃企鹅宝宝">
-<meta property="og:description" content="维吉尼亚密码的破解一、引言上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 e 是出现频率最高的，占12.7%；其次是t，9.1%；然后是a，o，i，n等，最少的是z，只占0.1%。">
+<meta property="og:description" content="维吉尼亚密码的破解一、引言上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 e 是出现频率最高的，占12.7%；其次是t，9.1%；然后是a，o，i，n等，最少的是z，只占**0.1%**。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216150747368.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216161337882.jpg">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216231804835.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/2020021623254417.jpg">
 <meta property="article:published_time" content="2020-05-06T17:08:39.000Z">
-<meta property="article:modified_time" content="2024-10-25T18:33:44.663Z">
+<meta property="article:modified_time" content="2024-10-25T18:33:42.601Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="密码学">
 <meta property="article:tag" content="古典密码">
@@ -247,7 +247,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-10-25 18:33:44" itemprop="dateModified" datetime="2024-10-25T18:33:44+00:00">2024-10-25</time>
+                <time title="修改时间：2024-10-25 18:33:42" itemprop="dateModified" datetime="2024-10-25T18:33:42+00:00">2024-10-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -290,7 +290,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.5k</span>
+              <span>3.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -309,9 +309,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="维吉尼亚密码的破解"><a href="#维吉尼亚密码的破解" class="headerlink" title="维吉尼亚密码的破解"></a>维吉尼亚密码的破解</h2><h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 <strong>e</strong> 是出现频率最高的，占<strong>12.7%</strong>；其次是<strong>t</strong>，<strong>9.1%</strong>；然后是<strong>a</strong>，<strong>o</strong>，<strong>i</strong>，<strong>n</strong>等，最少的是<strong>z</strong>，只占<strong>0.1%</strong>。<br><span id="more"></span><br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216150747368.png" alt="字母出现概率"></p>
+        <h2 id="维吉尼亚密码的破解"><a href="#维吉尼亚密码的破解" class="headerlink" title="维吉尼亚密码的破解"></a>维吉尼亚密码的破解</h2><h3 id="一、引言"><a href="#一、引言" class="headerlink" title="一、引言"></a>一、引言</h3><p>上一章我们介绍了维吉尼亚密码的原理，是通过移位替换的加密方法进行加密，但是因为概率论的出现这种简单的移位或替换就容易破解了，其原理很简单，英文中字母出现的频率是不一样的。比如字母 <strong>e</strong> 是出现频率最高的，占<strong>12.7%<strong>；其次是</strong>t</strong>，<strong>9.1%<strong>；然后是</strong>a</strong>，<strong>o</strong>，<strong>i</strong>，<strong>n</strong>等，最少的是<strong>z</strong>，只占**0.1%**。</p>
+<span id="more"></span>
+<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216150747368.png" alt="字母出现概率"></p>
 <p><a id="具体概率表">具体概率表</a></p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216161337882.jpg" width="450" height="500" alt="概率表" style="margin-left:50px"></p>
+<img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216161337882.jpg" width="450" height="500" alt="概率表" style="margin-left:50px">
+
 <p>除了英语，其他语言也有相关统计（<a target="_blank" rel="noopener" href="https://www.cnblogs.com/inverseEntropy/p/10151176.html">图片来源</a>）</p>
 <p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216150833315.png" alt="多种语言的字母出现频率"></p>
 <h3 id="二、一般破解的方法"><a href="#二、一般破解的方法" class="headerlink" title="二、一般破解的方法"></a>二、一般破解的方法</h3><h4 id="1-穷举密钥搜索"><a href="#1-穷举密钥搜索" class="headerlink" title="1. 穷举密钥搜索"></a>1. 穷举密钥搜索</h4><p>只适用于与小的密钥空间，而像维吉尼亚密码的 $Z^n_{26}$ 是 26 的 n 次方的空间，当 n 很大时，计算量是相当大的。</p>
@@ -319,20 +322,15 @@
 <h5 id="多表代换"><a href="#多表代换" class="headerlink" title="多表代换"></a>多表代换</h5><p><strong>维吉尼亚密码：</strong> 相同的明文字母可能对应不同的密文字母，这里讲的维吉尼亚密码的破解也是根据字母出现的频率的蛛丝马迹进行破解。</p>
 <h3 id="三、维吉尼亚密码的破解"><a href="#三、维吉尼亚密码的破解" class="headerlink" title="三、维吉尼亚密码的破解"></a>三、维吉尼亚密码的破解</h3><h4 id="1-确定密钥长度"><a href="#1-确定密钥长度" class="headerlink" title="1. 确定密钥长度"></a>1. 确定密钥长度</h4><h5 id="方法一：Kasiski测试法"><a href="#方法一：Kasiski测试法" class="headerlink" title="方法一：Kasiski测试法"></a>方法一：Kasiski测试法</h5><p><strong>原理：密文中出现两个相同字母组，它们所对应的明文字母相同的可能性很大，这样的两个密文字母组之间的距离可能为密钥长度的整数倍。</strong><br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/2020021617084725.jpg" alt="在这里插入图片描述"><br>尽管在维吉尼亚密码中相同的明文可能对应不同的密文，但是若连续出现相同的密文，那么用同样的密钥加密的概率会大大增加。这里密文 $ZB$ 都是用 $HI$ 加密，计算两者之间的距离为 $5$，因此可推断出来密钥长度为 $5.$</p>
 <h5 id="方法二：重合指数法"><a href="#方法二：重合指数法" class="headerlink" title="方法二：重合指数法"></a>方法二：重合指数法</h5><p><strong>原理：自然语言（以英语为例）的重合指数约为 0.065，而且单标代换不会改变该值。</strong><br><strong>重合指数定义：</strong></p>
-<p>设 <script type="math/tex">x=x_1x_2...x_n</script> 是含有 $n$ 个字母的串，则在 $x$ 中随机选择两个元素且这两个元素相同的概率为：</p>
+<p>设 $$x&#x3D;x_1x_2…x_n$$ 是含有 $n$ 个字母的串，则在 $x$ 中随机选择两个元素且这两个元素相同的概率为：</p>
 <p>定义：$f_i$ 为 26 个字母中第 $i$ 个字母在 $x$ 中出现的次数</p>
-<p>[例如：$x=AAZZZ,n=5,f<em>0=2,f</em>{25}=3$，第一次取出 A 的概率为 $\frac {f_0} {n}$，第二次再取出 A 的概率为 $\frac {f_0} {n} * \frac {f_0-1} {n-1}$]</p>
-<p>当我们把 26 个字母的概率全部相加，得到的总的概率就是<strong>重合指数</strong>：</p>
-<script type="math/tex; mode=display">
-I_c(x)={\frac {\displaystyle\sum_{i=0}^{25}f_i(f_i-1)} {n(n-1)} }</script><p>当计算的数量很大时，我们将 $n(n-1)$ 近似为 $n^2$，将 $f_i(f_i-1)$ 近似为 $f_i^2$</p>
-<p>因此</p>
-<script type="math/tex; mode=display">
-I_c(x) \approx \displaystyle\sum_{i=0}^{25} {p_i^2} \approx0.065</script><p>这里的 $p_i$ 表示第 $i$ 个字母在英语语言中出现的概率，就是在<a href="#具体概率表">引言</a>中列出的数值。<br>这个数值非常重要。</p>
+<p>[例如：$x&#x3D;AAZZZ,n&#x3D;5,f_0&#x3D;2,f_{25}&#x3D;3$，第一次取出 A 的概率为 $\frac {f_0} {n}$，第二次再取出 A 的概率为 $\frac {f_0} {n} * \frac {f_0-1} {n-1}$]</p>
+<p>当我们把 26 个字母的概率全部相加，得到的总的概率就是<strong>重合指数</strong>：<br>$$<br>I_c(x)&#x3D;{\frac {\displaystyle\sum_{i&#x3D;0}^{25}f_i(f_i-1)} {n(n-1)} }<br>$$<br>当计算的数量很大时，我们将 $n(n-1)$ 近似为 $n^2$，将 $f_i(f_i-1)$ 近似为 $f_i^2$</p>
+<p>因此<br>$$<br>I_c(x) \approx \displaystyle\sum_{i&#x3D;0}^{25} {p_i^2} \approx0.065<br>$$<br>这里的 $p_i$ 表示第 $i$ 个字母在英语语言中出现的概率，就是在<a href="#%E5%85%B7%E4%BD%93%E6%A6%82%E7%8E%87%E8%A1%A8">引言</a>中列出的数值。<br>这个数值非常重要。</p>
 <p><strong>注意：在单表代换中，不会改变该值，也就是用相同密钥字加密应服从相同的重合指数。</strong></p>
-<h5 id="猜测密钥长度"><a href="#猜测密钥长度" class="headerlink" title="猜测密钥长度"></a>猜测密钥长度</h5><p>假设密钥长度为 $d$，提取相同密钥字加密的密文，测试其重合指数。<br>如果猜测正确，则重合指数接近 $0.065$，否则字符串表现得更加随机一般在 $0.038(1/26) \thicksim 0.065$ 之间。<br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216184236771.jpg" alt="猜测密钥长度"><br>在这里，我们先猜测密钥长度为 5，然后将密文按照 5 进行分组，分别提取出用密钥 $k_1,k_2,k_3,k_4,k_5$ 加密的密文，组成集合 $C_1,C_2,C_3,C_4,C_5$，这样就把多表代换转化成了单表代换。<br>这里 $C_1={Z,P,L,W,Z},C_2={P,A,Z,Z,N},C_3={D,Z,B,B,M},C_4={X,H,H,K},C_5={V,S,I,M}$</p>
+<h5 id="猜测密钥长度"><a href="#猜测密钥长度" class="headerlink" title="猜测密钥长度"></a>猜测密钥长度</h5><p>假设密钥长度为 $d$，提取相同密钥字加密的密文，测试其重合指数。<br>如果猜测正确，则重合指数接近 $0.065$，否则字符串表现得更加随机一般在 $0.038(1&#x2F;26) \thicksim 0.065$ 之间。<br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216184236771.jpg" alt="猜测密钥长度"><br>在这里，我们先猜测密钥长度为 5，然后将密文按照 5 进行分组，分别提取出用密钥 $k_1,k_2,k_3,k_4,k_5$ 加密的密文，组成集合 $C_1,C_2,C_3,C_4,C_5$，这样就把多表代换转化成了单表代换。<br>这里 $C_1&#x3D;{Z,P,L,W,Z},C_2&#x3D;{P,A,Z,Z,N},C_3&#x3D;{D,Z,B,B,M},C_4&#x3D;{X,H,H,K},C_5&#x3D;{V,S,I,M}$</p>
 <p>以一个例子为例：<br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216214722472.jpg" alt="在这里插入图片描述"><br>$CHR$ 这三个字符出现频率较高，因此我们将其位置记录下来，测算他们之间的距离，并取最大公因数 5，猜测 5 便是密钥长度。这很有可能是相同的明文被相同的密文加密了。其实很容易猜到，这很可能是英语当中的定冠词 <strong>the</strong>.</p>
-<p>我们在用重合指数法进行测试，分别测试 $d=1,2,3,4,5$ （过程略）</p>
-<div class="table-container">
+<p>我们在用重合指数法进行测试，分别测试 $d&#x3D;1,2,3,4,5$ （过程略）</p>
 <table>
 <thead>
 <tr>
@@ -340,8 +338,7 @@ I_c(x) \approx \displaystyle\sum_{i=0}^{25} {p_i^2} \approx0.065</script><p>这�
 <th>重合指数</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>$1$</td>
 <td>$[0.045]$</td>
 </tr>
@@ -361,33 +358,23 @@ I_c(x) \approx \displaystyle\sum_{i=0}^{25} {p_i^2} \approx0.065</script><p>这�
 <td>$5$</td>
 <td>$[0.063,0.068,0.069,0.061,0.072]$</td>
 </tr>
-</tbody>
-</table>
-</div>
-<p>观察发现，只有当 $d=5$ 的时候，重合指数接近 $0.065$，因此刚刚的猜测 $d=5$ 是正确的，这时通过穷举密钥的复杂度为 $26^5$，但是仍然比较大。</p>
+</tbody></table>
+<p>观察发现，只有当 $d&#x3D;5$ 的时候，重合指数接近 $0.065$，因此刚刚的猜测 $d&#x3D;5$ 是正确的，这时通过穷举密钥的复杂度为 $26^5$，但是仍然比较大。</p>
 <h4 id="2-确定密钥字相对位移"><a href="#2-确定密钥字相对位移" class="headerlink" title="2. 确定密钥字相对位移"></a>2. 确定密钥字相对位移</h4><p>密钥字的相对位移实际上就是确定密钥之间的相互关系。<br>这里引入一个定义：</p>
-<p><strong>重合互指数:</strong><br>设 $x=x<em>1,x_2,…,x_n,y=y_1,y_2,…,y</em>{n’}$，分别为长度为 $n$ 和 $n’$ 的串，其重合互指数为从 $x$ 和 $y$ 中分别随机选出一个元素且两个元素相同的概率。</p>
-<p>计算方法和刚刚的计算方法类似：</p>
-<script type="math/tex; mode=display">
-MI_c(x,y)=\frac{\displaystyle\sum_{i=0}^{25}f_if'_i}{nn'}</script><p>具体不再阐述。</p>
-<p>考虑不同密钥字加密后密文串的重合互指数，设密钥字为 $k=k<em>1k_2…k_d$，$C_i$ 中的一个字母与 $C_j$ 中的一个字母都是 $A$ 的概率为 $p</em>{0-k<em>i}p</em>{0-k_j}$.</p>
-<p>其中 $p_{0-k_i}$ 为密文 $A$ 所对应明文字母的出现概率。同理可以计算 $B,C,D,…,Z$，因此：</p>
-<script type="math/tex; mode=display">
-MI_c(C_i,C_j) \approx \displaystyle\sum_{l=0}^{25}p_{l-k_i}p_{l-k_j}=
-\displaystyle\sum_{l=0}^{25}p_lp_{l+k_i-k_j}=\displaystyle\sum_{l=0}^{25}p_{l-k_i+k_j}p_l</script><p>这里的下标是需要对 26 取模的，可以观察到：$Mi_c$ 取决于相对位移 $k_i-k_j$.</p>
+<p><strong>重合互指数:</strong><br>设 $x&#x3D;x_1,x_2,…,x_n,y&#x3D;y_1,y_2,…,y_{n’}$，分别为长度为 $n$ 和 $n’$ 的串，其重合互指数为从 $x$ 和 $y$ 中分别随机选出一个元素且两个元素相同的概率。</p>
+<p>计算方法和刚刚的计算方法类似：<br>$$<br>MI_c(x,y)&#x3D;\frac{\displaystyle\sum_{i&#x3D;0}^{25}f_if’_i}{nn’}<br>$$<br>具体不再阐述。</p>
+<p>考虑不同密钥字加密后密文串的重合互指数，设密钥字为 $k&#x3D;k_1k_2…k_d$，$C_i$ 中的一个字母与 $C_j$ 中的一个字母都是 $A$ 的概率为 $p_{0-k_i}p_{0-k_j}$.</p>
+<p>其中 $p_{0-k_i}$ 为密文 $A$ 所对应明文字母的出现概率。同理可以计算 $B,C,D,…,Z$，因此：<br>$$<br>MI_c(C_i,C_j) \approx \displaystyle\sum_{l&#x3D;0}^{25}p_{l-k_i}p_{l-k_j}&#x3D;<br>\displaystyle\sum_{l&#x3D;0}^{25}p_lp_{l+k_i-k_j}&#x3D;\displaystyle\sum_{l&#x3D;0}^{25}p_{l-k_i+k_j}p_l<br>$$<br>这里的下标是需要对 26 取模的，可以观察到：$Mi_c$ 取决于相对位移 $k_i-k_j$.</p>
 <p>移位表如下：<br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216224709354.jpg" width="500"><br>观察这里当相对距离为0时，重合互指数为 $0.065$，在之前提到的自然语言的重合互指数也是 $0.065$，这并不是巧合。当相对位移位 0 时，其实就是 $C_1,C_2$ 的集合是用同一种密文加密得到，这也就是单表代换这样，并不会改变重合指数。</p>
 <p>这里其实并不需要列举从 0 到 25 的所有值。</p>
-<h5 id="猜测不同密钥字的相对位移s（猜测范围0-25）"><a href="#猜测不同密钥字的相对位移s（猜测范围0-25）" class="headerlink" title="猜测不同密钥字的相对位移s（猜测范围0~25）"></a>猜测不同密钥字的相对位移s（猜测范围0~25）</h5><script type="math/tex; mode=display">
-MI_c(C_i,C_j)=\frac{\displaystyle\sum_{t=0}^{25}f_{i,t}f_{j,t-s} } {n_in_j}</script><p>这里 $n<em>i$ 是指集合 $C_i$ 中字符个数，这里 $n_j$ 是指集合 $C_j$ 中字符个数，$f</em>{i,t}$ 表示在集合 $C<em>i$ 中，$t$ 这个密文字符出现的次数，$f</em>{j,t-s}$ 表示在集合 $C_j$ 中，$t-s$ 这个密文字符出现的次数。</p>
-<p>如果猜对 $s$，那么 $MI_c$ 应该接近 $0.065$，这意味着找到了<strong>不同密钥字加密的相同的明文字母</strong>，这也就找到了密钥字之间的相对位移，也就转化成了单表代换。<br>这里用 $m$ 表示明文字母，$c,c’$ 分别表示 $C_i,C_j$ 中 $m$ 对应的密文字母，那么：</p>
-<script type="math/tex; mode=display">
-m=c-k_i \pmod{26} \\ m=c'-k_j \pmod{26}</script><p>实际上，在维吉尼亚密码中，并没有很好的隐藏密钥和密文之间的相互关系，密钥之间的相互差距会体现在密文之间的相互关系。</p>
+<h5 id="猜测不同密钥字的相对位移s（猜测范围0-25）"><a href="#猜测不同密钥字的相对位移s（猜测范围0-25）" class="headerlink" title="猜测不同密钥字的相对位移s（猜测范围0~25）"></a>猜测不同密钥字的相对位移s（猜测范围0~25）</h5><p>$$<br>MI_c(C_i,C_j)&#x3D;\frac{\displaystyle\sum_{t&#x3D;0}^{25}f_{i,t}f_{j,t-s} } {n_in_j}<br>$$<br>这里 $n_i$ 是指集合 $C_i$ 中字符个数，这里 $n_j$ 是指集合 $C_j$ 中字符个数，$f_{i,t}$ 表示在集合 $C_i$ 中，$t$ 这个密文字符出现的次数，$f_{j,t-s}$ 表示在集合 $C_j$ 中，$t-s$ 这个密文字符出现的次数。</p>
+<p>如果猜对 $s$，那么 $MI_c$ 应该接近 $0.065$，这意味着找到了<strong>不同密钥字加密的相同的明文字母</strong>，这也就找到了密钥字之间的相对位移，也就转化成了单表代换。<br>这里用 $m$ 表示明文字母，$c,c’$ 分别表示 $C_i,C_j$ 中 $m$ 对应的密文字母，那么：<br>$$<br>m&#x3D;c-k_i \pmod{26} \ m&#x3D;c’-k_j \pmod{26}<br>$$<br>实际上，在维吉尼亚密码中，并没有很好的隐藏密钥和密文之间的相互关系，密钥之间的相互差距会体现在密文之间的相互关系。</p>
 <p>我们计算上面例子中的集合 $C_1,C_2,C_3,C_4,C_5$ 两两之间的重合互指数：</p>
-<p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216231804835.jpg" width="550"></p>
+<img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/20200216231804835.jpg" width="550">
+
 <p>这里的 $i,j$ 表示当取到不同集合的时候，后面的值表示当猜测的相对位移 $s$ 取不同值的时候重合互指数的结果。</p>
-<p>我们观察结果，当 $i=1,j=2,s=9$ 时，重合互指数达到了 $0.068$，因此可以得到 $k_1-k_2=9$.<br>但是当 $i=1,j=3;i=1,j=4$ 时，没有合适的相对位移，那么我们先暂时跳过，观察其他结果，发现当 $i=1,j=5,s=16$ 时，重合互指数达到 $0.070$，$i=2,j=3,s=13$ 的时候，重合互指数达到了 $0.067$.<br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/2020021623254417.jpg" width="550"><br>我们列举完剩下的结果，得到：</p>
-<script type="math/tex; mode=display">
-k_1-k_2=9 \\ k_1-k_5=16 \\ k_2-k_3=13 \\ k_2-k_5=7 \\ k_3-k_5=20 \\ k_4-k_5=11</script><h4 id="3-穷举搜索密钥字"><a href="#3-穷举搜索密钥字" class="headerlink" title="3. 穷举搜索密钥字"></a>3. 穷举搜索密钥字</h4><p>根据上述的结果，在确定密钥字之间关系式的基础上，只要穷举 $26$ 中可能性就可以了。因为当猜测 $k_1$ 的时候， $k_2$ 也就确定下来了，以此类推，剩下的几个密钥也就确定下来了，只要从 $A-Z$ 进行穷举即可。</p>
+<p>我们观察结果，当 $i&#x3D;1,j&#x3D;2,s&#x3D;9$ 时，重合互指数达到了 $0.068$，因此可以得到 $k_1-k_2&#x3D;9$.<br>但是当 $i&#x3D;1,j&#x3D;3;i&#x3D;1,j&#x3D;4$ 时，没有合适的相对位移，那么我们先暂时跳过，观察其他结果，发现当 $i&#x3D;1,j&#x3D;5,s&#x3D;16$ 时，重合互指数达到 $0.070$，$i&#x3D;2,j&#x3D;3,s&#x3D;13$ 的时候，重合互指数达到了 $0.067$.<br><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGoImage/master/images/2020021623254417.jpg" width="550"><br>我们列举完剩下的结果，得到：<br>$$<br>k_1-k_2&#x3D;9 \ k_1-k_5&#x3D;16 \ k_2-k_3&#x3D;13 \ k_2-k_5&#x3D;7 \ k_3-k_5&#x3D;20 \ k_4-k_5&#x3D;11<br>$$</p>
+<h4 id="3-穷举搜索密钥字"><a href="#3-穷举搜索密钥字" class="headerlink" title="3. 穷举搜索密钥字"></a>3. 穷举搜索密钥字</h4><p>根据上述的结果，在确定密钥字之间关系式的基础上，只要穷举 $26$ 中可能性就可以了。因为当猜测 $k_1$ 的时候， $k_2$ 也就确定下来了，以此类推，剩下的几个密钥也就确定下来了，只要从 $A-Z$ 进行穷举即可。</p>
 <h3 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h3><p>一个好的密码加密方案（或者说是算法），应该要很好的隐藏密钥和密文之间的联系，通过更复杂的算法或者在更大的密钥空间中，可以有效避免穷举搜索破解。如何设计加密算法以及如何选择合适的密钥空间，将在今后继续学习。</p>
 
     </div>
@@ -549,13 +536,13 @@ k_1-k_2=9 \\ k_1-k_5=16 \\ k_2-k_3=13 \\ k_2-k_5=7 \\ k_3-k_5=20 \\ k_4-k_5=11</
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">215k</span>
+    <span title="站点总字数">217k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:15</span>
+    <span title="站点阅读时长">3:17</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>

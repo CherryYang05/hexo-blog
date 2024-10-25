@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220615143024.png">
 <meta property="og:image" content="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220621183034.png">
 <meta property="article:published_time" content="2022-06-09T14:46:03.000Z">
-<meta property="article:modified_time" content="2024-10-25T18:33:44.663Z">
+<meta property="article:modified_time" content="2024-10-25T18:33:42.597Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="文档">
 <meta name="twitter:card" content="summary">
@@ -240,7 +240,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-10-25 18:33:44" itemprop="dateModified" datetime="2024-10-25T18:33:44+00:00">2024-10-25</time>
+                <time title="修改时间：2024-10-25 18:33:42" itemprop="dateModified" datetime="2024-10-25T18:33:42+00:00">2024-10-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -283,7 +283,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.2k</span>
+              <span>4.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -305,8 +305,9 @@
         <h2 id="l2p-cache-优化方案"><a href="#l2p-cache-优化方案" class="headerlink" title="l2p cache 优化方案"></a>l2p cache 优化方案</h2><p>根据已有的 cache 方案，在 SLC 模式下，由于映射表大小不到 400MB，因此将整个映射表存储在 DRAM 中。</p>
 <p>先对这种情况的地址映射进行分析。</p>
 <span id="more"></span>
+
 <h3 id="1-映射表和全局映射目录"><a href="#1-映射表和全局映射目录" class="headerlink" title="1. 映射表和全局映射目录"></a>1. 映射表和全局映射目录</h3><p>在原先的方案中有两种映射表，一种是存放每一个 page 表项的映射表，每个表项大小为 4B，这个表项用一维数组来存储，数组的下标记录对应表项的逻辑地址。另一种表存放第一种映射表所在 page 的映射，称为 GTD（Global Table Directory，全局表目录），非常类似于二级页表。GTD 表每个表项也是 4B，也用一维数组来表示。数组下标指明逻辑页号的范围，数组元素存放对应的 page 位置。</p>
-<p>根据 page 所设定的大小和项目所采用的硬件参数，一个 page 为 16KB，一个表项为 4B，则一个 page 可以存放 16KB/4KB=4K 个表项，GTD 的第一个表项指向存放逻辑地址从 0 到 4K-1 的表项所存储的页的物理地址，GTD 第二个表项则指向存放逻辑地址从 4K 到 8K-1 的表项所存储的页的物理地址。。。以此类推，最后大约需要 7 个 page 即可存储所有 GTD。</p>
+<p>根据 page 所设定的大小和项目所采用的硬件参数，一个 page 为 16KB，一个表项为 4B，则一个 page 可以存放 16KB&#x2F;4KB&#x3D;4K 个表项，GTD 的第一个表项指向存放逻辑地址从 0 到 4K-1 的表项所存储的页的物理地址，GTD 第二个表项则指向存放逻辑地址从 4K 到 8K-1 的表项所存储的页的物理地址。。。以此类推，最后大约需要 7 个 page 即可存储所有 GTD。</p>
 <h3 id="2-物理地址的分配"><a href="#2-物理地址的分配" class="headerlink" title="2. 物理地址的分配"></a>2. 物理地址的分配</h3><p>先对每个逻辑页分配可用的物理页，（首先确保该逻辑地址是有效的，不能重复分配逻辑地址）若该逻辑页被写过，则覆盖对应的物理页。</p>
 <p>同时以块为单位，对每个 page 进行管理，用 <code>free</code>, <code>valid</code>, <code>invalid</code> 标记 page 的三种状态</p>
 <h3 id="3-cache-优化方案"><a href="#3-cache-优化方案" class="headerlink" title="3. cache 优化方案"></a>3. cache 优化方案</h3><p>优化思路为：只将一部分最近使用的映射表以及全部 GTD 放进 DRAM，完整的映射表存放在 flash 中。采用 TPFTL 方案，DRAM 中使用两级 LRU 进行管理。基本思路如下：</p>
@@ -371,25 +372,30 @@
 <p>综合考虑后，最终的解决方案在访问次数的基础上进行改进。表项级 LRU 列表以访问的先后顺序进行排序，最新访问的表项插入链表的头部，同时维护一个访问次数字段，TP 结点平均热度就是访问次数的平均值。尽管这样可能会使得最近访问的表项的 TP 结点成为热度最低的结点，但这已经是相对完善且资源消耗较少的方案。每个表项的热度被页面级热度所掩盖，这导致利用时间局部性的效率较低。由于缓存空间利用率的提高，缓存命中率略有提高。</p>
 <h3 id="4-结构体定义"><a href="#4-结构体定义" class="headerlink" title="4. 结构体定义"></a>4. 结构体定义</h3><p>在原来 l2p 模块基础上新增以下结构体。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 页级 LRU 列表</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">tp_node_list</span> &#123;</span></span><br><span class="line">    list_node tp_list_node;             <span class="comment">// tp 链表头结点</span></span><br><span class="line">    u32 entry_per_tp_node[MAX_TP_NODE]; <span class="comment">// 存储每个 tp 结点下有多少表项的表，0 表示当前 tp 结点不存在</span></span><br><span class="line">    u32 tp_node_num;                    <span class="comment">// 有效 TP 结点数量</span></span><br><span class="line">    tp_node *lru_tp_node;               <span class="comment">// 热度最低（最近最久未使用）的 TP 结点</span></span><br><span class="line">    u32 total_entry_num;                <span class="comment">// 总表项个数，代表缓存中映射表总容量</span></span><br><span class="line">&#125; tp_node_list;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">union</span> _<span class="title">tp_entry_node</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">/* TP 结点数据结构 */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        u16 tvpn;                       <span class="comment">// 虚拟翻译页号</span></span><br><span class="line">        u16 entry_num;                  <span class="comment">// 结点下表项数量</span></span><br><span class="line">        u32 ava_popular;                <span class="comment">// 结点平均热度</span></span><br><span class="line">        list_head entry_list;           <span class="comment">// 表项链表头结点</span></span><br><span class="line">        list_node tp_node;              <span class="comment">// tp 链表结点</span></span><br><span class="line">    &#125; tp_node;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 每个 TP 结点下的表项结点 */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        list_node entry_node;           <span class="comment">// 表项链表结点</span></span><br><span class="line">        psa_entry entry;                <span class="comment">// psa 结构体，存储 l2p 映射表项</span></span><br><span class="line">        u32 popular;                    <span class="comment">// 表项热度</span></span><br><span class="line">        u32 reserve;                    <span class="comment">// 填充空间，为了结构体和 tp_node 占用空间一样</span></span><br><span class="line">    &#125; entry_node;</span><br><span class="line">&#125; tp_entry_node;</span><br></pre></td></tr></table></figure>
+
 <p><strong>下面是结构体之间的关系图。</strong></p>
 <p><img data-src="https://raw.githubusercontent.com/CherryYang05/PicGo-image/master/images/20220621183034.png" alt="结点关系图"></p>
 <h3 id="5-函数定义"><a href="#5-函数定义" class="headerlink" title="5. 函数定义"></a>5. 函数定义</h3><p>在原有 l2p 模块中函数基础上，新增以下函数。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获得最近最久未使用的映射表项。</span></span><br><span class="line"><span class="comment"> * 在表项链表头结点的前一个结点，（即整个链表的最后一个结点）就是最近最久未使用的表项</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">entry_node *<span class="title">l2p_get_least_recent_used_entry</span><span class="params">(tp_node *entry_list)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 当 DRAM 中有表项变化时，更新所有 TP 结点的流行度，更改 tp_node_list 结点信息。</span></span><br><span class="line"><span class="comment"> * 当进行替换时，表项会进行变化，同样带来 TP 结点的热度变化，调用函数获得热度最低的 TP 结点，更新字段。</span></span><br><span class="line"><span class="comment"> * 该 TP 结点的热度由 tp_node 结构体中 ava_popular 字段指定，该字段由 TP 结点下所有表项的热度之和除以表项数量得出（取整即可）。</span></span><br><span class="line"><span class="comment"> * 循环以 tp_node_list 为头结点的链表，选出热度最低的 TP 结点。（算法待定，暂时用循环解决）</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">l2p_update_tp_node_list</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 判断当前的逻辑子页号所属的 TP 结点是否被缓存 */</span></span><br><span class="line"><span class="function">boolean <span class="title">l2p_is_TP_node_cached</span><span class="params">(l2p_table_index lsn)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 检查 tp_node_list 结点下的 total_entry_num 字段，判断当前所给内存是否已满 */</span></span><br><span class="line"><span class="function">boolean <span class="title">l2p_is_DRAM_empty</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 根据物理地址从闪存中读取相应表项放到内存中 */</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">l2p_read_entry_from_flash</span><span class="params">(psa_entry *psa)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 将被修改的表项写回闪存。</span></span><br><span class="line"><span class="comment"> * 有一个小问题：表项在内存中需要有热度字段，在闪存中则无需该字段。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function">boolean <span class="title">l2p_write_the_modified_entry_back_to_flash</span><span class="params">(l2p_table_entry *l2p_entry)</span></span>;</span><br></pre></td></tr></table></figure>
+
 <p>原来模块中的函数定义如下。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 设置当前 l2p 表项无效 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">l2p_invalid_l2p_entry</span><span class="params">(l2p_table_index lsn)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 设置当前 l2p 表项有效 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">l2p_valid_l2p_entry</span><span class="params">(l2p_table_index lsn)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 判断当前标状态是否有效 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> boolean <span class="title">l2p_if_l2p_entry_valid</span><span class="params">(l2p_table_index lsn)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 判断两个 psa 表项所表示的 psa 是否相等 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> boolean <span class="title">l2p_if_psa_equal</span><span class="params">(psa_entry *a, psa_entry *b)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* psa + 1 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> boolean <span class="title">l2p_inc_psa</span><span class="params">(psa_entry *psa)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 从 block 结构体的 page 状态字段中得到子页的状态 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> BIT <span class="title">l2p_get_subpage_status</span><span class="params">(<span class="type">bitmap_t</span> T, psa_entry psa)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 设置子页的状态 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title">l2p_set_subpage_status</span><span class="params">(<span class="type">bitmap_t</span> T, psa_entry *psa, BIT bit)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化 block table，为其分配内存 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">l2p_init_block_table</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 给 l2p_table 指针分配地址，初始化 l2p_table */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">l2p_init_l2p_table</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化 global_table 指针，分配地址，初始化 global_table*/</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">l2p_init_global_table</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 根据逻辑子页号（lsn）查找相应的 l2p 表项 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> boolean <span class="title">l2p_search_l2p_entry</span><span class="params">(l2p_table_index lsn, l2p_table_entry *l2p_entry)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 修改逻辑子页号 lsn 对应的 l2p 表项，并设置该表项为有效 */</span></span><br><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span> <span class="title">l2p_update_l2p_table</span><span class="params">(l2p_table_index lsn, l2p_table_entry l2p_entry)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* ？ */</span></span><br><span class="line"><span class="function"><span class="type">static</span> psa_entry <span class="title">l2p_get_new_psa</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*  */</span></span><br><span class="line"><span class="function"><span class="type">static</span> psa_entry <span class="title">l2p_get_and_update_global_psa</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化 L2P 模块，为 global_psa 分配内存*/</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">l2p_init_l2p_module</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 根据逻辑子页号 lsn 获得一个 l2p entry，此函数是提供给别的模块的 API*/</span></span><br><span class="line"><span class="function">l2p_table_entry <span class="title">l2p_get_l2p_entry</span><span class="params">(l2p_table_index lsn, u32 opcode, u32 is_searched)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 根据逻辑子页号 lsn 获得对应表项的翻译页所在的全局翻译目录（GTD） 的表项 */</span></span><br><span class="line"><span class="function">global_table_entry <span class="title">l2p_get_global_table_entry</span><span class="params">(l2p_table_index lsn)</span></span>;</span><br></pre></td></tr></table></figure>
+
 <h3 id="6-全局变量"><a href="#6-全局变量" class="headerlink" title="6. 全局变量"></a>6. 全局变量</h3><p>在原有 l2p 模块中全局变量的基础上，新增以下全局变量。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tp_node_list *tp_list;        <span class="comment">// 管理所有 tp 结点的链表头结点</span></span><br></pre></td></tr></table></figure>
+
 <p>原有的全局变量如下。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">psa_entry global_psa;         <span class="comment">// 记录下一个待分配地址</span></span><br><span class="line"></span><br><span class="line">block_entry *block_table;     <span class="comment">// 用来记录每个 block，指向一个一维数组的指针</span></span><br><span class="line"></span><br><span class="line">global_table_entry *g_table;  <span class="comment">// 用来记录 global_table，指向一个一维数组的首地址</span></span><br><span class="line"></span><br><span class="line">l2p_table_entry *l2p_table;   <span class="comment">// 用来记录 l2p_table，指向一个一维数组的首地址</span></span><br></pre></td></tr></table></figure>
+
 <h3 id="疑问"><a href="#疑问" class="headerlink" title="疑问"></a>疑问</h3><ul>
-<li>[x] psa 地址更新的优先级为什么是 <code>subpage-&gt;plane-&gt;ch-&gt;ce-&gt;lun-&gt;block-&gt;page</code>?</li>
-<li>[x] 代码中有两处疑问：<ul>
-<li>[x] <code>l2p.h</code> Line: 42（lun: 1？）</li>
-<li>[x] <code>l2p.h</code> Line: 48（slc_ppa？）</li>
+<li><input checked disabled type="checkbox"> psa 地址更新的优先级为什么是 <code>subpage-&gt;plane-&gt;ch-&gt;ce-&gt;lun-&gt;block-&gt;page</code>?</li>
+<li><input checked disabled type="checkbox"> 代码中有两处疑问：<ul>
+<li><input checked disabled type="checkbox"> <code>l2p.h</code> Line: 42（lun: 1？）</li>
+<li><input checked disabled type="checkbox"> <code>l2p.h</code> Line: 48（slc_ppa？）</li>
 </ul>
 </li>
-<li>[x] 为什么要记录下一个即将分配的 subpage 物理地址，记录当前的是否能够起到同样的逻辑？</li>
-<li>[x] <code>u8 free[PAGE_PER_BLOCK / 8 + 1][PAGE_SIZE / SUB_PAGE_SZ];</code> 除以 8 是什么意思？（<code>l2p.h</code> Line: 75）</li>
+<li><input checked disabled type="checkbox"> 为什么要记录下一个即将分配的 subpage 物理地址，记录当前的是否能够起到同样的逻辑？</li>
+<li><input checked disabled type="checkbox"> <code>u8 free[PAGE_PER_BLOCK / 8 + 1][PAGE_SIZE / SUB_PAGE_SZ];</code> 除以 8 是什么意思？（<code>l2p.h</code> Line: 75）</li>
 </ul>
 <h3 id="附"><a href="#附" class="headerlink" title="附"></a>附</h3><ul>
 <li>psa：physical subpage address，物理子页地址</li>
@@ -398,22 +404,48 @@
 <li>TP：translation page</li>
 </ul>
 <h3 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h3><ul>
-<li>[ ] 是否要进行指令缓存，有竞争情况，是否加锁</li>
-<li>[x] DFTL 要改成 TPFTL</li>
-<li>[ ] 更新页级 LRU 和条目级 LRU 列表算法</li>
-<li>[x] 192MB DRAM</li>
-<li>[x] 给定 TP 结点数量？TP 结点和 entry 结点总和为 8M 个</li>
-<li><p>[ ] 读写 flash 步骤：先 FCL_get_free_SQ_entry(u32 ch)，返回得到 SQ index，ch 是约定的 flash 中 l2p 表地址的 channel，然后 FCL_set_SQ_entry，最后 FCL_send_SQ_entry</p>
+<li><p><input disabled type="checkbox"> 
+是否要进行指令缓存，有竞争情况，是否加锁</p>
 </li>
-<li><p>[x] 申请一个空的 SQ_entry 之后，如何将参数写入 SQ_entry？</p>
+<li><p><input checked disabled type="checkbox"> 
+DFTL 要改成 TPFTL</p>
 </li>
-<li>[x] <code>void FCL_set_SQ_entry(u32 hcmd_entry_index, u32 SQ_entry_index, u32 buffer_index, u32 opcode, phy_page_addr *ppa, u32 cmd_sp)</code> 里的参数含义，怎么使用？（hcmd_entry_index、cmd_sp 为 0 即可，buffer_index 是内存中你要读写的地址，phy_page_addr 是你要写入的 flash 的地址，全部自己指定）</li>
-<li>[x] 若读取 flash 中的数据，send SQ_entry 之后，通过哪些接口取得该数据？</li>
-<li>[x] block_entry *block_table;    用来记录 block 中 page 的状态，指向一个 4 维数组的首地址，访问数组元素的形式可为 <code>block_table[ch][ce][lun][plane]</code>（应该是 <code>block_table[ch][ce][lun][plane][block]</code>？）</li>
-<li>[x] 重新定义了结构体，TP 结点和 entry 结点数量总和为 8M，每个 tp 结点或 entry 结点结构体大小为 20B，总大小约为 160MB，可映射约 8MB * 4KB = 32GB 的闪存空间。加上结点的状态位 8MB，一共占用空间约为 168MB</li>
-<li>[x] <code>block_table</code> 记录的是闪存块中每个页的状态，该数据从何处读取</li>
-<li>[x] <code>g_table</code> 和 <code>l2p</code> 表在闪存中有固定的位置，该位置由谁指定？</li>
-<li>[x] LRU 实现策略</li>
+<li><p><input disabled type="checkbox"> 
+更新页级 LRU 和条目级 LRU 列表算法</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+192MB DRAM</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+给定 TP 结点数量？TP 结点和 entry 结点总和为 8M 个</p>
+</li>
+<li><p><input disabled type="checkbox"> 
+读写 flash 步骤：先 FCL_get_free_SQ_entry(u32 ch)，返回得到 SQ index，ch 是约定的 flash 中 l2p 表地址的 channel，然后 FCL_set_SQ_entry，最后 FCL_send_SQ_entry</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+申请一个空的 SQ_entry 之后，如何将参数写入 SQ_entry？</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+<code>void FCL_set_SQ_entry(u32 hcmd_entry_index, u32 SQ_entry_index, u32 buffer_index, u32 opcode, phy_page_addr *ppa, u32 cmd_sp)</code> 里的参数含义，怎么使用？（hcmd_entry_index、cmd_sp 为 0 即可，buffer_index 是内存中你要读写的地址，phy_page_addr 是你要写入的 flash 的地址，全部自己指定）</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+若读取 flash 中的数据，send SQ_entry 之后，通过哪些接口取得该数据？</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+block_entry *block_table;	用来记录 block 中 page 的状态，指向一个 4 维数组的首地址，访问数组元素的形式可为 <code>block_table[ch][ce][lun][plane]</code>（应该是 <code>block_table[ch][ce][lun][plane][block]</code>？）</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+重新定义了结构体，TP 结点和 entry 结点数量总和为 8M，每个 tp 结点或 entry 结点结构体大小为 20B，总大小约为 160MB，可映射约 8MB * 4KB &#x3D; 32GB 的闪存空间。加上结点的状态位 8MB，一共占用空间约为 168MB</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+<code>block_table</code> 记录的是闪存块中每个页的状态，该数据从何处读取</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+<code>g_table</code> 和 <code>l2p</code> 表在闪存中有固定的位置，该位置由谁指定？</p>
+</li>
+<li><p><input checked disabled type="checkbox"> 
+LRU 实现策略</p>
+</li>
 </ul>
 
     </div>
@@ -573,13 +605,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">215k</span>
+    <span title="站点总字数">217k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:15</span>
+    <span title="站点阅读时长">3:17</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>

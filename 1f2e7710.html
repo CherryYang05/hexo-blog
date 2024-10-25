@@ -95,7 +95,7 @@
 <meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/计算机体系结构课程笔记（二）/VLIW执行情况，n=3.png">
 <meta property="og:image" content="https://cherryyang05.github.io/hexo-blog/计算机体系结构课程笔记（二）/VLIW执行情况，n=10.png">
 <meta property="article:published_time" content="2022-01-11T08:53:38.000Z">
-<meta property="article:modified_time" content="2024-10-25T18:33:44.711Z">
+<meta property="article:modified_time" content="2024-10-25T18:33:42.649Z">
 <meta property="article:author" content="Cherry">
 <meta property="article:tag" content="体系结构">
 <meta property="article:tag" content="笔记">
@@ -303,7 +303,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-10-25 18:33:44" itemprop="dateModified" datetime="2024-10-25T18:33:44+00:00">2024-10-25</time>
+                <time title="修改时间：2024-10-25 18:33:42" itemprop="dateModified" datetime="2024-10-25T18:33:42+00:00">2024-10-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -346,7 +346,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>12k</span>
+              <span>13k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -366,12 +366,14 @@
 
       
         <h1 id="第四章-指令集并行"><a href="#第四章-指令集并行" class="headerlink" title="第四章 指令集并行"></a>第四章 指令集并行</h1><blockquote>
-<p>国防科大计算机体系结构课程第四章笔记<br><span id="more"></span></p>
+<p>国防科大计算机体系结构课程第四章笔记</p>
 </blockquote>
+<span id="more"></span>
+
 <h2 id="4-1-指令集并行的概念"><a href="#4-1-指令集并行的概念" class="headerlink" title="4.1 指令集并行的概念"></a>4.1 指令集并行的概念</h2><ul>
 <li>当指令之间不存在相关时，它们在流水线中是可以重叠起来并行执行的。这种指令序列中存在的潜在并行性称为指令级并行<ul>
 <li>Instruction-Level Parallelism</li>
-<li>简记为 ILP </li>
+<li>简记为 ILP</li>
 </ul>
 </li>
 <li>如何知道指令之间可以并行？硬、软件如何支持指令级并行？如何研究这些问题？<ul>
@@ -379,8 +381,8 @@
 <li>必须要硬件技术和软件技术互相配合，才能够最大限度地挖掘出程序中存在的指令级并行<br><strong>性能评价：CPI计算</strong></li>
 </ul>
 </li>
-<li>流水线处理器的实际CPI（平均每条指令使用的周期数）等于理想流水线的CPI加上各类停顿引起的周期数的总和<br>CPI流水线 = CPI理想 + 停顿结构相关 + 停顿先写后读 + 停顿先读后写 + 停顿写后写 + 停顿控制相关</li>
-<li>减少其中的任何一种停顿，都可以有效地减少CPI，从而提高流水线的性能 </li>
+<li>流水线处理器的实际CPI（平均每条指令使用的周期数）等于理想流水线的CPI加上各类停顿引起的周期数的总和<br>CPI流水线 &#x3D; CPI理想 + 停顿结构相关 + 停顿先写后读 + 停顿先读后写 + 停顿写后写 + 停顿控制相关</li>
+<li>减少其中的任何一种停顿，都可以有效地减少CPI，从而提高流水线的性能</li>
 </ul>
 <div style="text-align: center;">
 <img data-src="计算机体系结构课程笔记（二）/指令集并行的技术及克服的停顿.png" width="80%" style="margin: 0 auto">
@@ -420,7 +422,7 @@
 <li>具有向量处理指令的典型机器是向量计算机，有关向量处理和向量计算机的内容本章不作讨论</li>
 </ul>
 </li>
-<li>本章中的分支指令就是指条件转移指令 </li>
+<li>本章中的分支指令就是指条件转移指令</li>
 </ul>
 <p><strong>本章通用浮点流水线延迟表</strong></p>
 <ul>
@@ -453,8 +455,7 @@
 <li>无结构冒险</li>
 </ul>
 <h4 id="循环展开实例"><a href="#循环展开实例" class="headerlink" title="循环展开实例"></a>循环展开实例</h4><ul>
-<li>对于下面的源代码，在不进行指令调度和进行指令调度两种情况下，分析代码一次循环的执行时间<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">1000</span>; i++) </span><br><span class="line">    x[i] = x[i] + s;</span><br></pre></td></tr></table></figure>
-</li>
+<li>对于下面的源代码，在不进行指令调度和进行指令调度两种情况下，分析代码一次循环的执行时间<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">1</span>; i &lt;= <span class="number">1000</span>; i++) </span><br><span class="line">    x[i] = x[i] + s;</span><br></pre></td></tr></table></figure></li>
 </ul>
 <p><strong>编译过程</strong></p>
 <ul>
@@ -474,6 +475,7 @@
 </ul>
 <h4 id="MIPS汇编语言程序"><a href="#MIPS汇编语言程序" class="headerlink" title="MIPS汇编语言程序"></a>MIPS汇编语言程序</h4><p>程序转换成MIPS汇编语言程序</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Loop:   LD      F0, <span class="number">0</span>(R1)   ;F0为向量元素</span><br><span class="line">        ADDD    F4, F0, F2  ;加常数F2</span><br><span class="line">        SD      <span class="number">0</span>(R1), F4   ;保存结果</span><br><span class="line">        SUBI    R1, R1, #<span class="number">8</span>  ;修改指针</span><br><span class="line">        BNEZ    R1, Loop    ;循环控制</span><br></pre></td></tr></table></figure>
+
 <div style="text-align: center;">
 <img data-src="计算机体系结构课程笔记（二）/循环无调度执行.png" width="80%" style="margin: 0 auto">
 </div>
@@ -501,22 +503,10 @@
 <img data-src="计算机体系结构课程笔记（二）/循环无调度执行（6）.png" width="80%" style="margin: 0 auto">
 </div>
 
-<p><strong>循环无调度执行结果分析</strong></p>
-<ul>
-<li>每遍循环需要10个时钟节拍</li>
-<li>只有3个时钟节拍(L.D, ADD.D, S.D)是有效的关键指令<ul>
-<li>有效比率为 30%</li>
-<li>空转5个时钟节拍 (50%)</li>
-<li>循环控制2个时钟节拍 (20%)</li>
-</ul>
-</li>
-<li>调度代码，减少空转</li>
-<li><div style="text-align: center;">
+<h2 id="循环无调度执行结果分析-每遍循环需要10个时钟节拍-只有3个时钟节拍-L-D-ADD-D-S-D-是有效的关键指令-有效比率为-30-空转5个时钟节拍-50-循环控制2个时钟节拍-20-调度代码，减少空转"><a href="#循环无调度执行结果分析-每遍循环需要10个时钟节拍-只有3个时钟节拍-L-D-ADD-D-S-D-是有效的关键指令-有效比率为-30-空转5个时钟节拍-50-循环控制2个时钟节拍-20-调度代码，减少空转" class="headerlink" title="循环无调度执行结果分析- 每遍循环需要10个时钟节拍- 只有3个时钟节拍(L.D, ADD.D, S.D)是有效的关键指令  - 有效比率为 30%  - 空转5个时钟节拍 (50%)  - 循环控制2个时钟节拍 (20%)- 调度代码，减少空转"></a><strong>循环无调度执行结果分析</strong><br>- 每遍循环需要10个时钟节拍<br>- 只有3个时钟节拍(L.D, ADD.D, S.D)是有效的关键指令<br>  - 有效比率为 30%<br>  - 空转5个时钟节拍 (50%)<br>  - 循环控制2个时钟节拍 (20%)<br>- 调度代码，减少空转</h2><div style="text-align: center;">
 <img data-src="计算机体系结构课程笔记（二）/循环调度执行.png" width="80%" style="margin: 0 auto">
 </div>
 
-</li>
-</ul>
 <p>经过调度后，一次循环仅需 6 个时钟周期便可以完成。</p>
 <p><strong>如何进行调度</strong></p>
 <ul>
@@ -530,7 +520,7 @@
 <p><strong>调度代码结果分析</strong></p>
 <ul>
 <li>每遍循环 6 个时钟节拍</li>
-<li>和未调度代码比较，加速比 $10/6=1.7$</li>
+<li>和未调度代码比较，加速比 $10&#x2F;6&#x3D;1.7$</li>
 <li>3个有效时钟节拍 (L.D, ADD.D, S.D)<ul>
 <li>节拍有效比率 50%</li>
 <li>1拍空转 (占17%)</li>
@@ -539,7 +529,11 @@
 </li>
 <li>如何进一步减少空转和循环控制占用的比率?</li>
 </ul>
-<h4 id="循环展开"><a href="#循环展开" class="headerlink" title="循环展开"></a>循环展开</h4><p>如果将循环展开3次得到4个循环体(假设向量包含了4的倍数的元素)<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Loop:   L.D     F0,<span class="number">0</span>(R1)</span><br><span class="line">        ADD.D   F4,F0,F2</span><br><span class="line">        S.D     <span class="number">0</span>(R1),F4</span><br><span class="line">        L.D     F6,<span class="number">-8</span>(R1)</span><br><span class="line">        ADD.D   F8,F6,F2</span><br><span class="line">        S.D     <span class="number">-8</span>(R1), F8</span><br><span class="line">        L.D     F10,<span class="number">-16</span>(R1)</span><br><span class="line">        ADD.D   F12,F10,F2</span><br><span class="line">        S.D     <span class="number">-16</span>(R1), F12</span><br><span class="line">        L.D     F14,<span class="number">-24</span>(R1)</span><br><span class="line">        ADD.D   F16,F14,F2</span><br><span class="line">        S.D     <span class="number">-24</span>(R1), F16</span><br><span class="line">        DADDUI  R1,R1,#<span class="number">-32</span></span><br><span class="line">        BNE     R1,R2,Loop</span><br></pre></td></tr></table></figure><br><strong>执行时间分析</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Loop:   L.D     F0,<span class="number">0</span>(R1)        <span class="number">1</span></span><br><span class="line">        ADD.D   F4,F0,F2        <span class="number">2</span>,<span class="number">3</span></span><br><span class="line">        S.D     <span class="number">0</span>(R1),F4        <span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span></span><br><span class="line">        L.D     F6,<span class="number">-8</span>(R1)       <span class="number">7</span></span><br><span class="line">        ADD.D   F8,F6,F2        <span class="number">8</span>,<span class="number">9</span></span><br><span class="line">        S.D     <span class="number">-8</span>(R1), F8      <span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span></span><br><span class="line">        L.D     F10,<span class="number">-16</span>(R1)     <span class="number">13</span></span><br><span class="line">        ADD.D   F12,F10,F2      <span class="number">14</span>,<span class="number">15</span></span><br><span class="line">        S.D     <span class="number">-16</span>(R1), F12    <span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span></span><br><span class="line">        L.D     F14,<span class="number">-24</span>(R1)     <span class="number">19</span></span><br><span class="line">        ADD.D   F16,F14,F2      <span class="number">20</span>,<span class="number">21</span></span><br><span class="line">        S.D     <span class="number">-24</span>(R1), F16    <span class="number">22</span>,<span class="number">23</span>,<span class="number">24</span></span><br><span class="line">        DADDUI	R1,R1,#<span class="number">-32</span>      <span class="number">25</span></span><br><span class="line">        BNE     R1,R2,Loop      <span class="number">26</span>,<span class="number">27</span></span><br><span class="line">        stall                   <span class="number">28</span></span><br></pre></td></tr></table></figure><br><strong>结果分析</strong></p>
+<h4 id="循环展开"><a href="#循环展开" class="headerlink" title="循环展开"></a>循环展开</h4><p>如果将循环展开3次得到4个循环体(假设向量包含了4的倍数的元素)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Loop:   L.D     F0,<span class="number">0</span>(R1)</span><br><span class="line">        ADD.D   F4,F0,F2</span><br><span class="line">        S.D     <span class="number">0</span>(R1),F4</span><br><span class="line">        L.D     F6,<span class="number">-8</span>(R1)</span><br><span class="line">        ADD.D   F8,F6,F2</span><br><span class="line">        S.D     <span class="number">-8</span>(R1), F8</span><br><span class="line">        L.D     F10,<span class="number">-16</span>(R1)</span><br><span class="line">        ADD.D   F12,F10,F2</span><br><span class="line">        S.D     <span class="number">-16</span>(R1), F12</span><br><span class="line">        L.D     F14,<span class="number">-24</span>(R1)</span><br><span class="line">        ADD.D   F16,F14,F2</span><br><span class="line">        S.D     <span class="number">-24</span>(R1), F16</span><br><span class="line">        DADDUI  R1,R1,#<span class="number">-32</span></span><br><span class="line">        BNE     R1,R2,Loop</span><br></pre></td></tr></table></figure>
+<p><strong>执行时间分析</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Loop:   L.D     F0,<span class="number">0</span>(R1)        <span class="number">1</span></span><br><span class="line">        ADD.D   F4,F0,F2        <span class="number">2</span>,<span class="number">3</span></span><br><span class="line">        S.D     <span class="number">0</span>(R1),F4        <span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span></span><br><span class="line">        L.D     F6,<span class="number">-8</span>(R1)       <span class="number">7</span></span><br><span class="line">        ADD.D   F8,F6,F2        <span class="number">8</span>,<span class="number">9</span></span><br><span class="line">        S.D     <span class="number">-8</span>(R1), F8      <span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span></span><br><span class="line">        L.D     F10,<span class="number">-16</span>(R1)     <span class="number">13</span></span><br><span class="line">        ADD.D   F12,F10,F2      <span class="number">14</span>,<span class="number">15</span></span><br><span class="line">        S.D     <span class="number">-16</span>(R1), F12    <span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span></span><br><span class="line">        L.D     F14,<span class="number">-24</span>(R1)     <span class="number">19</span></span><br><span class="line">        ADD.D   F16,F14,F2      <span class="number">20</span>,<span class="number">21</span></span><br><span class="line">        S.D     <span class="number">-24</span>(R1), F16    <span class="number">22</span>,<span class="number">23</span>,<span class="number">24</span></span><br><span class="line">        DADDUI	R1,R1,#<span class="number">-32</span>      <span class="number">25</span></span><br><span class="line">        BNE     R1,R2,Loop      <span class="number">26</span>,<span class="number">27</span></span><br><span class="line">        stall                   <span class="number">28</span></span><br></pre></td></tr></table></figure>
+<p><strong>结果分析</strong></p>
 <ul>
 <li>循环使用 28 个时钟节拍<ul>
 <li>14 个空转节拍<ul>
@@ -557,6 +551,7 @@
 <li>代码量增大</li>
 </ul>
 <h4 id="循环展开-指令调度"><a href="#循环展开-指令调度" class="headerlink" title="循环展开+指令调度"></a>循环展开+指令调度</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Loop:   L.D     F0, <span class="number">0</span>(R1)</span><br><span class="line">        L.D     F6, <span class="number">-8</span>(R1)</span><br><span class="line">        L.D     F10, <span class="number">-16</span>(R1)</span><br><span class="line">        L.D     F14, <span class="number">-24</span>(R1)</span><br><span class="line">        ADD.D   F4, F0, F2</span><br><span class="line">        ADD.D   F8, F6, F2</span><br><span class="line">        ADD.D   F12, F10, F2</span><br><span class="line">        ADD.D   F16, F14, F2</span><br><span class="line">        S.D     <span class="number">0</span>(R1), F4</span><br><span class="line">        S.D     <span class="number">-8</span>(R1), F8</span><br><span class="line">        DADDUI	R1,R1, #<span class="number">-32</span></span><br><span class="line">        S.D     <span class="number">16</span>(R1), F12</span><br><span class="line">        BNE     R1, R2, Loop</span><br><span class="line">        S.D     <span class="number">8</span>(R1), F16</span><br></pre></td></tr></table></figure>
+
 <p><strong>“循环展开+指令调度”结果分析</strong></p>
 <ul>
 <li>每遍循环时间下降为14个时钟节拍<ul>
@@ -585,7 +580,7 @@
 </ul>
 </li>
 <li>消除额外的测试开销</li>
-<li>在循环展开时分析 LOAD/STORE 指令进行内存地址换名（动态地址具有不确定性，必须完全算出地址才能继续执行下面的代码，无法像静态地址那样可以预测）</li>
+<li>在循环展开时分析 LOAD&#x2F;STORE 指令进行内存地址换名（动态地址具有不确定性，必须完全算出地址才能继续执行下面的代码，无法像静态地址那样可以预测）</li>
 <li>保留真相关</li>
 <li>不规整？</li>
 </ul>
@@ -616,7 +611,7 @@
 <p><strong>动态调度</strong></p>
 <ul>
 <li>动态调度的目的<ul>
-<li>在程序执行的时候，解决WAW,WAR和RAW带来的冒险 </li>
+<li>在程序执行的时候，解决WAW,WAR和RAW带来的冒险</li>
 </ul>
 </li>
 <li>优点：<ul>
@@ -943,26 +938,7 @@
 <ul>
 <li>CDC6600</li>
 </ul>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>性能提升</th>
-<th>编码方式</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1.7</td>
-<td>FORTRAN</td>
-</tr>
-<tr>
-<td>2.5</td>
-<td>手工汇编</td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>|性能提升|编码方式|<br>|——-|——|	<br>|1.7|FORTRAN|<br>|2.5|手工汇编|</p>
 <ul>
 <li>Condition（CDC6600记分牌）<ul>
 <li>无软件流水调度</li>
@@ -974,7 +950,7 @@
 <li>但是记分牌需要和每个功能部件进行连线，有了记分牌之后的连线是原来的 4 倍</li>
 </ul>
 <h3 id="4-2-3-Tomasulo-算法"><a href="#4-2-3-Tomasulo-算法" class="headerlink" title="4.2.3 Tomasulo 算法"></a>4.2.3 Tomasulo 算法</h3><ul>
-<li>IBM 360/91比 CDC6600 晚三年推出<ul>
+<li>IBM 360&#x2F;91比 CDC6600 晚三年推出<ul>
 <li>商业计算机使用 Cache 技术之前</li>
 </ul>
 </li>
@@ -995,16 +971,16 @@
 </li>
 </ul>
 <h4 id="在MIPS上实现算法"><a href="#在MIPS上实现算法" class="headerlink" title="在MIPS上实现算法"></a>在MIPS上实现算法</h4><ul>
-<li>360/91 浮点功能单元<ul>
+<li>360&#x2F;91 浮点功能单元<ul>
 <li>3个加法单元</li>
 <li>2个乘法单元</li>
 <li>6个读单元</li>
 <li>3个写单元</li>
 </ul>
 </li>
-<li>MIPS和360/91浮点单元的区别<ul>
-<li>360/91: 支持寄存器-存储器指令</li>
-<li>360/91: 采用流水化功能单元，不采用多个功能单元</li>
+<li>MIPS和360&#x2F;91浮点单元的区别<ul>
+<li>360&#x2F;91: 支持寄存器-存储器指令</li>
+<li>360&#x2F;91: 采用流水化功能单元，不采用多个功能单元</li>
 </ul>
 </li>
 <li>每个功能单元都有保留站：缓冲</li>
@@ -1026,7 +1002,7 @@
 <li>当两个操作数都成功得到后，该指令便会被流入到功能部件进行运算，运算完成后将结果送入一条总线上，这个总线叫<strong>公共数据总线</strong>，该总线是 Tomasulo 算法的枢纽</li>
 <li>将数据放入公共数据总线后，所有需要该数据的地方将同时获得该数据，包括保留站和寄存器，供下一条指令使用</li>
 <li>获得两个操作数的指令便可以接着执行，相关的检测是在保留站中执行的，没有一个统一的控制电路</li>
-<li><span id="changename">数据指针的调整使得寄存器完成了一次<strong>换名</strong>操作，==由原来的寄存器读数，变成从产生数据的源部件取数==</span></li>
+<li><span id="changename">数据指针的调整使得寄存器完成了一次<strong>换名</strong>操作，&#x3D;&#x3D;由原来的寄存器读数，变成从产生数据的源部件取数&#x3D;&#x3D;</span></li>
 </ul>
 <h4 id="MIPS五阶段的流水线的改造"><a href="#MIPS五阶段的流水线的改造" class="headerlink" title="MIPS五阶段的流水线的改造"></a>MIPS五阶段的流水线的改造</h4><ul>
 <li>ID和EX阶段被以下三个阶段代替<br>1、流出（Issue）<br>2、执行（Execute）<br>3、结果写回（Write result）</li>
@@ -1036,7 +1012,7 @@
 <li>从浮点指令队列中取出一条指令</li>
 <li>如果存在一个空的保留站，就流出这条指令</li>
 <li>如果操作数在寄存器中，就送到该指令对应的保留站</li>
-<li>存储器取/存指令只要有空闲的缓存就可以流出</li>
+<li>存储器取&#x2F;存指令只要有空闲的缓存就可以流出</li>
 <li>如果没有空闲的保留站或者缓存，就存在结构相关，指令暂停，直到有空闲的保留站或者缓存</li>
 </ol>
 <p><strong>执行</strong></p>
@@ -1066,8 +1042,9 @@
 <ul>
 <li>Qi：保留站的编号<ul>
 <li>编号所对应产生结果的保留站</li>
-<li>如果 Qi 为空，就是当前没有指令的结果要写到这个寄存器或者缓冲    </li>
+<li>如果 Qi 为空，就是当前没有指令的结果要写到这个寄存器或者缓冲</li>
 </ul>
+<p>	</p>
 </li>
 <li>Load 缓冲和 Store 缓冲都有<ul>
 <li>busy 位</li>
@@ -1077,7 +1054,9 @@
 </li>
 </ul>
 <p>$\sum$</p>
-<h4 id="程序实例-1"><a href="#程序实例-1" class="headerlink" title="程序实例"></a>程序实例</h4><p><strong>用以下指令序列来说明 Tomasulo 算法原理</strong><br>同记分牌算法的指令系列<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LD    F6, <span class="number">34</span>(R2)</span><br><span class="line">LD    F2, <span class="number">45</span>(R3)</span><br><span class="line">MULTD F0, F2, F4</span><br><span class="line">SUBD  F8, F6, F2</span><br><span class="line">DIVD  F10, F0, F6</span><br><span class="line">ADDD  F6, F8, F2</span><br></pre></td></tr></table></figure></p>
+<h4 id="程序实例-1"><a href="#程序实例-1" class="headerlink" title="程序实例"></a>程序实例</h4><p><strong>用以下指令序列来说明 Tomasulo 算法原理</strong><br>同记分牌算法的指令系列</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">LD    F6, <span class="number">34</span>(R2)</span><br><span class="line">LD    F2, <span class="number">45</span>(R3)</span><br><span class="line">MULTD F0, F2, F4</span><br><span class="line">SUBD  F8, F6, F2</span><br><span class="line">DIVD  F10, F0, F6</span><br><span class="line">ADDD  F6, F8, F2</span><br></pre></td></tr></table></figure>
+
 <p><strong>假设：</strong></p>
 <ol>
 <li>加法指令需要 2 个时钟周期</li>
@@ -1413,7 +1392,7 @@
 
 <p><strong>执行过程</strong></p>
 <ul>
-<li>当前指令的 PC 将和 BTB 中的 PC 值进行遍历比较，如果有相同的项，那么就认为该指令是曾经成功的分支指令，他的分支目标地址放在列==分支目标PC==中</li>
+<li>当前指令的 PC 将和 BTB 中的 PC 值进行遍历比较，如果有相同的项，那么就认为该指令是曾经成功的分支指令，他的分支目标地址放在列&#x3D;&#x3D;分支目标PC&#x3D;&#x3D;中</li>
 <li>然后将分支目标PC取出直接放入 PC 寄存器，从该地址取出下一条指令执行<ul>
 <li>BTB 可以进一步优化，将分支目标指令也存放在缓冲中，加快指令的读取</li>
 </ul>
@@ -1432,7 +1411,7 @@
 <li>降低失效开销技术：在一个时钟周期内同时取出不同分支路径的指令，<strong>即把分支成功和失败的指令都取出来</strong><ul>
 <li>会引入其他开销，比如存储系统的端口加倍</li>
 <li>降低失效开销的唯一方法，比如<ul>
-<li>AS/400 PowerPC 处理器，多分支预测技术</li>
+<li>AS&#x2F;400 PowerPC 处理器，多分支预测技术</li>
 </ul>
 </li>
 </ul>
@@ -1461,7 +1440,7 @@
 <li>达到 CPI 小于1</li>
 </ul>
 </li>
-<li>多流出处理器 2 种基本结构    <ul>
+<li>多流出处理器 2 种基本结构	<ul>
 <li>超标量（Superscalar）<ul>
 <li>超标量每个时钟周期流出的指令数不定</li>
 <li>可以编译器静态调度，也可以硬件动态调度</li>
@@ -1476,7 +1455,7 @@
 </ul>
 <h3 id="4-4-1-超标量处理机"><a href="#4-4-1-超标量处理机" class="headerlink" title="4.4.1 超标量处理机"></a>4.4.1 超标量处理机</h3><ul>
 <li>超标量处理机的原型来自于 IBM 实验室的 “America”处理器<ul>
-<li>RS/6000 第一个采用超标量技术</li>
+<li>RS&#x2F;6000 第一个采用超标量技术</li>
 <li>现在，几乎所有高性能处理器都是用该技术</li>
 </ul>
 </li>
@@ -1515,8 +1494,7 @@
 <li>循环展开成5个副本</li>
 </ul>
 </li>
-<li>使用先前我们用到的代码作为例子<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LOOP  LD    F0, <span class="number">0</span>(R1)   ;取出一个向量单元.</span><br><span class="line">      ADDD  F4, F0, F2	;与F2寄存器中的标量相加</span><br><span class="line">      SD    <span class="number">0</span>(R1), F4   ;保存相加后的向量单元</span><br><span class="line">      SUBI	R1, R1, #<span class="number">8</span>  ;R1寄存器值减<span class="number">8</span></span><br><span class="line">      BNEZ 	R1, LOOP    ;如果R1值不为<span class="number">0</span>，则跳转</span><br></pre></td></tr></table></figure>
-</li>
+<li>使用先前我们用到的代码作为例子<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LOOP  LD    F0, <span class="number">0</span>(R1)   ;取出一个向量单元.</span><br><span class="line">      ADDD  F4, F0, F2	;与F2寄存器中的标量相加</span><br><span class="line">      SD    <span class="number">0</span>(R1), F4   ;保存相加后的向量单元</span><br><span class="line">      SUBI	R1, R1, #<span class="number">8</span>  ;R1寄存器值减<span class="number">8</span></span><br><span class="line">      BNEZ 	R1, LOOP    ;如果R1值不为<span class="number">0</span>，则跳转</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h4 id="超标量：例子执行情况"><a href="#超标量：例子执行情况" class="headerlink" title="超标量：例子执行情况"></a>超标量：例子执行情况</h4><ul>
 <li>在超标量流水线上对上述代码进行调度，以获取更多地指令机并行度</li>
@@ -1572,7 +1550,7 @@
 <ul>
 <li>5 条结果在 8 个时钟周期中完成计算<ul>
 <li>每条结果花费 1.3 时钟周期，比超标量性能更高</li>
-<li>有 17/40 的指令槽被放入了有效的操作，利用率很低</li>
+<li>有 17&#x2F;40 的指令槽被放入了有效的操作，利用率很低</li>
 </ul>
 </li>
 </ul>
@@ -1588,12 +1566,12 @@
 </ul>
 </li>
 <li>9 拍里面执行了 23 个操作<ul>
-<li>2.5 操作/拍</li>
-<li>指令槽利用率不高， 只有 51% (23/45)</li>
+<li>2.5 操作&#x2F;拍</li>
+<li>指令槽利用率不高， 只有 51% (23&#x2F;45)</li>
 </ul>
 </li>
 <li>使用大量寄存器</li>
-<li>7 个循环，共计使用 2×7+1=15 个 64 位浮点寄存器</li>
+<li>7 个循环，共计使用 2×7+1&#x3D;15 个 64 位浮点寄存器</li>
 </ul>
 <p>如果我们想减少循环展开的次数，则至少展开三次才能保证流水线中没有空周期：</p>
 <div style="text-align: center;">
@@ -1602,8 +1580,8 @@
 
 <ul>
 <li>8 拍 3 个结果，每个结果 2.66 拍</li>
-<li>指令槽利用率: 11/40 = 27.5%</li>
-<li>寄存器：3×2+1=7 个 64 位浮点寄存器</li>
+<li>指令槽利用率: 11&#x2F;40 &#x3D; 27.5%</li>
+<li>寄存器：3×2+1&#x3D;7 个 64 位浮点寄存器</li>
 </ul>
 <p>如果我们想尽可能充满指令槽，可以展开 10 次：</p>
 <div style="text-align: center;">
@@ -1612,8 +1590,8 @@
 
 <ul>
 <li>10 拍 10 个结果，每个结果使用 1 拍</li>
-<li>指令槽利用率：36/50 = 72%</li>
-<li>寄存器需求：10×2+1=23 个 64 位浮点寄存器<ul>
+<li>指令槽利用率：36&#x2F;50 &#x3D; 72%</li>
+<li>寄存器需求：10×2+1&#x3D;23 个 64 位浮点寄存器<ul>
 <li>当前 MIPS 只有 16 个 64 位浮点寄存器或 32 个 32 位寄存器，已经超过了要求</li>
 </ul>
 </li>
@@ -1767,7 +1745,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E6%8C%87%E4%BB%A4%E9%9B%86%E5%B9%B6%E8%A1%8C"><span class="nav-text">第四章 指令集并行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E6%8C%87%E4%BB%A4%E9%9B%86%E5%B9%B6%E8%A1%8C%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">4.1 指令集并行的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80%E8%B0%83%E5%BA%A6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95"><span class="nav-text">4.1.1 循环展开调度的基本方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%85%B6%E4%BB%96%E7%89%B9%E6%80%A7%E8%AF%B4%E6%98%8E"><span class="nav-text">流水线其他特性说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80%E5%AE%9E%E4%BE%8B"><span class="nav-text">循环展开实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIPS%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%A8%8B%E5%BA%8F"><span class="nav-text">MIPS汇编语言程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80"><span class="nav-text">循环展开</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80-%E6%8C%87%E4%BB%A4%E8%B0%83%E5%BA%A6"><span class="nav-text">循环展开+指令调度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E6%8C%87%E4%BB%A4%E7%9A%84%E5%8A%A8%E6%80%81%E8%B0%83%E5%BA%A6"><span class="nav-text">4.2 指令的动态调度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E5%86%92%E9%99%A9%E7%9A%84%E6%A3%80%E6%B5%8B%E5%92%8C%E8%B0%83%E5%BA%A6"><span class="nav-text">4.2.1 冒险的检测和调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-%E8%AE%B0%E5%88%86%E7%89%8C%E7%AE%97%E6%B3%95"><span class="nav-text">4.2.2 记分牌算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%88%86%E7%89%8C%E5%A4%84%E7%90%86"><span class="nav-text">记分牌处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%88%86%E7%89%8C%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-text">记分牌执行过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%88%86%E7%89%8C%E7%BB%93%E6%9E%84"><span class="nav-text">记分牌结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%AE%9E%E4%BE%8B"><span class="nav-text">程序实例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-Tomasulo-%E7%AE%97%E6%B3%95"><span class="nav-text">4.2.3 Tomasulo 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Tomasulo-%E7%AE%97%E6%B3%95%E4%B8%8E%E8%AE%B0%E5%88%86%E7%89%8C"><span class="nav-text">Tomasulo 算法与记分牌</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8MIPS%E4%B8%8A%E5%AE%9E%E7%8E%B0%E7%AE%97%E6%B3%95"><span class="nav-text">在MIPS上实现算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Tomasulo-%E6%B5%AE%E7%82%B9%E5%8D%95%E5%85%83%E5%85%B7%E4%BD%93%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">Tomasulo 浮点单元具体执行流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIPS%E4%BA%94%E9%98%B6%E6%AE%B5%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%94%B9%E9%80%A0"><span class="nav-text">MIPS五阶段的流水线的改造</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%AE%9E%E4%BE%8B-1"><span class="nav-text">程序实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B"><span class="nav-text">举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-text">算法分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E6%8E%A7%E5%88%B6%E7%9B%B8%E5%85%B3%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%A3%E5%86%B3%E6%8A%80%E6%9C%AF"><span class="nav-text">4.3 控制相关的动态解决技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E7%BC%93%E5%86%B2"><span class="nav-text">4.3.1 分支预测缓冲</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E7%BC%93%E5%86%B2-BPB"><span class="nav-text">分支预测缓冲(BPB)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%BD%8D-BPB"><span class="nav-text">1 位 BPB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%BD%8D-BPB"><span class="nav-text">2 位 BPB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#n-%E4%BD%8D-BPB"><span class="nav-text">n 位 BPB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BPB-%E5%AE%9E%E7%8E%B0"><span class="nav-text">BPB 实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-%E5%88%86%E6%94%AF%E7%9B%AE%E6%A0%87%E7%BC%93%E5%86%B2-BTB"><span class="nav-text">4.3.2 分支目标缓冲(BTB)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#BTB-%E5%AE%9E%E7%8E%B0"><span class="nav-text">BTB 实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-%E5%A4%9A%E6%8C%87%E4%BB%A4%E6%B5%81%E5%87%BA%E6%8A%80%E6%9C%AF"><span class="nav-text">4.4 多指令流出技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-1-%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA"><span class="nav-text">4.4.1 超标量处理机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-text">超标量处理器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98"><span class="nav-text">超标量处理机的技术问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%BE%E4%BE%8B"><span class="nav-text">超标量处理器举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%EF%BC%9A%E4%BE%8B%E5%AD%90%E6%89%A7%E8%A1%8C%E6%83%85%E5%86%B5"><span class="nav-text">超标量：例子执行情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%EF%BC%9A%E4%BE%8B%E5%AD%90%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-text">超标量：例子结果分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-2-%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%8A%80%E6%9C%AF"><span class="nav-text">4.4.2 超长指令字技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VLIW%E5%9F%BA%E6%9C%AC%E6%9C%BA%E6%9E%84"><span class="nav-text">VLIW基本机构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VLIW%E4%BE%8B%E5%AD%90"><span class="nav-text">VLIW例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-%E7%AC%AC%E5%9B%9B%E7%AB%A0%E6%8C%87%E4%BB%A4%E7%BA%A7%E5%B9%B6%E8%A1%8C%E6%80%BB%E7%BB%93"><span class="nav-text">4.5 第四章指令级并行总结</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E6%8C%87%E4%BB%A4%E9%9B%86%E5%B9%B6%E8%A1%8C"><span class="nav-text">第四章 指令集并行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E6%8C%87%E4%BB%A4%E9%9B%86%E5%B9%B6%E8%A1%8C%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">4.1 指令集并行的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80%E8%B0%83%E5%BA%A6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95"><span class="nav-text">4.1.1 循环展开调度的基本方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%85%B6%E4%BB%96%E7%89%B9%E6%80%A7%E8%AF%B4%E6%98%8E"><span class="nav-text">流水线其他特性说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80%E5%AE%9E%E4%BE%8B"><span class="nav-text">循环展开实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIPS%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%A8%8B%E5%BA%8F"><span class="nav-text">MIPS汇编语言程序</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E6%97%A0%E8%B0%83%E5%BA%A6%E6%89%A7%E8%A1%8C%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90-%E6%AF%8F%E9%81%8D%E5%BE%AA%E7%8E%AF%E9%9C%80%E8%A6%8110%E4%B8%AA%E6%97%B6%E9%92%9F%E8%8A%82%E6%8B%8D-%E5%8F%AA%E6%9C%893%E4%B8%AA%E6%97%B6%E9%92%9F%E8%8A%82%E6%8B%8D-L-D-ADD-D-S-D-%E6%98%AF%E6%9C%89%E6%95%88%E7%9A%84%E5%85%B3%E9%94%AE%E6%8C%87%E4%BB%A4-%E6%9C%89%E6%95%88%E6%AF%94%E7%8E%87%E4%B8%BA-30-%E7%A9%BA%E8%BD%AC5%E4%B8%AA%E6%97%B6%E9%92%9F%E8%8A%82%E6%8B%8D-50-%E5%BE%AA%E7%8E%AF%E6%8E%A7%E5%88%B62%E4%B8%AA%E6%97%B6%E9%92%9F%E8%8A%82%E6%8B%8D-20-%E8%B0%83%E5%BA%A6%E4%BB%A3%E7%A0%81%EF%BC%8C%E5%87%8F%E5%B0%91%E7%A9%BA%E8%BD%AC"><span class="nav-text">循环无调度执行结果分析- 每遍循环需要10个时钟节拍- 只有3个时钟节拍(L.D, ADD.D, S.D)是有效的关键指令  - 有效比率为 30%  - 空转5个时钟节拍 (50%)  - 循环控制2个时钟节拍 (20%)- 调度代码，减少空转</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80"><span class="nav-text">循环展开</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E5%B1%95%E5%BC%80-%E6%8C%87%E4%BB%A4%E8%B0%83%E5%BA%A6"><span class="nav-text">循环展开+指令调度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E6%8C%87%E4%BB%A4%E7%9A%84%E5%8A%A8%E6%80%81%E8%B0%83%E5%BA%A6"><span class="nav-text">4.2 指令的动态调度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E5%86%92%E9%99%A9%E7%9A%84%E6%A3%80%E6%B5%8B%E5%92%8C%E8%B0%83%E5%BA%A6"><span class="nav-text">4.2.1 冒险的检测和调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-%E8%AE%B0%E5%88%86%E7%89%8C%E7%AE%97%E6%B3%95"><span class="nav-text">4.2.2 记分牌算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%88%86%E7%89%8C%E5%A4%84%E7%90%86"><span class="nav-text">记分牌处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%88%86%E7%89%8C%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-text">记分牌执行过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%88%86%E7%89%8C%E7%BB%93%E6%9E%84"><span class="nav-text">记分牌结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%AE%9E%E4%BE%8B"><span class="nav-text">程序实例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-Tomasulo-%E7%AE%97%E6%B3%95"><span class="nav-text">4.2.3 Tomasulo 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Tomasulo-%E7%AE%97%E6%B3%95%E4%B8%8E%E8%AE%B0%E5%88%86%E7%89%8C"><span class="nav-text">Tomasulo 算法与记分牌</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8MIPS%E4%B8%8A%E5%AE%9E%E7%8E%B0%E7%AE%97%E6%B3%95"><span class="nav-text">在MIPS上实现算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Tomasulo-%E6%B5%AE%E7%82%B9%E5%8D%95%E5%85%83%E5%85%B7%E4%BD%93%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">Tomasulo 浮点单元具体执行流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MIPS%E4%BA%94%E9%98%B6%E6%AE%B5%E7%9A%84%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%9A%84%E6%94%B9%E9%80%A0"><span class="nav-text">MIPS五阶段的流水线的改造</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%AE%9E%E4%BE%8B-1"><span class="nav-text">程序实例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B"><span class="nav-text">举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90"><span class="nav-text">算法分析</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E6%8E%A7%E5%88%B6%E7%9B%B8%E5%85%B3%E7%9A%84%E5%8A%A8%E6%80%81%E8%A7%A3%E5%86%B3%E6%8A%80%E6%9C%AF"><span class="nav-text">4.3 控制相关的动态解决技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E7%BC%93%E5%86%B2"><span class="nav-text">4.3.1 分支预测缓冲</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%94%AF%E9%A2%84%E6%B5%8B%E7%BC%93%E5%86%B2-BPB"><span class="nav-text">分支预测缓冲(BPB)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E4%BD%8D-BPB"><span class="nav-text">1 位 BPB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E4%BD%8D-BPB"><span class="nav-text">2 位 BPB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#n-%E4%BD%8D-BPB"><span class="nav-text">n 位 BPB</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#BPB-%E5%AE%9E%E7%8E%B0"><span class="nav-text">BPB 实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-%E5%88%86%E6%94%AF%E7%9B%AE%E6%A0%87%E7%BC%93%E5%86%B2-BTB"><span class="nav-text">4.3.2 分支目标缓冲(BTB)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#BTB-%E5%AE%9E%E7%8E%B0"><span class="nav-text">BTB 实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-%E5%A4%9A%E6%8C%87%E4%BB%A4%E6%B5%81%E5%87%BA%E6%8A%80%E6%9C%AF"><span class="nav-text">4.4 多指令流出技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-1-%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA"><span class="nav-text">4.4.1 超标量处理机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-text">超标量处理器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E6%9C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98"><span class="nav-text">超标量处理机的技术问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%E5%A4%84%E7%90%86%E5%99%A8%E4%B8%BE%E4%BE%8B"><span class="nav-text">超标量处理器举例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%EF%BC%9A%E4%BE%8B%E5%AD%90%E6%89%A7%E8%A1%8C%E6%83%85%E5%86%B5"><span class="nav-text">超标量：例子执行情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B6%85%E6%A0%87%E9%87%8F%EF%BC%9A%E4%BE%8B%E5%AD%90%E7%BB%93%E6%9E%9C%E5%88%86%E6%9E%90"><span class="nav-text">超标量：例子结果分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-2-%E8%B6%85%E9%95%BF%E6%8C%87%E4%BB%A4%E5%AD%97%E6%8A%80%E6%9C%AF"><span class="nav-text">4.4.2 超长指令字技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VLIW%E5%9F%BA%E6%9C%AC%E6%9C%BA%E6%9E%84"><span class="nav-text">VLIW基本机构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VLIW%E4%BE%8B%E5%AD%90"><span class="nav-text">VLIW例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-%E7%AC%AC%E5%9B%9B%E7%AB%A0%E6%8C%87%E4%BB%A4%E7%BA%A7%E5%B9%B6%E8%A1%8C%E6%80%BB%E7%BB%93"><span class="nav-text">4.5 第四章指令级并行总结</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1841,13 +1819,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">215k</span>
+    <span title="站点总字数">217k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:15</span>
+    <span title="站点阅读时长">3:17</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
